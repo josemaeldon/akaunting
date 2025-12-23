@@ -20,7 +20,6 @@ RUN apt-get update && apt-get install -y \
         zip \
         mbstring \
         xml \
-        curl \
         bcmath \
         opcache \
     && rm -rf /var/lib/apt/lists/*
@@ -37,7 +36,7 @@ COPY . /var/www/html/
 
 # Install PHP dependencies (production-optimized)
 RUN cd /var/www/html \
-    && composer install --no-dev --optimize-autoloader --no-interaction \
+    && composer install --no-dev --no-scripts --optimize-autoloader --no-interaction \
     && composer clear-cache
 
 # Set proper permissions for Laravel storage and cache directories
