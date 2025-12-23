@@ -2,30 +2,12 @@
 
 return [
 
-    'accounts' => [
-        'cash'              => 'Cash',
-    ],
-
-    'categories' => [
-        'deposit'           => 'Deposit',
-        'sales'             => 'Sales',
-    ],
-
-    'currencies' => [
-        'usd'               => 'US Dollar',
-    ],
-
-    'offline_payments' => [
-        'cash'              => 'Cash',
-        'bank'              => 'Bank Transfer',
-    ],
-
-    'reports' => [
-        'income'            => 'Monthly income summary by category.',
-        'expense'           => 'Monthly expense summary by category.',
-        'income_expense'    => 'Monthly income vs expense by category.',
-        'tax'               => 'Quarterly tax summary.',
-        'profit_loss'       => 'Quarterly profit & loss by category.',
-    ],
+    'accounts_cash'         => 'Cash',
+    'categories_deposit'    => 'Deposit',
+    'categories_sales'      => 'Sales',
+    'currencies_usd'        => 'US Dollar',
+    'currencies_eur'        => 'Euro',
+    'currencies_gbp'        => 'British Pound',
+    'currencies_try'        => 'Turkish Lira',
 
 ];

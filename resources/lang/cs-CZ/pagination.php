@@ -4,6 +4,6 @@ return [
 
     'previous'              => '&laquo; předchozí',
     'next'                  => 'další &raquo;',
-    'showing'               => ':first-:last z :total záznamů.',
-    'page'                  => 'na stránku.',
+    'showing'               => 'Zobrazuji :first - :last z celkem :total :type',
+
 ];

@@ -4,19 +4,10 @@ return [
 
     'domain'                => 'Domæne',
     'logo'                  => 'Logo',
-
+    'manage'                => 'Administrer virksomheder',
+    'all'                   => 'Alle virksomheder',
     'error' => [
-        'not_user_company'  => 'Fejl: Du har ikke tilladelse til at ændre denne enhed!',
-        'delete_active'     => 'Fejl: Kan ikke slette det aktive selskab. Venligst, skift til et andet først!',
-        'disable_active'    => 'Fejl: Kan ikke deaktivere det aktive selskab. Venligst, skift til et andet først!',
+        'delete_active'     => 'Fejl: Kan ikke slette aktiv virksomhed! Ændre dette først!',
     ],
-
-    'form_description' => [
-        'general'           => 'Denne information er synlig i de poster, du opretter.',
-        'billing'           => 'Moms nummeret vises i hver faktura / regning. Skrivebordet og rapporter er vist i standard valuta.',
-        'address'           => 'Adressen vil blive brugt i fakturaer, regninger og andre poster, som du sender.',
-    ],
-
-    'skip_step'             => 'Spring over',
 
 ];

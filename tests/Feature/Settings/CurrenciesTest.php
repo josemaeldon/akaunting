@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Settings;
 
-use App\Jobs\Setting\CreateCurrency;
 use App\Models\Setting\Currency;
 use Tests\Feature\FeatureTestCase;
 
@@ -26,70 +25,57 @@ class CurrenciesTest extends FeatureTestCase
 
     public function testItShouldCreateCurrency()
     {
-        $request = $this->getRequest();
-
         $this->loginAs()
-            ->post(route('currencies.store'), $request)
-            ->assertStatus(200);
+            ->post(route('currencies.store'), $this->getCurrencyRequest())
+            ->assertStatus(302)
+            ->assertRedirect(route('currencies.index'));
 
         $this->assertFlashLevel('success');
-
-        $this->assertDatabaseHas('currencies', [
-            'code' => $request['code'],
-        ]);
-    }
-
-    public function testItShouldSeeCurrencyUpdatePage()
-    {
-        $request = $this->getRequest();
-
-        $currency = $this->dispatch(new CreateCurrency($request));
-
-        $this->loginAs()
-            ->get(route('currencies.edit', $currency->id))
-            ->assertStatus(200)
-            ->assertSee($currency->code);
     }
 
     public function testItShouldUpdateCurrency()
     {
-        $request = $this->getRequest();
+        $request = $this->getCurrencyRequest();
 
-        $currency = $this->dispatch(new CreateCurrency($request));
+        $currency = Currency::create($request);
 
         $request['name'] = $this->faker->text(15);
 
         $this->loginAs()
             ->patch(route('currencies.update', $currency->id), $request)
-            ->assertStatus(200)
-			->assertSee($request['name']);
+            ->assertStatus(302)
+            ->assertRedirect(route('currencies.index'));
 
         $this->assertFlashLevel('success');
-
-        $this->assertDatabaseHas('currencies', [
-            'code' => $request['code'],
-        ]);
     }
 
     public function testItShouldDeleteCurrency()
     {
-        $request = $this->getRequest();
-
-        $currency = $this->dispatch(new CreateCurrency($request));
+        $currency = Currency::create($this->getCurrencyRequest());
 
         $this->loginAs()
             ->delete(route('currencies.destroy', $currency->id))
-            ->assertStatus(200);
+            ->assertStatus(302)
+            ->assertRedirect(route('currencies.index'));
 
         $this->assertFlashLevel('success');
-
-        $this->assertSoftDeleted('currencies', [
-            'code' => $request['code'],
-        ]);
     }
 
-    public function getRequest()
+    private function getCurrencyRequest()
     {
-        return Currency::factory()->enabled()->raw();
+        return [
+            'company_id' => $this->company->id,
+            'name' => $this->faker->text(15),
+            'code' => $this->faker->text(strtoupper(5)),
+            'rate' => $this->faker->boolean(1),
+            'precision' => $this->faker->text(5),
+            'symbol' => $this->faker->text(5),
+            'symbol_first' => 1,
+            'symbol_position' => 'after_amount',
+            'decimal_mark' => $this->faker->text(5),
+            'thousands_separator' => $this->faker->text(5),
+            'enabled' => $this->faker->boolean ? 1 : 0,
+            'default_currency' => $this->faker->boolean ? 1 : 0
+        ];
     }
 }

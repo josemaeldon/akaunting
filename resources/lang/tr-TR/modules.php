@@ -2,18 +2,21 @@
 
 return [
 
-    'api_key'               => 'API Anahtarı',
+    'title'                 => 'API token',
+    'api_token'             => 'Token',
     'my_apps'               => 'Uygulamalarım',
     'pre_sale'              => 'Ön-Satış',
     'top_paid'              => 'Popüler Ücretli',
     'new'                   => 'Yeni',
     'top_free'              => 'Popüler Ücretsiz',
     'free'                  => 'Ücretsiz',
+    'search'                => 'Arama',
     'install'               => 'Yükle',
     'buy_now'               => 'Şimdi Satın Al',
-    'get_api_key'           => 'API Anahtarını almak için <a href=":url" target="_blank">buraya tıklayın</a>.',
+    'token_link'            => 'API token almak için <a href="https://akaunting.com/tokens" target="_blank">buraya tıklayın</a>.',
     'no_apps'               => 'Henüz bu kategoride uygulama bulunmamaktadır.',
-    'become_developer'      => 'Geliştirici misiniz? <a href=":url" target="_blank">Buraya</a> tıklayarak Akaunting için uygulama geliştirmeyi öğrenebilir ve hemen para kazanmaya başlayabilirsiniz!',
+    'developer'             => 'Geliştirici misiniz? Uygulama geliştirip satışa sunmak için<a href="https://akaunting.com/blog/akaunting-app-store" target="_blank">buraya</a> tıklayın!',
+
     'recommended_apps'      => 'Önerilen Uygulamalar',
 
     'about'                 => 'Hakkında',
@@ -35,30 +38,31 @@ return [
         'installation'      => 'Yükleme',
         'faq'               => 'SSS',
         'changelog'         => 'Değişiklikler',
-        'reviews'           => 'Yorumlar',
+        'reviews'            => 'Yorumlar',
     ],
 
     'installation' => [
         'header'            => 'Uygulama Yükleme',
-        'download'          => ':module indiriliyor',
-        'unzip'             => ':module zipten çıkarılıyor',
-        'file_copy'         => ':module dosyaları kopyalanıyor',
-        'finish'            => ':module kurulumu tamamlanıyor',
-        'redirect'          => ':module kuruldu, güncelleme sayfasına yönlendiriliyorsunuz',
-        'install'           => ':module kuruluyor',
+        'download'          => ':module dosyası indiriliyor.',
+        'unzip'             => ':module ayıklanıyor',
+        'file_copy'         => ':module dosyaları kopyalanıyor.',
+        'migrate'           => ':module uygulama güncellemeleri.',
+        'finish'            => 'Güncelleme başarıyla yüklendi. Güncelleme sayfasına yönlendiriliyorsunuz.',
+        'install'           => ':module uygulamanın dosyaları yükleniyor.',
     ],
 
     'errors' => [
-        'download'          => ':module indirilemedi',
-        'zip'               => ':module için zip doosyası oluşturulamadı',
-        'unzip'             => ':module zipten çıkarılamadı',
-        'file_copy'         => ':module dosyaları kopyalanamadı',
-        'finish'            => ':module kurulumu tamamlanamadı',
+        'download' => ':module indirilemiyor!',
+        'upload' => 'İndirilen :module kaydedilemedi!',
+        'unzip' => ':module sıkıştırılmış dosyadan çıkartılamadı!',
+        'file_copy' => ':module dosyaları kopyalanamaz!',
+        'migrate' => ':module göç bozuk!',
+        'migrate core' => ':module zaten son sürüm güncellemyemezsiniz.',
     ],
 
     'badge' => [
-        'installed'         => 'Yüklü',
-        'pre_sale'          => 'Ön-Satış',
+        'installed' => 'Yüklü',
+        'pre_sale' => 'Ön-Satış',
     ],
 
     'button' => [
@@ -68,16 +72,14 @@ return [
     ],
 
     'my' => [
-        'purchased'         => 'Satın Alınmış',
-        'installed'         => 'Yüklü',
+        'purchased' => 'Satın Alınmış',
+        'installed' => 'Yüklü',
     ],
 
     'reviews' => [
         'button' => [
-            'add'           => 'Yorum Ekle'
+            'add' => 'Yorum Ekle'
         ],
-
-        'na'                => 'Herhangi bir yorum yok.'
-    ],
-
+        'na' => 'Herhangi bir yorum yok.'
+    ]
 ];

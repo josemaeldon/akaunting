@@ -6,7 +6,7 @@ return [
     'to_account'            => 'アカウントへ',
 
     'messages' => [
-        'delete'            => ':from から :to (:amount)',
+        'delete'            => ': からに: に (: 量)',
     ],
 
 ];

@@ -2,10 +2,13 @@
 
 namespace App\Models\Module;
 
-use App\Abstracts\Model;
+use App\Models\Model;
+use Sofa\Eloquence\Eloquence;
 
 class Module extends Model
 {
+    use Eloquence;
+
     protected $table = 'modules';
 
     /**
@@ -13,7 +16,7 @@ class Module extends Model
      *
      * @var array
      */
-    protected $fillable = ['company_id', 'alias', 'enabled', 'created_from', 'created_by'];
+    protected $fillable = ['company_id', 'alias', 'status'];
 
     /**
      * Scope alias.

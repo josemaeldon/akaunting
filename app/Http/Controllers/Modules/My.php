@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Modules;
 
-use App\Abstracts\Http\Controller;
+use App\Http\Controllers\Controller;
 use App\Traits\Modules;
+use App\Models\Module\Module;
+use Illuminate\Routing\Route;
 
 class My extends Controller
 {
@@ -16,9 +18,12 @@ class My extends Controller
      */
     public function index()
     {
-        $purchase = $this->getMyModules(['query' => ['limit' => 16]]);
-        $installed = $this->getInstalledModules();
+        $this->checkApiToken();
 
-        return $this->response('modules.my.index', compact('purchase', 'installed'));
+        $purchased = $this->getMyModules();
+        $modules = $this->getInstalledModules();
+        $installed = Module::where('company_id', '=', session('company_id'))->pluck('status', 'alias')->toArray();
+
+        return view('modules.my.index', compact('purchased', 'modules', 'installed'));
     }
 }

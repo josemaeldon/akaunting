@@ -2,24 +2,23 @@
 
 return [
 
-    'title' => [
-        '403'       => 'Oeps! Verboden toegang',
-        '404'       => 'Oeps! Pagina niet gevonden!',
-        '500'       => 'Oeps! Er is iets misgegaan.',
+    'forbidden_access' => 'Forbidden Access',
+    'error_page'       => 'Error Page',
+    'page_not_found'   => 'Page Not Found',
+
+    'body'   => [
+        'forbidden_access' => 'Oops! Forbidden Access.',
+        'error_page' => 'Oops! Something went wrong.',
+        'page_not_found' => 'Oops! Page not found.',
     ],
 
-    'header' => [
-        '403'       => '403 Verboden',
-        '404'       => '404 niet gevonden',
-        '500'       => '500 Interne serverfout',
-    ],
-
-    'message' => [
-        '403'       => 'U heeft geen toegang tot deze pagina.',
-        '404'       => 'We konden de pagina die je zocht niet vinden.',
-        '500'       => 'We gaan meteen opzoek naar een oplossing,',
-        'record'    => 'We konden het record dat u zocht niet vinden.',
-        'amount'    => 'Deze pagina bevat ongeldige bedragen! Neem contact op met de systeembeheerder.',
+    'messages'   => [
+        'forbidden_access' => 'You can not access this page.
+        Meanwhile, you may <a href=":link">return to dashboard</a>.',
+        'error_page' => 'We will work on fixing that right away.
+        Meanwhile, you may <a href=":link">return to dashboard</a>.',
+        'page_not_found' => 'We could not find the page you were looking for.
+        Meanwhile, you may <a href=":link">return to dashboard</a>.',
     ],
 
 ];

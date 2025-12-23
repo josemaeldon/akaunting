@@ -3,27 +3,13 @@
 namespace App\Http\Controllers\Wizard;
 
 use Akaunting\Money\Currency as MoneyCurrency;
-use App\Abstracts\Http\Controller;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Setting\Currency as Request;
-use App\Jobs\Setting\CreateCurrency;
-use App\Jobs\Setting\DeleteCurrency;
-use App\Jobs\Setting\UpdateCurrency;
+use App\Models\Banking\Account;
 use App\Models\Setting\Currency;
 
 class Currencies extends Controller
 {
-    /**
-     * Instantiate a new controller instance.
-     */
-    public function __construct()
-    {
-        // Add CRUD permission check
-        $this->middleware('permission:create-settings-currencies')->only('create', 'store', 'duplicate', 'import');
-        $this->middleware('permission:read-settings-currencies')->only('index', 'show', 'edit', 'export');
-        $this->middleware('permission:update-settings-currencies')->only('update', 'enable', 'disable');
-        $this->middleware('permission:delete-settings-currencies')->only('destroy');
-    }
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -31,30 +17,41 @@ class Currencies extends Controller
      */
     public function index()
     {
-        $currencies = Currency::collect();
+        $currencies = Currency::all();
 
-        // Get current currencies
-        $current = Currency::orderBy('code')->pluck('code')->toArray();
-
-        // Prepare codes
-        $codes = [];
-        $money_currencies = MoneyCurrency::getCurrencies();
-
-        foreach ($money_currencies as $key => $item) {
-            $codes[$key] = $key;
-        }
-
-        return $this->response('wizard.currencies.index', compact('currencies', 'codes'));
+        return view('wizard.currencies.index', compact('currencies'));
     }
 
     /**
-     * Show the form for viewing the specified resource.
+     * Show the form for creating a new resource.
      *
      * @return Response
      */
-    public function show()
+    public function create()
     {
-        return redirect()->route('wizard.currencies.index');
+        // Get current currencies
+        $current = Currency::pluck('code')->toArray();
+
+        // Prepare codes
+        $codes = array();
+        $currencies = MoneyCurrency::getCurrencies();
+        foreach ($currencies as $key => $item) {
+            // Don't show if already available
+            if (in_array($key, $current)) {
+                continue;
+            }
+
+            $codes[$key] = $key;
+        }
+
+        $html = view('wizard.currencies.create', compact('codes'))->render();
+
+        return response()->json([
+            'success' => true,
+            'error' => false,
+            'message' => 'null',
+            'html' => $html,
+        ]);
     }
 
     /**
@@ -66,17 +63,63 @@ class Currencies extends Controller
      */
     public function store(Request $request)
     {
-        $response = $this->ajaxDispatch(new CreateCurrency($request));
-
-        if ($response['success']) {
-            $message = trans('messages.success.created', ['type' => trans_choice('general.currencies', 1)]);
-        } else {
-            $message = $response['message'];
+        // Force the rate to be 1 for default currency
+        if ($request['default_currency']) {
+            $request['rate'] = '1';
         }
 
-        $response['message'] = $message;
+        $currency = Currency::create($request->all());
 
-        return response()->json($response);
+        // Update default currency setting
+        if ($request['default_currency']) {
+            setting()->set('general.default_currency', $request['code']);
+            setting()->save();
+        }
+
+        $message = trans('messages.success.added', ['type' => trans_choice('general.currencies', 1)]);
+
+        return response()->json([
+            'success' => true,
+            'error' => false,
+            'message' => $message,
+            'data' => $currency,
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  Currency  $currency
+     *
+     * @return Response
+     */
+    public function edit(Currency $currency)
+    {
+        // Get current currencies
+        $current = Currency::pluck('code')->toArray();
+
+        // Prepare codes
+        $codes = array();
+        $currencies = MoneyCurrency::getCurrencies();
+        foreach ($currencies as $key => $item) {
+            // Don't show if already available
+            if (($key != $currency->code) && in_array($key, $current)) {
+                continue;
+            }
+
+            $codes[$key] = $key;
+        }
+
+        $item = $currency;
+
+        $html = view('wizard.currencies.edit', compact('item', 'codes'))->render();
+
+        return response()->json([
+            'success' => true,
+            'error' => false,
+            'message' => 'null',
+            'html' => $html,
+        ]);
     }
 
     /**
@@ -89,19 +132,122 @@ class Currencies extends Controller
      */
     public function update(Currency $currency, Request $request)
     {
-        $response = $this->ajaxDispatch(new UpdateCurrency($currency, $request));
+        // Check if we can disable or change the code
+        if (!$request['enabled'] || ($currency->code != $request['code'])) {
+            $relationships = $this->countRelationships($currency, [
+                'accounts' => 'accounts',
+                'customers' => 'customers',
+                'invoices' => 'invoices',
+                'revenues' => 'revenues',
+                'bills' => 'bills',
+                'payments' => 'payments',
+            ]);
 
-        $currency->default = default_currency() == $currency->code;
-
-        if ($response['success']) {
-            $message = trans('messages.success.updated', ['type' => $currency->name]);
-        } else {
-            $message = $response['message'];
+            if ($currency->code == setting('general.default_currency')) {
+                $relationships[] = strtolower(trans_choice('general.companies', 1));
+            }
         }
 
-        $response['message'] = $message;
+        if (empty($relationships)) {
+            // Force the rate to be 1 for default currency
+            if ($request['default_currency']) {
+                $request['rate'] = '1';
+            }
 
-        return response()->json($response);
+            $currency->update($request->all());
+
+            // Update default currency setting
+            if ($request['default_currency']) {
+                setting()->set('general.default_currency', $request['code']);
+                setting()->save();
+            }
+
+            $message = trans('messages.success.updated', ['type' => trans_choice('general.currencies', 1)]);
+
+            return response()->json([
+                'success' => true,
+                'error' => false,
+                'message' => $message,
+                'data' => $currency,
+            ]);
+        } else {
+            $message = trans('messages.warning.disabled', ['name' => $currency->name, 'text' => implode(', ', $relationships)]);
+
+            return response()->json([
+                'success' => true,
+                'error' => false,
+                'message' => $message,
+                'data' => $currency,
+            ]);
+        }
+    }
+
+    /**
+     * Enable the specified resource.
+     *
+     * @param  Currency  $currency
+     *
+     * @return Response
+     */
+    public function enable(Currency $currency)
+    {
+        $currency->enabled = 1;
+        $currency->save();
+
+        $message = trans('messages.success.enabled', ['type' => trans_choice('general.currencies', 1)]);
+
+        return response()->json([
+            'success' => true,
+            'error' => false,
+            'message' => $message,
+            'data' => $currency,
+        ]);
+    }
+
+    /**
+     * Disable the specified resource.
+     *
+     * @param  Currency  $currency
+     *
+     * @return Response
+     */
+    public function disable(Currency $currency)
+    {
+        $relationships = $this->countRelationships($currency, [
+            'accounts' => 'accounts',
+            'customers' => 'customers',
+            'invoices' => 'invoices',
+            'revenues' => 'revenues',
+            'bills' => 'bills',
+            'payments' => 'payments',
+        ]);
+
+        if ($currency->code == setting('general.default_currency')) {
+            $relationships[] = strtolower(trans_choice('general.companies', 1));
+        }
+
+        if (empty($relationships)) {
+            $currency->enabled = 0;
+            $currency->save();
+
+            $message = trans('messages.success.disabled', ['type' => trans_choice('general.currencies', 1)]);
+
+            return response()->json([
+                'success' => true,
+                'error' => false,
+                'message' => $message,
+                'data' => $currency,
+            ]);
+        } else {
+            $message = trans('messages.warning.disabled', ['name' => $currency->name, 'text' => implode(', ', $relationships)]);
+
+            return response()->json([
+                'success' => false,
+                'error' => true,
+                'message' => $message,
+                'data' => $currency,
+            ]);
+        }
     }
 
     /**
@@ -113,19 +259,39 @@ class Currencies extends Controller
      */
     public function destroy(Currency $currency)
     {
-        $currency_id = $currency->id;
+        $relationships = $this->countRelationships($currency, [
+            'accounts' => 'accounts',
+            'customers' => 'customers',
+            'invoices' => 'invoices',
+            'revenues' => 'revenues',
+            'bills' => 'bills',
+            'payments' => 'payments',
+        ]);
 
-        $response = $this->ajaxDispatch(new DeleteCurrency($currency));
-
-        if ($response['success']) {
-            $message = trans('messages.success.deleted', ['type' => $currency->name]);
-        } else {
-            $message = $response['message'];
+        if ($currency->code == setting('general.default_currency')) {
+            $relationships[] = strtolower(trans_choice('general.companies', 1));
         }
 
-        $response['currency_id'] = $currency_id;
-        $response['message'] = $message;
+        if (empty($relationships)) {
+            $currency->delete();
 
-        return response()->json($response);
+            $message = trans('messages.success.deleted', ['type' => trans_choice('general.currencies', 1)]);
+
+            return response()->json([
+                'success' => true,
+                'error' => false,
+                'message' => $message,
+                'data' => $currency,
+            ]);
+        } else {
+            $message = trans('messages.warning.deleted', ['name' => $currency->name, 'text' => implode(', ', $relationships)]);
+
+            return response()->json([
+                'success' => false,
+                'error' => true,
+                'message' => $message,
+                'data' => $currency,
+            ]);
+        }
     }
 }

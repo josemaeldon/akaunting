@@ -3,13 +3,13 @@
 return [
 
     'next'                  => 'Selanjutnya',
-    'refresh'               => 'Perbarui',
+    'refresh'               => 'Menyegarkan',
 
     'steps' => [
-        'requirements'      => 'Silakan meminta ke penyedia hosting Anda untuk memperbaiki kesalahan!',
+        'requirements'      => 'Silakan meminta penyedia hosting Anda untuk memperbaiki kesalahan!',
         'language'          => 'Langkah 1/3 : Seleksi Bahasa',
-        'database'          => 'Langkah 2/3 : Atur Database',
-        'settings'          => 'Langkah 3/3 : Detail Perusahaan dan Admin',
+        'database'          => 'Langkah 2/3 : Setup basis data',
+        'settings'          => 'Langkah 3/3: Detail Perusahaan dan Admin',
     ],
 
     'language' => [
@@ -19,17 +19,15 @@ return [
     'requirements' => [
         'enabled'           => ':feature perlu diaktifkan!',
         'disabled'          => ':feature perlu dinonaktifkan!',
-        'extension'         => ':extension ekstensi perlu diinstal dan dimuat!',
+        'extension'         => ': ekstensi ekstensi perlu diinstal dan dimuat!',
         'directory'         => ':directory direktori perlu ditulis!',
-        'executable'        => 'Berkas PHP CLI belum didefinisikan/bekerja atau bukan versi :php_version ke atas. Mohon tanyakan ke penyedia hosting untuk mengatur variabel PHP_BINARY atau PHP_PATH dengan benar.',
-        'npm'               => '<b>File JavaScript tidak ada !</b> <br><br><span>Anda harus menjalankan <em class="underline">npm install</em> dan <em class="underline">npm run dev< /em> perintah.</span>', 
     ],
 
     'database' => [
         'hostname'          => 'Nama host',
         'username'          => 'Nama pengguna',
         'password'          => 'Kata Sandi',
-        'name'              => 'Database',
+        'name'              => 'Basis data',
     ],
 
     'settings' => [
@@ -40,12 +38,7 @@ return [
     ],
 
     'error' => [
-        'php_version'       => 'Terjadi Kesalahan: Minta ke penyedia hosting Anda untuk menggunakan PHP :php_version atau lebih tinggi untuk HTTP dan CLI.',
-        'connection'        => 'Kesalahan: Tidak dapat terhubung ke database! Silahkan, pastikan bahwa rinciannya benar.',
+        'connection'        => 'Kesalahan: Tidak dapat terhubung ke database! Tolong, pastikan detilnya benar.',
     ],
 
-    'update' => [
-        'core'              => 'Versi baru akaunting tersedia! Harap perbarui <a href=":url">pemasangan Anda.</a>',
-        'module'            => ':module versi baru tersedia! Harap perbarui <a href=":url">pemasangan Anda.</a>',
-    ],
 ];

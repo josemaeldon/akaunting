@@ -2,8 +2,8 @@
 
 return [
 
-    'previous'              => 'Vorherige',
-    'next'                  => 'Nächste',
-    'showing'               => ':first :last von :total Datensätze.',
-    'page'                  => 'pro Seite.',
+    'previous'              => '&laquo; Vorherige',
+    'next'                  => 'Nächste &raquo;',
+    'showing'               => 'Zeige :first bis :last von :total :type',
+
 ];

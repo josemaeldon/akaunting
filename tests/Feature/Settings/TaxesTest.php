@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Settings;
 
-use App\Jobs\Setting\CreateTax;
 use App\Models\Setting\Tax;
 use Tests\Feature\FeatureTestCase;
 
@@ -26,64 +25,50 @@ class TaxesTest extends FeatureTestCase
 
     public function testItShouldCreateTax()
     {
-        $request = $this->getRequest();
-
         $this->loginAs()
-            ->post(route('taxes.store'), $request)
-            ->assertStatus(200);
+            ->post(route('taxes.store'), $this->getTaxRequest())
+            ->assertStatus(302)
+            ->assertRedirect(route('taxes.index'));
 
         $this->assertFlashLevel('success');
-
-        $this->assertDatabaseHas('taxes', $request);
-    }
-
-    public function testItShouldSeeTaxUpdatePage()
-    {
-        $request = $this->getRequest();
-
-        $tax = $this->dispatch(new CreateTax($request));
-
-        $this->loginAs()
-            ->get(route('taxes.edit', $tax->id))
-            ->assertStatus(200)
-            ->assertSee($tax->name);
     }
 
     public function testItShouldUpdateTax()
     {
-        $request = $this->getRequest();
+        $request = $this->getTaxRequest();
 
-        $tax = $this->dispatch(new CreateTax($request));
+        $tax = Tax::create($request);
 
         $request['name'] = $this->faker->text(15);
 
         $this->loginAs()
             ->patch(route('taxes.update', $tax->id), $request)
-            ->assertStatus(200)
-			->assertSee($request['name']);
+            ->assertStatus(302)
+            ->assertRedirect(route('taxes.index'));
 
         $this->assertFlashLevel('success');
-
-        $this->assertDatabaseHas('taxes', $request);
     }
 
     public function testItShouldDeleteTax()
     {
-        $request = $this->getRequest();
-
-        $tax = $this->dispatch(new CreateTax($request));
+        $tax = Tax::create($this->getTaxRequest());
 
         $this->loginAs()
             ->delete(route('taxes.destroy', $tax->id))
-            ->assertStatus(200);
+            ->assertStatus(302)
+            ->assertRedirect(route('taxes.index'));
 
         $this->assertFlashLevel('success');
-
-        $this->assertDatabaseHas('taxes', $request);
     }
 
-    public function getRequest()
+    private function getTaxRequest()
     {
-        return Tax::factory()->enabled()->raw();
+        return [
+            'company_id' => $this->company->id,
+            'name' => $this->faker->text(15),
+            'rate' => $this->faker->randomFloat(2, 10, 20),
+            'type' => $this->faker->randomElement(['normal', 'inclusive', 'compound']),
+            'enabled' => $this->faker->boolean ? 1 : 0
+        ];
     }
 }

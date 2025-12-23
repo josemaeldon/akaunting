@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'accepted'             => 'يجب أن يتم قبول خانة :attribute.',
+    'accepted'             => 'يجب أن يتم القبول على خانة :attribute.',
     'active_url'           => 'خانة :attribute تحتوي على رابط غير صحيح.',
     'after'                => 'يجب على خانة :attribute أن تكون تاريخًا لاحقًا للتاريخ :date.',
     'after_or_equal'       => 'يجب على خانة :attribute أن تكون تاريخًا لاحقًا أو مطابقًا للتاريخ :date.',
@@ -33,20 +33,19 @@ return [
     'confirmed'            => 'خانة التأكيد غير متطابقة مع خانة :attribute.',
     'date'                 => 'خانة :attribute ليست تاريخًا صحيحًا.',
     'date_format'          => 'خانة :attribute غير متوافقة مع التنسيق :format.',
-    'different'            => 'يجب أن تكون الخانتان :attribute و :other <strong>مُختلفتان</strong>.',
+    'different'            => 'يجب أن تكون الخانتان :attribute و :other مُختلفتان.',
     'digits'               => 'يجب أن تحتوي خانة :attribute على عدد :digits من الأرقام.',
     'digits_between'       => 'يجب أن تحتوي خانة :attribute على عدد من الأرقام بين :min و :max.',
     'dimensions'           => 'خانة :attribute تحتوي على أبعاد صورة غير صالحة.',
     'distinct'             => 'خانة :attribute تحتوي على قيمة مكررة.',
-    'email'                => 'يجب أن تحتوي خانة :attribute على عنوان <strong>بريد إلكتروني</strong> صحيح.',
-    'ends_with'            => 'هذه الخانة :attribute يجب ان تحتوى على: :values',
+    'email'                => 'يجب أن تحتوي خانة :attribute على عنوان بريد إلكتروني صحيح.',
     'exists'               => 'الخانة المحددة :attribute غير صالحة.',
-    'file'                 => 'هذه الخانة :attribute يجب ان تكون <strong>ملف</strong>.',
-    'filled'               => 'هذه الخانة :attribute يجب ان تحتوي على <strong>قيمة</strong>.',
-    'image'                => 'هذه الخانة :attribute يجب ان تكون <strong>صورة</strong>.',
+    'file'                 => 'يجب أن تحتوي خانة :attribute على ملف.',
+    'filled'               => 'يجب أن تحتوي خانة :attribute على قيمة.',
+    'image'                => 'يجب أن تكون خانة :attribute عبارة عن صورة.',
     'in'                   => 'الخانة المحددة :attribute غير صالحة.',
     'in_array'             => 'خانة :attribute غير موجود في :other.',
-    'integer'              => 'هذه الخانة :attribute يجب ان تكون <strong>رقم</strong>.',
+    'integer'              => 'يجب أن تحتوي خانة :attribute على عددًا صحيحًا.',
     'ip'                   => 'يجب أن تحتوي خانة :attribute على عنوان IP صحيحًا.',
     'json'                 => 'يجب أن تحتوي خانة :attribute على نصًا صحيحًا من نوع JSON.',
     'max'                  => [
@@ -65,9 +64,9 @@ return [
     ],
     'not_in'               => 'الخانة المحددة :attribute غير صالحة.',
     'numeric'              => 'يجب أن تحتوي خانة :attribute على عددًا صحيحًا.',
-    'present'              => 'هذه الخانة :attribute يجب ان تحتوي على <strong>قيمة</strong>.',
-    'regex'                => 'تنسيق هذه الخانة :attribute <strong>غير صالحة</strong>.',
-    'required'             => 'هذه الخانة :attribute <strong>مطلوبة</strong>.',
+    'present'              => 'يجب أن تكون خانة :attribute موجوداً.',
+    'regex'                => 'صيغة :attribute غير صحيحة.',
+    'required'             => 'الخانة :attribute إلزامية.',
     'required_if'          => 'الخانة :attribute إلزامية إذا كانت خانة :other تساوي :value.',
     'required_unless'      => 'الخانة :attribute تكون إلزامية ما لم تكن خانة :other تحتوي على :values.',
     'required_with'        => 'الخانة :attribute إلزامية إذا توفّر :values.',
@@ -76,16 +75,16 @@ return [
     'required_without_all' => 'الخانة :attribute إلزامية إذا لم يتوفّر أياً من :values.',
     'same'                 => 'يجب أن تتطابق خانة :attribute مع :other.',
     'size'                 => [
-        'numeric' => 'يجب أن تكون قيمة خانة :attribute مساوية ل :size.',
+        'numeric' => 'يجب أن تكون قيمة خانة :attribute مساوية للعدد :size.',
         'file'    => 'يجب أن يكون حجم الملف :attribute يساوي :size كيلوبايت.',
-        'string'  => 'هذه الخانة :attribute يجب ان تكون <strong>:size حرف</strong>.',
+        'string'  => 'يجب أن يحتوي خانة :attribute على :size حرف/أحرف.',
         'array'   => 'يجب أن تحتوي خانة :attribute على :size من العناصر.',
     ],
-    'string'               => 'هذه الخانة :attribute يجب ان تكون <strong>نص</strong>.',
+    'string'               => 'يجب أن تكون خانة :attribute نصًا.',
     'timezone'             => 'يجب أن تكون خانة :attribute نطاقًا زمنيًا صحيحًا.',
-    'unique'               => 'هذه الخانة :attribute <strong>مستخدمة بالفعل</strong>.',
-    'uploaded'             => 'هذه الخانة :attribute <strong>فشلت</strong> عند تحميلها على النظام.',
-    'url'                  => 'تنسيق هذه الخانة :attribute <strong>غير صالح</strong>.',
+    'unique'               => 'قيمة :attribute مُستخدمة من قبل.',
+    'uploaded'             => 'فشل في رفع :attribute.',
+    'url'                  => 'صيغة :attribute غير صحيحة.',
 
     /*
     |--------------------------------------------------------------------------
@@ -100,11 +99,10 @@ return [
 
     'custom' => [
         'attribute-name' => [
-            'rule-name'             => 'رسالة مخصصة',
+            'rule-name' => 'رسالة مخصصة',
         ],
-        'invalid_currency'      => 'رمز خانة :attribute غير صحيحة.',
-        'invalid_amount'        => 'خانة المبلغ :attribute غير صالحة.',
-        'invalid_extension'     => 'امتداد الملف غير صالح.',
+        'invalid_currency' => 'رمز خانة :attribute غير صحيحة.',
+        'invalid_amount'   => 'The amount :attribute is invalid.',
     ],
 
     /*

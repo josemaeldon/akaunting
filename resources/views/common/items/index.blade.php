@@ -1,150 +1,110 @@
-<x-layouts.admin>
-    <x-slot name="title">{{ trans_choice('general.items', 2) }}</x-slot>
+@extends('layouts.admin')
 
-    <x-slot name="favorite"
-        title="{{ trans_choice('general.items', 2) }}"
-        icon="inventory_2"
-        route="items.index"
-    ></x-slot>
+@section('title', trans_choice('general.items', 2))
 
-    <x-slot name="buttons">
-        @can('create-common-items')
-            <x-link href="{{ route('items.create') }}" kind="primary" id="index-more-actions-new-item">
-                {{ trans('general.title.new', ['type' => trans_choice('general.items', 1)]) }}
-            </x-link>
-        @endcan
-    </x-slot>
+@section('new_button')
+@permission('create-common-items')
+<span class="new-button"><a href="{{ route('items.create') }}" class="btn btn-success btn-sm"><span class="fa fa-plus"></span> &nbsp;{{ trans('general.add_new') }}</a></span>
+<span><a href="{{ route('import.create', ['common', 'items']) }}" class="btn btn-default btn-sm"><span class="fa fa-download"></span> &nbsp;{{ trans('import.import') }}</a></span>
+@endpermission
+<span><a href="{{ route('items.export', request()->input()) }}" class="btn btn-default btn-sm"><span class="fa fa-upload"></span> &nbsp;{{ trans('general.export') }}</a></span>
+@endsection
 
-    <x-slot name="moreButtons">
-        <x-dropdown id="dropdown-more-actions">
-            <x-slot name="trigger">
-                <span class="material-icons pointer-events-none">more_horiz</span>
-            </x-slot>
+@section('content')
+<!-- Default box -->
+<div class="box box-success">
+    <div class="box-header with-border">
+        {!! Form::open(['route' => 'items.index', 'role' => 'form', 'method' => 'GET']) !!}
+        <div id="items" class="pull-left box-filter">
+            <span class="title-filter hidden-xs">{{ trans('general.search') }}:</span>
+            {!! Form::text('search', request('search'), ['class' => 'form-control input-filter input-sm', 'placeholder' => trans('general.search_placeholder')]) !!}
+            {!! Form::select('categories[]', $categories, request('categories'), ['id' => 'filter-categories', 'class' => 'form-control input-filter input-lg', 'multiple' => 'multiple']) !!}
+            {!! Form::button('<span class="fa fa-filter"></span> &nbsp;' . trans('general.filter'), ['type' => 'submit', 'class' => 'btn btn-sm btn-default btn-filter']) !!}
+        </div>
+        <div class="pull-right">
+            <span class="title-filter hidden-xs">{{ trans('general.show') }}:</span>
+            {!! Form::select('limit', $limits, request('limit', setting('general.list_limit', '25')), ['class' => 'form-control input-filter input-sm', 'onchange' => 'this.form.submit()']) !!}
+        </div>
+        {!! Form::close() !!}
+    </div>
+    <!-- /.box-header -->
 
-            @can('create-common-items')
-                <x-dropdown.link href="{{ route('import.create', ['common', 'items']) }}" id="index-more-actions-import-item">
-                    {{ trans('import.import') }}
-                </x-dropdown.link>
-            @endcan
-
-            <x-dropdown.link href="{{ route('items.export', request()->input()) }}" id="index-more-actions-export-item">
-                {{ trans('general.export') }}
-            </x-dropdown.link>
-        </x-dropdown>
-    </x-slot>
-
-    <x-slot name="content">
-        @if ($items->count() || request()->get('search', false))
-            <x-index.container>
-                <x-index.search
-                    search-string="App\Models\Common\Item"
-                    bulk-action="App\BulkActions\Common\Items"
-                />
-
-                <x-table>
-                    <x-table.thead>
-                        <x-table.tr>
-                            <x-table.th kind="bulkaction">
-                                <x-index.bulkaction.all />
-                            </x-table.th>
-
-                            <x-table.th class="w-6/12 sm:w-4/12">
-                                <x-slot name="first">
-                                    <x-sortablelink column="name" title="{{ trans('general.name') }}" />
-                                </x-slot>
-                                <x-slot name="second">
-                                    <x-sortablelink column="description" title="{{ trans('general.description') }}" />
-                                </x-slot>
-                            </x-table.th>
-
-                            <x-table.th class="w-3/12" hidden-mobile>
-                                <x-sortablelink column="category.name" title="{{ trans_choice('general.categories', 1) }}" />
-                            </x-table.th>
-
-                            <x-table.th class="w-2/12" hidden-mobile>
-                                {{ trans_choice('general.taxes', 2) }}
-                            </x-table.th>
-
-                            <x-table.th class="w-6/12 sm:w-3/12" kind="amount">
-                                <x-slot name="first">
-                                    <x-sortablelink column="sale_price" title="{{ trans('items.sale_price') }}" />
-                                </x-slot>
-                                <x-slot name="second">
-                                    <x-sortablelink column="purchase_price" title="{{ trans('items.purchase_price') }}" />
-                                </x-slot>
-                            </x-table.th>
-                        </x-table.tr>
-                    </x-table.thead>
-
-                    <x-table.tbody>
-                        @foreach($items as $item)
-                            <x-table.tr href="{{ route('items.edit', $item->id) }}">
-                                <x-table.td kind="bulkaction">
-                                    <x-index.bulkaction.single id="{{ $item->id }}" name="{{ $item->name }}" />
-                                </x-table.td>
-
-                                <x-table.td class="w-6/12 sm:w-4/12">
-                                    <x-slot name="first" class="flex font-bold" override="class">
-                                        {{ $item->name }}
-
-                                        @if (! $item->enabled)
-                                            <x-index.disable text="{{ trans_choice('general.items', 1) }}" />
-                                        @endif
-                                    </x-slot>
-                                    <x-slot name="second" class="font-normal" override="class">
-                                        {{ $item->description }}
-                                    </x-slot>
-                                </x-table.td>
-
-                                <x-table.td class="w-3/12" hidden-mobile>
-                                    <div class="flex items-center">
-                                        <x-index.category :model="$item->category" />
-                                    </div>
-                                </x-table.td>
-
-                                <x-table.td class="w-2/12" hidden-mobile>
-                                    @if ($item->taxes->count())
-                                        @foreach($item->taxes as $tax)
-                                            <span class="bg-lilac-900 px-3 py-1 text-sm rounded-lg text-black ltr:mr-3 rtl:ml-3">
-                                                {{ $tax->tax->name }}
-                                            </span>
-                                        @endforeach
+    <div class="box-body">
+        <div class="table table-responsive">
+            <table class="table table-striped table-hover" id="tbl-items">
+                <thead>
+                    <tr>
+                        <th class="col-md-1 hidden-xs">{{ trans_choice('general.pictures', 1) }}</th>
+                        <th class="col-md-3">@sortablelink('name', trans('general.name'))</th>
+                        <th class="col-md-1 hidden-xs">@sortablelink('category', trans_choice('general.categories', 1))</th>
+                        <th class="col-md-1 hidden-xs">@sortablelink('quantity', trans_choice('items.quantities', 1))</th>
+                        <th class="col-md-2 text-right amount-space">@sortablelink('sale_price', trans('items.sales_price'))</th>
+                        <th class="col-md-2 hidden-xs text-right amount-space">@sortablelink('purchase_price', trans('items.purchase_price'))</th>
+                        <th class="col-md-1 hidden-xs">@sortablelink('enabled', trans_choice('general.statuses', 1))</th>
+                        <th class="col-md-1 text-center">{{ trans('general.actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach($items as $item)
+                    <tr>
+                        <td class="hidden-xs"><img src="{{ $item->picture ? Storage::url($item->picture->id) : asset('public/img/akaunting-logo-green.png') }}" class="img-thumbnail" width="50" alt="{{ $item->name }}"></td>
+                        <td><a href="{{ route('items.edit', $item->id) }}">{{ $item->name }}</a></td>
+                        <td class="hidden-xs">{{ $item->category ? $item->category->name : trans('general.na') }}</td>
+                        <td class="hidden-xs">{{ $item->quantity }}</td>
+                        <td class="text-right amount-space">{{ money($item->sale_price, setting('general.default_currency'), true) }}</td>
+                        <td class="hidden-xs text-right amount-space">{{ money($item->purchase_price, setting('general.default_currency'), true) }}</td>
+                        <td class="hidden-xs">
+                            @if ($item->enabled)
+                                <span class="label label-success">{{ trans('general.enabled') }}</span>
+                            @else
+                                <span class="label label-danger">{{ trans('general.disabled') }}</span>
+                            @endif
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-toggle-position="left" aria-expanded="false">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                    <li><a href="{{ route('items.edit', $item->id) }}">{{ trans('general.edit') }}</a></li>
+                                    @if ($item->enabled)
+                                        <li><a href="{{ route('items.disable', $item->id) }}">{{ trans('general.disable') }}</a></li>
                                     @else
-                                        <x-empty-data />
+                                        <li><a href="{{ route('items.enable', $item->id) }}">{{ trans('general.enable') }}</a></li>
                                     @endif
-                                </x-table.td>
+                                    @permission('create-common-items')
+                                    <li class="divider"></li>
+                                    <li><a href="{{ route('items.duplicate', $item->id) }}">{{ trans('general.duplicate') }}</a></li>
+                                    @endpermission
+                                    @permission('delete-common-items')
+                                    <li class="divider"></li>
+                                    <li>{!! Form::deleteLink($item, 'common/items') !!}</li>
+                                    @endpermission
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- /.box-body -->
 
-                                <x-table.td class="w-6/12 sm:w-3/12" kind="amount">
-                                    <x-slot name="first">
-                                        @if ($item->sale_price)
-                                            <x-money :amount="$item->sale_price" />
-                                        @else
-                                            <x-empty-data />
-                                        @endif
-                                    </x-slot>
-                                    <x-slot name="second">
-                                        @if ($item->purchase_price)
-                                            <x-money :amount="$item->purchase_price" />
-                                        @else
-                                            <x-empty-data />
-                                        @endif
-                                    </x-slot>
-                                </x-table.td>
+    <div class="box-footer">
+        @include('partials.admin.pagination', ['items' => $items, 'type' => 'items'])
+    </div>
+    <!-- /.box-footer -->
+</div>
+<!-- /.box -->
+@endsection
 
-                                <x-table.td kind="action">
-                                    <x-table.actions :model="$item" />
-                                </x-table.td>
-                            </x-table.tr>
-                        @endforeach
-                    </x-table.tbody>
-                </x-table>
-
-                <x-pagination :items="$items" />
-            </x-index.container>
-        @else
-            <x-empty-page group="common" page="items" />
-        @endif
-    </x-slot>
-
-    <x-script folder="common" file="items" />
-</x-layouts.admin>
+@push('scripts')
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#filter-categories").select2({
+            placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.categories', 1)]) }}"
+        });
+    });
+</script>
+@endpush

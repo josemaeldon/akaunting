@@ -2,133 +2,96 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\Abstracts\Http\ApiController;
+use App\Http\Controllers\ApiController;
 use App\Http\Requests\Auth\User as Request;
-use App\Http\Resources\Auth\User as Resource;
-use App\Jobs\Auth\CreateUser;
-use App\Jobs\Auth\DeleteUser;
-use App\Jobs\Auth\UpdateUser;
+use App\Models\Auth\User;
+use App\Transformers\Auth\User as Transformer;
+use Dingo\Api\Routing\Helpers;
 
 class Users extends ApiController
 {
+    use Helpers;
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function index()
     {
-        $users = user_model_class()::with('companies', 'media', 'permissions', 'roles')->isNotCustomer()->collect();
+        $users = User::with(['companies', 'roles', 'permissions'])->collect();
 
-        return Resource::collection($users);
+        return $this->response->paginator($users, new Transformer());
     }
 
     /**
      * Display the specified resource.
      *
      * @param  int|string  $id
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function show($id)
     {
-        $model_class = user_model_class();
-
         // Check if we're querying by id or email
         if (is_numeric($id)) {
-            $user = $model_class::with('companies', 'permissions', 'roles')->find($id);
+            $user = User::with(['companies', 'roles', 'permissions'])->find($id);
         } else {
-            $user = $model_class::with('companies', 'permissions', 'roles')->where('email', $id)->first();
+            $user = User::with(['companies', 'roles', 'permissions'])->where('email', $id)->first();
         }
 
-        if (! $user instanceof $model_class) {
-            return $this->errorInternal('No query results for model [' . $model_class . '] ' . $id);
-        }
-
-        return new Resource($user);
+        return $this->response->item($user, new Transformer());
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  $request
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function store(Request $request)
     {
-        $user = $this->dispatch(new CreateUser($request));
+        $user = User::create($request->input());
 
-        return $this->created(route('api.users.show', $user->id), new Resource($user));
+        // Attach roles
+        $user->roles()->attach($request->get('roles'));
+
+        // Attach companies
+        $user->companies()->attach($request->get('companies'));
+
+        return $this->response->created(url('api/users/'.$user->id));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  $user_id
+     * @param  $user
      * @param  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
-    public function update($user_id, Request $request)
+    public function update(User $user, Request $request)
     {
-        $user = user_model_class()::query()->isNotCustomer()->find($user_id);
+        // Except password as we don't want to let the users change a password from this endpoint
+        $user->update($request->except('password'));
 
-        $user = $this->dispatch(new UpdateUser($user, $request));
+        // Sync roles
+        $user->roles()->sync($request->get('roles'));
 
-        return new Resource($user->fresh());
-    }
+        // Sync companies
+        $user->companies()->sync($request->get('companies'));
 
-    /**
-     * Enable the specified resource in storage.
-     *
-     * @param  $user_id
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function enable($user_id)
-    {
-        $user = user_model_class()::query()->isNotCustomer()->find($user_id);
-
-        $user = $this->dispatch(new UpdateUser($user, request()->merge(['enabled' => 1])));
-
-        return new Resource($user->fresh());
-    }
-
-    /**
-     * Disable the specified resource in storage.
-     *
-     * @param  $user_id
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function disable($user_id)
-    {
-        $user = user_model_class()::query()->isNotCustomer()->find($user_id);
-
-        $user = $this->dispatch(new UpdateUser($user, request()->merge(['enabled' => 0])));
-
-        return new Resource($user->fresh());
+        return $this->response->item($user->fresh(), new Transformer());
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  $user_id
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
-     *
-     * @return \Illuminate\Http\Response
+     * @param  User  $user
+     * @return \Dingo\Api\Http\Response
      */
-    public function destroy($user_id)
+    public function destroy(User $user)
     {
-        $user = user_model_class()::query()->isNotCustomer()->find($user_id);
+        $user->delete();
 
-        try {
-            $this->dispatch(new DeleteUser($user));
-
-            return $this->noContent();
-        } catch(\Exception $e) {
-            $this->errorUnauthorized($e->getMessage());
-        }
+        return $this->response->noContent();
     }
 }

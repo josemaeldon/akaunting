@@ -13,7 +13,6 @@ return [
     'price'                 => 'Prezzo',
     'sub_total'             => 'Subtotale',
     'discount'              => 'Sconto',
-    'item_discount'         => 'Linea Sconto',
     'tax_total'             => 'Totale imposte',
     'total'                 => 'Totale',
 
@@ -30,8 +29,6 @@ return [
     'add_payment'           => 'Aggiungere pagamento',
     'mark_paid'             => 'Segna come pagata',
     'mark_sent'             => 'Segna come inviata',
-    'mark_viewed'           => 'Segna come visto',
-    'mark_cancelled'        => 'Segna come annullata',
     'download_pdf'          => 'Scarica PDF',
     'send_mail'             => 'Invia email',
     'all_invoices'          => 'Accedi per visualizzare tutte le fatture',
@@ -40,13 +37,23 @@ return [
     'get_paid'              => 'Essere pagato',
     'accept_payments'       => 'Accetta pagamenti online',
 
+    'status' => [
+        'draft'             => 'Bozza',
+        'sent'              => 'Inviato',
+        'viewed'            => 'Visto',
+        'approved'          => 'Approvato',
+        'partial'           => 'Parziale',
+        'paid'              => 'Pagato',
+    ],
+
     'messages' => [
+        'email_sent'        => 'La mail è stata inviata con successo.',
+        'marked_sent'       => 'La mail è stata contrassegnata con successo come inviata.',
         'email_required'    => 'Nessun indirizzo email per questo cliente!',
         'draft'             => 'Questa è una <b>BOZZA</b> della fattura e si rifletterà sui grafici dopo che sarà inviata.',
 
         'status' => [
             'created'       => 'Creato il :date',
-            'viewed'        => 'Visto',
             'send' => [
                 'draft'     => 'Non inviato',
                 'sent'      => 'Inviato il :date',
@@ -55,6 +62,11 @@ return [
                 'await'     => 'In attesa del pagamento',
             ],
         ],
+    ],
+
+    'notification' => [
+        'message'           => 'Hai ricevuto questa e-mail perché avete un imminente importo di :amount a :customer cliente.',
+        'button'            => 'Paga adesso',
     ],
 
 ];

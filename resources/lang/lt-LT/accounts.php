@@ -2,13 +2,13 @@
 
 return [
 
-    'account_name'          => 'Sąskaitos pavadinimas',
+    'account_name'          => 'Įmonės pavadinimas',
     'number'                => 'Numeris',
     'opening_balance'       => 'Pradinis likutis',
     'current_balance'       => 'Likutis',
     'bank_name'             => 'Banko pavadinimas',
     'bank_phone'            => 'Banko telefonas',
     'bank_address'          => 'Banko adresas',
-    'default_account'       => 'Pagrindinė sąskaita',
+    'default_account'       => 'Numatytoji įmonė',
 
 ];

@@ -1,131 +1,110 @@
-<x-layouts.admin>
-    <x-slot name="title">
-        {{ trans_choice('general.categories', 2) }}
-    </x-slot>
+@extends('layouts.admin')
 
-    <x-slot name="favorite"
-        title="{{ trans_choice('general.categories', 2) }}"
-        icon="folder"
-        route="categories.index"
-    ></x-slot>
+@section('title', trans_choice('general.categories', 2))
 
-    <x-slot name="buttons">
-        @can('create-settings-categories')
-            <x-link href="{{ route('categories.create') }}" kind="primary" id="index-more-actions-new-category">
-                {{ trans('general.title.new', ['type' => trans_choice('general.categories', 1)]) }}
-            </x-link>
-        @endcan
-    </x-slot>
+@permission('create-settings-categories')
+@section('new_button')
+<span class="new-button"><a href="{{ url('settings/categories/create') }}" class="btn btn-success btn-sm"><span class="fa fa-plus"></span> &nbsp;{{ trans('general.add_new') }}</a></span>
+@endsection
+@endpermission
 
-    <x-slot name="moreButtons">
-        <x-dropdown id="dropdown-more-actions">
-            <x-slot name="trigger">
-                <span class="material-icons pointer-events-none">more_horiz</span>
-            </x-slot>
+@section('content')
+<!-- Default box -->
+<div class="box box-success">
+    <div class="box-header with-border">
+        {!! Form::open(['url' => 'settings/categories', 'role' => 'form', 'method' => 'GET']) !!}
+        <div id="items" class="pull-left box-filter">
+            <span class="title-filter hidden-xs">{{ trans('general.search') }}:</span>
+            {!! Form::text('search', request('search'), ['class' => 'form-control input-filter input-sm', 'placeholder' => trans('general.search_placeholder')]) !!}
+            {!! Form::select('types[]', $types, request('types'), ['id' => 'filter-types', 'class' => 'form-control input-filter input-lg', 'multiple' => 'multiple']) !!}
+            {!! Form::button('<span class="fa fa-filter"></span> &nbsp;' . trans('general.filter'), ['type' => 'submit', 'class' => 'btn btn-sm btn-default btn-filter']) !!}
+        </div>
+        <div class="pull-right">
+            <span class="title-filter hidden-xs">{{ trans('general.show') }}:</span>
+            {!! Form::select('limit', $limits, request('limit', setting('general.list_limit', '25')), ['class' => 'form-control input-filter input-sm', 'onchange' => 'this.form.submit()']) !!}
+        </div>
+        {!! Form::close() !!}
+    </div>
+    <!-- /.box-header -->
 
-            @can('create-settings-categories')
-                <x-dropdown.link href="{{ route('import.create', ['settings', 'categories']) }}" id="index-more-actions-import-category">
-                    {{ trans('import.import') }}
-                </x-dropdown.link>
-            @endcan
+    <div class="box-body">
+        <div class="table table-responsive">
+            <table class="table table-striped table-hover" id="tbl-categories">
+                <thead>
+                    <tr>
+                        <th class="col-md-5">@sortablelink('name', trans('general.name'))</th>
+                        <th class="col-md-3">@sortablelink('type', trans_choice('general.types', 1))</th>
+                        <th class="col-md-2 hidden-xs">{{ trans('general.color') }}</th>
+                        <th class="col-md-1 hidden-xs">@sortablelink('enabled', trans_choice('general.statuses', 1))</th>
+                        <th class="col-md-1 text-center">{{ trans('general.actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach($categories as $item)
+                    <tr>
+                        <td>
+                        @if (($item->type == 'income') && $auth_user->can('read-reports-income-summary'))
+                        <a href="{{ url('reports/income-summary?categories[]=' . $item->id) }}">{{ $item->name }}</a>
+                        @elseif (($item->type == 'expense') && $auth_user->can('read-reports-expense-summary'))
+                        <a href="{{ url('reports/expense-summary?categories[]=' . $item->id) }}">{{ $item->name }}</a>
+                        @elseif (($item->type == 'item') && $auth_user->can('read-common-items'))
+                        <a href="{{ url('common/items?categories[]=' . $item->id) }}">{{ $item->name }}</a>
+                        @else
+                        <a href="{{ url('settings/categories/' . $item->id . '/edit') }}">{{ $item->name }}</a>
+                        @endif
+                        </td>
+                        <td>{{ $types[$item->type] }}</td>
+                        <td class="hidden-xs"><i class="fa fa-2x fa-circle" style="color:{{ $item->color }};"></i></td>
+                        <td class="hidden-xs">
+                            @if ($item->enabled)
+                                <span class="label label-success">{{ trans('general.enabled') }}</span>
+                            @else
+                                <span class="label label-danger">{{ trans('general.disabled') }}</span>
+                            @endif
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" data-toggle-position="left" aria-expanded="false">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                    <li><a href="{{ url('settings/categories/' . $item->id . '/edit') }}">{{ trans('general.edit') }}</a></li>
+                                    @if ($item->enabled)
+                                    <li><a href="{{ route('categories.disable', $item->id) }}">{{ trans('general.disable') }}</a></li>
+                                    @else
+                                    <li><a href="{{ route('categories.enable', $item->id) }}">{{ trans('general.enable') }}</a></li>
+                                    @endif
+                                    @if ($item->id != $transfer_id)
+                                    @permission('delete-settings-categories')
+                                    <li class="divider"></li>
+                                    <li>{!! Form::deleteLink($item, 'settings/categories') !!}</li>
+                                    @endpermission
+                                    @endif
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- /.box-body -->
 
-            <x-dropdown.link href="{{ route('categories.export', request()->input()) }}" id="index-more-actions-export-category">
-                {{ trans('general.export') }}
-            </x-dropdown.link>
-        </x-dropdown>
-    </x-slot>
+    <div class="box-footer">
+        @include('partials.admin.pagination', ['items' => $categories, 'type' => 'categories'])
+    </div>
+    <!-- /.box-footer -->
+</div>
+<!-- /.box -->
+@endsection
 
-    <x-slot name="content">
-        <x-index.container>
-            <x-index.search
-                search-string="App\Models\Setting\Category"
-                bulk-action="App\BulkActions\Settings\Categories"
-            />
-
-            <x-table>
-                <x-table.thead>
-                    <x-table.tr>
-                        <x-table.th kind="bulkaction">
-                            <x-index.bulkaction.all />
-                        </x-table.th>
-
-                        <x-table.th class="w-6/12">
-                            <x-sortablelink column="name" title="{{ trans('general.name') }}" />
-                        </x-table.th>
-
-                        <x-table.th class="w-6/12">
-                            <x-sortablelink column="type" title="{{ trans_choice('general.types', 1) }}" />
-                        </x-table.th>
-                    </x-table.tr>
-                </x-table.thead>
-
-                <x-table.tbody>
-                    @foreach($categories as $item)
-                        <x-table.tr href="{{ route('categories.edit', $item->id) }}">
-                            <x-table.td kind="bulkaction">
-                                <x-index.bulkaction.single 
-                                    id="{{ $item->id }}"
-                                    name="{{ $item->name }}"
-                                    :disabled="($item->isTransferCategory()) ? true : false"
-                                />
-                            </x-table.td>
-
-                            <x-table.td class="w-6/12">
-                                <div class="flex items-center">
-                                    @if ($item->sub_categories->count())
-                                        <x-tooltip id="tooltip-category-{{ $item->id }}" placement="bottom" message="{{ trans('categories.collapse') }}">
-                                            <button
-                                                type="button"
-                                                class="w-4 h-4 flex items-center justify-center mx-2 leading-none align-text-top rounded-lg"
-                                                node="child-{{ $item->id }}"
-                                                onClick="toggleSub('child-{{ $item->id }}', event)"
-                                            >
-                                                <span class="material-icons transform rotate-90 -ml-2 transition-all text-xl leading-none align-middle rounded-full bg-{{ $item->color }} text-white" style="background-color:{{ $item->color }};">chevron_right</span>
-                                            </button>
-                                        </x-tooltip>
-        
-                                        <div class="flex items-center font-bold">
-                                            {{ $item->name }}
-                                        </div>
-                                </div>
-                                @else
-                                    <div class="flex items-center">
-                                        <span class="material-icons text-{{ $item->color }}" class="text-3xl" style="color:{{ $item->color }};">circle</span>
-
-                                        <span class="font-bold ltr:ml-2 rtl:mr-2">
-                                            {{ $item->name }}
-                                        </span>
-                                    </div>
-                                @endif
-
-                                @if (! $item->enabled)
-                                    <x-index.disable text="{{ trans_choice('general.categories', 1) }}" />
-                                @endif
-                            </x-table.td>
-
-                            <x-table.td class="w-6/12">
-                                @if (! empty($types[$item->type]))
-                                    {{ $types[$item->type] }}
-                                @else
-                                    <x-empty-data />
-                                @endif
-                            </x-table.td>
-
-                            <x-table.td kind="action">
-                                <x-table.actions :model="$item" />
-                            </x-table.td>
-                        </x-table.tr>
-
-                        @foreach($item->sub_categories as $sub_category)
-                            @include('settings.categories.sub_category', ['parent_category' => $item, 'sub_category' => $sub_category, 'tree_level' => 1])
-                        @endforeach
-                    @endforeach
-                </x-table.tbody>
-            </x-table>
-
-            <x-pagination :items="$categories" />
-        </x-index.container>
-    </x-slot>
-
-    <x-script folder="settings" file="categories" />
-</x-layouts.admin>
+@push('scripts')
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#filter-types").select2({
+            placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.types', 1)]) }}"
+        });
+    });
+</script>
+@endpush

@@ -13,7 +13,6 @@ return [
     'price'                 => 'Kaina',
     'sub_total'             => 'Tarpinė suma',
     'discount'              => 'Nuolaida',
-    'item_discount'         => 'Nuolaida',
     'tax_total'             => 'Mokesčių suma',
     'total'                 => 'Iš viso',
 
@@ -29,16 +28,22 @@ return [
     'histories'             => 'Istorijos',
     'payments'              => 'Mokėjimai',
     'add_payment'           => 'Pridėti mokėjimą',
-    'mark_paid'             => 'Pažymėti kaip apmokėtą',
     'mark_received'         => 'Pažymėti kaip gautą',
-    'mark_cancelled'        => 'Pažymėti kaip atšauktą',
     'download_pdf'          => 'Parsisiųsti PDF',
     'send_mail'             => 'Siųsti laišką',
     'create_bill'           => 'Sukurti sąskaitą',
     'receive_bill'          => 'Gauti sąskaitą',
     'make_payment'          => 'Atlikti mokėjimą',
 
+    'status' => [
+        'draft'             => 'Juodraštis',
+        'received'          => 'Gauta',
+        'partial'           => 'Dalinis',
+        'paid'              => 'Apmokėta',
+    ],
+
     'messages' => [
+        'received'          => 'Sąskaita gauta sėkmingai!',
         'draft'             => 'Tai yra <b>JUODRAŠTINĖ</b> sąskaita ir ji bus įtraukta į grafikus po to kai bus gauta.',
 
         'status' => [

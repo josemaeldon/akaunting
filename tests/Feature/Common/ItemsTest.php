@@ -2,12 +2,8 @@
 
 namespace Tests\Feature\Common;
 
-use App\Exports\Common\Items as Export;
-use App\Jobs\Common\CreateItem;
 use App\Models\Common\Item;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
-use Maatwebsite\Excel\Facades\Excel;
 use Tests\Feature\FeatureTestCase;
 
 class ItemsTest extends FeatureTestCase
@@ -30,134 +26,68 @@ class ItemsTest extends FeatureTestCase
 
 	public function testItShouldCreateItem()
 	{
-		$request = $this->getRequest();
-
 		$this->loginAs()
-			->post(route('items.store'), $request)
-			->assertStatus(200);
+			->post(route('items.store'), $this->getItemRequest())
+			->assertStatus(302)
+			->assertRedirect(route('items.index'));
 
 		$this->assertFlashLevel('success');
-
-		$this->assertDatabaseHas('items', $request);
 	}
 
 	public function testItShouldSeeItemUpdatePage()
 	{
-		$request = $this->getRequest();
-
-        $item = $this->dispatch(new CreateItem($request));
+        $item = Item::create($this->getItemRequest());
 
 		$this->loginAs()
-			->get(route('items.edit', $item->id))
+			->get(route('items.edit', ['item' => $item->id]))
 			->assertStatus(200)
 			->assertSee($item->name);
 	}
 
 	public function testItShouldUpdateItem()
 	{
-		$request = $this->getRequest();
+		$request = $this->getItemRequest();
 
-		$item = $this->dispatch(new CreateItem($request));
+		$item = Item::create($request);
 
-		$request['name'] = $this->faker->text(15);
+        $request['name'] = $this->faker->text(15);
 
 		$this->loginAs()
 			->patch(route('items.update', $item->id), $request)
-			->assertStatus(200)
-			->assertSee($request['name']);
+			->assertStatus(302)
+			->assertRedirect(route('items.index'));
 
 		$this->assertFlashLevel('success');
-
-		$this->assertDatabaseHas('items', $request);
 	}
 
 	public function testItShouldDeleteItem()
 	{
-		$request = $this->getRequest();
-
-		$item = $this->dispatch(new CreateItem($request));
+		$item = Item::create($this->getItemRequest());
 
 		$this->loginAs()
-			->delete(route('items.destroy', $item->id))
-			->assertStatus(200);
+			->delete(route('items.destroy', ['item' => $item]))
+			->assertStatus(302)
+			->assertRedirect(route('items.index'));
 
 		$this->assertFlashLevel('success');
-
-		$this->assertSoftDeleted('items', $request);
 	}
 
-    public function testItShouldExportItems()
+    private function getItemRequest()
     {
-        $count = 5;
-        Item::factory()->count($count)->create();
+        $picture = UploadedFile::fake()->create('image.jpg');
 
-        Excel::fake();
-
-        $this->loginAs()
-            ->get(route('items.export'))
-            ->assertStatus(200);
-
-        Excel::matchByRegex();
-
-        Excel::assertDownloaded(
-            '/' . str()->filename(trans_choice('general.items', 2)) . '-\d{10}\.xlsx/',
-            function (Export $export) use ($count) {
-                // Assert that the correct export is downloaded.
-                return $export->sheets()[0]->collection()->count() === $count;
-            }
-        );
-    }
-
-    public function testItShouldExportSelectedItems()
-    {
-        $create_count = 5;
-        $select_count = 3;
-
-        $items = Item::factory()->count($create_count)->create();
-
-        Excel::fake();
-
-        $this->loginAs()
-            ->post(
-                route('bulk-actions.action', ['group' => 'common', 'type' => 'items']),
-                ['handle' => 'export', 'selected' => $items->take($select_count)->pluck('id')->toArray()]
-            )
-            ->assertStatus(200);
-
-        Excel::matchByRegex();
-
-        Excel::assertDownloaded(
-            '/' . str()->filename(trans_choice('general.items', 2)) . '-\d{10}\.xlsx/',
-            function (Export $export) use ($select_count) {
-                // Assert that the correct export is downloaded.
-                return $export->sheets()[0]->collection()->count() === $select_count;
-            }
-        );
-    }
-
-    public function testItShouldImportItems()
-    {
-        Excel::fake();
-
-        $this->loginAs()
-            ->post(
-                route('items.import'),
-                [
-                    'import' => UploadedFile::fake()->createWithContent(
-                        'items.xlsx',
-                        File::get(public_path('files/import/items.xlsx'))
-                    ),
-                ]
-            )
-            ->assertStatus(200);
-
-        Excel::assertImported('items.xlsx');
-
-        $this->assertFlashLevel('success');
-    }
-
-    public function getRequest()
-    {
-        return Item::factory()->enabled()->raw();
+        return [
+            'company_id' => $this->company->id,
+            'name' => $this->faker->text(15),
+            'sku' => $this->faker->unique()->ean8,
+            'picture' => $picture,
+            'description' => $this->faker->text(100),
+            'purchase_price' => $this->faker->randomFloat(2, 10, 20),
+            'sale_price' => $this->faker->randomFloat(2, 10, 20),
+            'quantity' => $this->faker->randomNumber(2),
+            'category_id' => $this->company->categories()->type('item')->first()->id,
+            'tax_id' => '',
+            'enabled' => $this->faker->boolean ? 1 : 0
+        ];
     }
 }

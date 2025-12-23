@@ -2,10 +2,12 @@
 
 namespace $NAMESPACE$;
 
-use App\Abstracts\Event;
+use Illuminate\Queue\SerializesModels;
 
-class $CLASS$ extends Event
+class $CLASS$
 {
+    use SerializesModels;
+
     /**
      * Create a new event instance.
      *

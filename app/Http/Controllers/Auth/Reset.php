@@ -2,15 +2,25 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Abstracts\Http\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
-use Illuminate\Http\Request as BaseRequest;
-use App\Http\Requests\Auth\Reset as Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
 class Reset extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Password Reset Controller
+    |--------------------------------------------------------------------------
+    |
+    | This controller is responsible for handling password reset requests
+    | and uses a simple trait to include this behavior. You're free to
+    | explore this trait and override any methods you wish to tweak.
+    |
+    */
+
     use ResetsPasswords;
 
     /**
@@ -30,22 +40,17 @@ class Reset extends Controller
         $this->middleware('guest');
     }
 
-    public function create(BaseRequest $request, $token = null)
+    public function create(Request $request, $token = null)
     {
         return view('auth.reset.create')->with(
             ['token' => $token, 'email' => $request->email]
         );
     }
 
-    /**
-     * Send a reset link to the given user.
-     *
-     * @param  \App\Http\Requests\Auth\Reset  $request
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(Request $request)
     {
+        $this->validate($request, $this->rules(), $this->validationErrorMessages());
+
         // Here we will attempt to reset the user's password. If it is successful we
         // will update the password on an actual user model and persist it to the
         // database. Otherwise we will parse the error and return the response.
@@ -84,44 +89,13 @@ class Reset extends Controller
      * Get the response for a successful password reset.
      *
      * @param  string  $response
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
     protected function sendResetResponse($response)
     {
-        $user = user();
+        flash(trans($response))->success();
 
-        $company = $user::withoutEvents(function () use ($user) {
-            return $user->companies()->enabled()->first();
-        });
-
-        // Logout if no company assigned
-        if (! $company) {
-            $this->guard()->logout();
-
-            return response()->json([
-                'status' => null,
-                'success' => false,
-                'error' => true,
-                'message' => trans('auth.error.no_company'),
-                'data' => null,
-                'redirect' => null,
-            ]);
-        }
-
-        // Redirect to portal if is customer
-        if ($user->isCustomer()) {
-            $this->redirectTo = route('portal.dashboard', ['company_id' => $company->id]);
-        }
-
-        return response()->json([
-            'status' => null,
-            'success' => true,
-            'error' => false,
-            'message' => null,
-            'data' => null,
-            'redirect' => url($this->redirectTo),
-        ]);
+        return redirect($this->redirectTo);
     }
 
     /**
@@ -129,18 +103,12 @@ class Reset extends Controller
      *
      * @param  \Illuminate\Http\Request
      * @param  string  $response
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
     protected function sendResetFailedResponse(Request $request, $response)
     {
-        return response()->json([
-            'status' => null,
-            'success' => false,
-            'error' => true,
-            'message' => trans($response),
-            'data' => null,
-            'redirect' => null,
-        ]);
+        return redirect()->back()
+            ->withInput($request->only('email'))
+            ->withErrors(['email' => trans($response)]);
     }
 }

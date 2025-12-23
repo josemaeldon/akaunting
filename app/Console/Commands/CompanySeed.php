@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
 
 class CompanySeed extends Command
 {
@@ -12,39 +11,37 @@ class CompanySeed extends Command
      *
      * @var string
      */
-    protected $signature = 'company:seed {company} {--class= : with Fully Qualified Name}';
+    protected $signature = 'company:seed {company}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Run one or all seeds for a specific company';
+    protected $description = 'Seed for specific company';
+    
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
     /**
      * Execute the console command.
      *
      * @return mixed
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function handle()
     {
-        $class_name = $this->input->getOption('class') ?? 'Database\Seeds\Company';
-
-        $class = $this->laravel->make($class_name);
-
-        $class->setContainer($this->laravel)->setCommand($this)->__invoke();
+        $class = $this->laravel->make('CompanySeeder');
+        
+        $seeder = $class->setContainer($this->laravel)->setCommand($this);
+        
+        $seeder->__invoke();
     }
 
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [
-            ['class', null, InputOption::VALUE_OPTIONAL, 'The class name of the root seeder', 'Database\Seeds\Company'],
-        ];
-    }
 }

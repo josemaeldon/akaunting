@@ -2,39 +2,33 @@
 
 namespace App\Http\Controllers\Install;
 
-use App\Abstracts\Http\Controller;
-use App\Http\Requests\Module\Install as InstallRequest;
-use App\Events\Install\UpdateCacheCleared;
-use App\Events\Install\UpdateCopied;
-use App\Events\Install\UpdateDownloaded;
-use App\Events\Install\UpdateUnzipped;
-use App\Jobs\Install\CopyFiles;
-use App\Jobs\Install\DownloadFile;
-use App\Jobs\Install\FinishUpdate;
-use App\Jobs\Install\UnzipFile;
+use App\Http\Controllers\Controller;
+use App\Utilities\Updater;
 use App\Utilities\Versions;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\Request;
+use Module;
 
 class Updates extends Controller
 {
+
     /**
-     * Display a listing of the resource.
+     * Show the form for creating a new resource.
      *
      * @return Response
      */
     public function index()
     {
-        $updates = Versions::getUpdates();
+        $updates = Updater::all();
 
         $core = null;
 
-        $modules = [];
+        $modules = array();
 
         if (isset($updates['core'])) {
             $core = $updates['core'];
         }
 
-        $rows = module()->all();
+        $rows = Module::all();
 
         if ($rows) {
             foreach ($rows as $row) {
@@ -45,12 +39,11 @@ class Updates extends Controller
                 }
 
                 $m = new \stdClass();
-                $m->name = $row->getName();
+                $m->name = $row->get('name');
                 $m->alias = $row->get('alias');
+                $m->category = $row->get('category');
                 $m->installed = $row->get('version');
-                $m->latest = $updates[$alias]->latest;
-                $m->errors = $updates[$alias]->errors;
-                $m->message = $updates[$alias]->message;
+                $m->latest = $updates[$alias];
 
                 $modules[] = $m;
             }
@@ -72,22 +65,19 @@ class Updates extends Controller
     public function check()
     {
         // Clear cache in order to check for updates
-        Cache::forget('updates');
-        Cache::forget('versions');
-
-        event(new UpdateCacheCleared(company_id()));
+        Updater::clear();
 
         return redirect()->back();
     }
 
     /**
-     * Run the update.
+     * Update the core or modules.
      *
      * @param  $alias
      * @param  $version
      * @return Response
      */
-    public function run($alias, $version)
+    public function update($alias, $version)
     {
         if ($alias == 'core') {
             $name = 'Akaunting ' . $version;
@@ -95,17 +85,11 @@ class Updates extends Controller
             $installed = version('short');
         } else {
             // Get module instance
-            $module = module($alias);
+            $module = Module::findByAlias($alias);
 
-            $name = $module->getName();
+            $name = $module->get('name');
 
             $installed = $module->get('version');
-
-            if (version_compare($installed, $version, '>=')) {
-                flash(trans('modules.warning.latest_version', ['module' => $name]))->warning()->important();
-
-                return $this->check();
-            }
         }
 
         return view('install.updates.edit', compact('alias', 'name', 'installed', 'version'));
@@ -118,206 +102,135 @@ class Updates extends Controller
      *
      * @return Response
      */
-    public function steps(InstallRequest $request)
+    public function steps(Request $request)
     {
-        $steps = [];
+        $json = [];
+        $json['step'] = [];
 
         $name = $request['name'];
+        $version = $request['version'];
 
         // Download
-        $steps[] = [
+        $json['step'][] = [
             'text' => trans('modules.installation.download', ['module' => $name]),
-            'url'  => route('updates.download'),
+            'url'  => url('install/updates/download')
         ];
 
         // Unzip
-        $steps[] = [
+        $json['step'][] = [
             'text' => trans('modules.installation.unzip', ['module' => $name]),
-            'url'  => route('updates.unzip'),
+            'url'  => url('install/updates/unzip')
         ];
 
-        // Copy files
-        $steps[] = [
+        // File Copy
+        $json['step'][] = [
             'text' => trans('modules.installation.file_copy', ['module' => $name]),
-            'url'  => route('updates.copy'),
+            'url'  => url('install/updates/file-copy')
         ];
 
-        // Finish/Apply
-        $steps[] = [
-            'text' => trans('modules.installation.finish', ['module' => $name]),
-            'url'  => route('updates.finish'),
+        // Migrate DB and trigger event UpdateFinish event
+        $json['step'][] = [
+            'text' => trans('modules.installation.migrate', ['module' => $name]),
+            'url'  => url('install/updates/migrate')
         ];
 
-        // Redirect
-        $steps[] = [
-            'text' => trans('modules.installation.redirect', ['module' => $name]),
-            'url'  => route('updates.redirect'),
+        // redirect update page
+        $json['step'][] = [
+            'text' => trans('modules.installation.finish'),
+            'url'  => url('install/updates/finish')
         ];
 
+        return response()->json($json);
+    }
+
+    /**
+     * Show the form for viewing the specified resource.
+     *
+     * @param  $request
+     *
+     * @return Response
+     */
+    public function download(Request $request)
+    {
+        set_time_limit(600); // 10 minutes
+
+        if ($request['alias'] != 'core') {
+            $this->checkApiToken();
+        }
+
+        $json = Updater::download($request['name'], $request['alias'], $request['version']);
+
+        return response()->json($json);
+    }
+
+    /**
+     * Show the form for viewing the specified resource.
+     *
+     * @param  $request
+     *
+     * @return Response
+     */
+    public function unzip(Request $request)
+    {
+        set_time_limit(600); // 10 minutes
+
+        if ($request['alias'] != 'core') {
+            $this->checkApiToken();
+        }
+
+        $json = Updater::unzip($request['name'], $request['path']);
+
+        return response()->json($json);
+    }
+
+    /**
+     * Show the form for viewing the specified resource.
+     *
+     * @param  $request
+     *
+     * @return Response
+     */
+    public function fileCopy(Request $request)
+    {
+        set_time_limit(600); // 10 minutes
+
+        if ($request['alias'] != 'core') {
+            $this->checkApiToken();
+        }
+
+        $json = Updater::fileCopy($request['name'], $request['alias'], $request['path'], $request['version']);
+
+        return response()->json($json);
+    }
+
+    /**
+     * Show the form for viewing the specified resource.
+     *
+     * @param  $request
+     *
+     * @return Response
+     */
+    public function migrate(Request $request)
+    {
+        $json = Updater::migrate($request['name'], $request['alias'], $request['version'], $request['installed']);
+
+        return response()->json($json);
+    }
+
+    /**
+     * Show the form for viewing the specified resource.
+     *
+     * @param  $request
+     *
+     * @return Response
+     */
+    public function finish(Request $request)
+    {
         return response()->json([
             'success' => true,
-            'error' => false,
-            'data' => $steps,
-            'message' => null
-        ]);
-    }
-
-    /**
-     * Download the file
-     *
-     * @param  $request
-     *
-     * @return Response
-     */
-    public function download(InstallRequest $request)
-    {
-        set_time_limit(900); // 15 minutes
-
-        try {
-            $path = $this->dispatch(new DownloadFile($request['alias'], $request['version']));
-
-            event(new UpdateDownloaded($request['alias'], $request['version'], $request['installed']));
-
-            $json = [
-                'success' => true,
-                'error' => false,
-                'message' => null,
-                'data' => [
-                    'path' => $path,
-                ],
-            ];
-        } catch (\Exception $e) {
-            $json = [
-                'success' => false,
-                'error' => true,
-                'message' => $e->getMessage(),
-                'data' => [],
-            ];
-        }
-
-        return response()->json($json);
-    }
-
-    /**
-     * Unzip the downloaded file
-     *
-     * @param  $request
-     *
-     * @return Response
-     */
-    public function unzip(InstallRequest $request)
-    {
-        set_time_limit(900); // 15 minutes
-
-        try {
-            $path = $this->dispatch(new UnzipFile($request['alias'], $request['path']));
-
-            event(new UpdateUnzipped($request['alias'], $request['version'], $request['installed']));
-
-            $json = [
-                'success' => true,
-                'error' => false,
-                'message' => null,
-                'data' => [
-                    'path' => $path,
-                ],
-            ];
-        } catch (\Exception $e) {
-            $json = [
-                'success' => false,
-                'error' => true,
-                'message' => $e->getMessage(),
-                'data' => [],
-            ];
-        }
-
-        return response()->json($json);
-    }
-
-    /**
-     * Copy files
-     *
-     * @param  $request
-     *
-     * @return Response
-     */
-    public function copyFiles(InstallRequest $request)
-    {
-        set_time_limit(900); // 15 minutes
-
-        try {
-            $path = $this->dispatch(new CopyFiles($request['alias'], $request['path']));
-
-            event(new UpdateCopied($request['alias'], $request['version'], $request['installed']));
-
-            $json = [
-                'success' => true,
-                'error' => false,
-                'message' => null,
-                'data' => [
-                    'path' => $path,
-                ],
-            ];
-        } catch (\Exception $e) {
-            $json = [
-                'success' => false,
-                'error' => true,
-                'message' => $e->getMessage(),
-                'data' => [],
-            ];
-        }
-
-        return response()->json($json);
-    }
-
-    /**
-     * Finish the update
-     *
-     * @param  $request
-     *
-     * @return Response
-     */
-    public function finish(InstallRequest $request)
-    {
-        set_time_limit(900); // 15 minutes
-
-        try {
-            $this->dispatch(new FinishUpdate($request['alias'], $request['version'], $request['installed'], company_id()));
-
-            $json = [
-                'success' => true,
-                'error' => false,
-                'message' => null,
-                'data' => [],
-            ];
-        } catch (\Exception $e) {
-            $json = [
-                'success' => false,
-                'error' => true,
-                'message' => $e->getMessage(),
-                'data' => [],
-            ];
-        }
-
-        return response()->json($json);
-    }
-
-    /**
-     * Redirect back
-     *
-     * @param  $request
-     *
-     * @return Response
-     */
-    public function redirect()
-    {
-        $json = [
-            'success' => true,
             'errors' => false,
-            'redirect' => route('updates.index'),
+            'redirect' => url("install/updates"),
             'data' => [],
-        ];
-
-        return response()->json($json);
+        ]);
     }
 }

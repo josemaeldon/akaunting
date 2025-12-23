@@ -2,30 +2,12 @@
 
 return [
 
-    'accounts' => [
-        'cash'              => 'Contanti',
-    ],
-
-    'categories' => [
-        'deposit'           => 'Deposito',
-        'sales'             => 'Vendite',
-    ],
-
-    'currencies' => [
-        'usd'               => 'Dollaro USA',
-    ],
-
-    'offline_payments' => [
-        'cash'              => 'Contanti',
-        'bank'              => 'Bonifico Bancario',
-    ],
-
-    'reports' => [
-        'income'            => 'Sommario mensile delle entrate per categoria.',
-        'expense'           => 'Riepilogo spese mensili per categoria.',
-        'income_expense'    => 'Entrate mensili vs spese per categoria.',
-        'tax'               => 'Sintesi fiscale trimestrale.',
-        'profit_loss'       => 'Utili e perdite trimestrali per categoria.',
-    ],
+    'accounts_cash'         => 'Contanti',
+    'categories_deposit'    => 'Deposito',
+    'categories_sales'      => 'Vendite',
+    'currencies_usd'        => 'Dollaro USA',
+    'currencies_eur'        => 'Euro',
+    'currencies_gbp'        => 'Sterlina Regno Unito',
+    'currencies_try'        => 'Lira turca',
 
 ];

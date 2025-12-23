@@ -6,7 +6,7 @@ return [
     'reconciled'            => '和解',
     'closing_balance'       => '(期末) 残高',
     'unreconciled'          => '未調整',
-    'transactions'          => 'トランザクション',
+    'list_transactions'     => '取引一覧',
     'start_date'            => '開始日',
     'end_date'              => '終了日時',
     'cleared_amount'        => 'クリアの量',

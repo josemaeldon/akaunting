@@ -3,8 +3,7 @@
 return [
 
     'bill_number'           => 'Fakturanummer',
-    'bill_date'             => 'Fakturadato',
-    'bill_amount'           => 'Regningens beløb',
+    'bill_date'             => 'Faktura dato',
     'total_price'           => 'Total pris',
     'due_date'              => 'Forfaldsdato',
     'order_number'          => 'Ordrenummer',
@@ -14,44 +13,43 @@ return [
     'price'                 => 'Pris',
     'sub_total'             => 'Subtotal',
     'discount'              => 'Rabat',
-    'item_discount'         => 'Linjerabat',
     'tax_total'             => 'Moms i alt',
     'total'                 => 'I alt',
 
     'item_name'             => 'Varenavn|Varenavne',
-    'recurring_bills'       => 'Tilbagevendende Regninger|Tilbagevendende Regninger',
 
-    'show_discount'         => ':discount% rabat',
+    'show_discount'         => ':discount% Rabat',
     'add_discount'          => 'Tilføj rabat',
-    'discount_desc'         => 'af subtotal',
+    'discount_desc'         => 'subtotal',
 
-    'payment_made'          => 'Betaling fortaget',
     'payment_due'           => 'Betalingsfrist',
     'amount_due'            => 'Forfaldent beløb',
     'paid'                  => 'Betalt',
     'histories'             => 'Historik',
     'payments'              => 'Betalinger',
     'add_payment'           => 'Tilføj betaling',
-    'mark_paid'             => 'Marker som betalt',
-    'mark_received'         => 'Marker som modtaget',
-    'mark_cancelled'        => 'Marker som annulleret',
+    'mark_received'         => 'Modtagelse godkendt',
     'download_pdf'          => 'Download PDF',
-    'send_mail'             => 'Send e-mail',
-    'create_bill'           => 'Opret faktura',
-    'receive_bill'          => 'Modtag faktura',
+    'send_mail'             => 'Send E-mail',
+    'create_bill'           => 'Opret regning',
+    'receive_bill'          => 'Modtag regning',
     'make_payment'          => 'Opret betaling',
 
-    'form_description' => [
-        'billing'           => 'Faktureringsoplysninger vises i din regning. Regningsdato bruges i skrivebordet og rapporter. Vælg den dato, du forventer at betale som forfaldsdato.',
+    'status' => [
+        'draft'             => 'Kladde',
+        'received'          => 'Modtaget',
+        'partial'           => 'Delvis',
+        'paid'              => 'Betalt',
     ],
 
     'messages' => [
-        'draft'             => 'Dette er et <b>UDKAST</b> til en regning og vil først blive vist i oversigten, når den er markeret som modtaget.',
+        'received'          => 'Regning registreret som modtaget!',
+        'draft'             => 'Dette er et <b>UDKAST</b> til faktura og vil blive afspejlet i diagrammer, når den bliver modtaget.',
 
         'status' => [
             'created'       => 'Oprettet den :date',
             'receive' => [
-                'draft'     => 'Ikke modtaget',
+                'draft'     => 'Ikke sendt',
                 'received'  => 'Modtaget den :date',
             ],
             'paid' => [

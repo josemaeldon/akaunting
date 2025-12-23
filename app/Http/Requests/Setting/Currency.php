@@ -2,10 +2,20 @@
 
 namespace App\Http\Requests\Setting;
 
-use App\Abstracts\Http\FormRequest;
+use App\Http\Requests\Request;
 
-class Currency extends FormRequest
+class Currency extends Request
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -14,24 +24,22 @@ class Currency extends FormRequest
     public function rules()
     {
         // Check if store or update
-        if (in_array($this->getMethod(), ['PATCH', 'PUT'])) {
-            $id = is_numeric($this->currency) ? $this->currency : $this->currency->getAttribute('id');
+        if ($this->getMethod() == 'PATCH') {
+            $id = $this->currency->getAttribute('id');
         } else {
             $id = null;
         }
 
         // Get company id
-        $company_id = (int) $this->request->get('company_id');
+        $company_id = $this->request->get('company_id');
 
         return [
             'name' => 'required|string',
-            'code' => 'required|string|currency_code|unique:currencies,NULL,' . ($id ?? 'null') . ',id,company_id,' . $company_id . ',deleted_at,NULL',
-            'rate' => 'required|gt:0',
+            'code' => 'required|string|unique:currencies,NULL,' . $id . ',id,company_id,' . $company_id . ',deleted_at,NULL',
+            'rate' => 'required',
             'enabled' => 'integer|boolean',
-            'default_currency' => 'nullable|boolean',
-            'decimal_mark' => 'nullable|string|different:thousands_separator|regex:/^[A-Za-z.,_\s-]+$/',
+            'default_currency' => 'boolean',
             'symbol_first' => 'nullable|boolean',
-            'thousands_separator' => 'nullable|different:decimal_mark|regex:/^[A-Za-z.,_\s-]+$/',
         ];
     }
 }

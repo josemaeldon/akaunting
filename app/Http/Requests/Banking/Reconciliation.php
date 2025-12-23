@@ -2,10 +2,20 @@
 
 namespace App\Http\Requests\Banking;
 
-use App\Abstracts\Http\FormRequest;
+use App\Http\Requests\Request;
 
-class Reconciliation extends FormRequest
+class Reconciliation extends Request
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -15,8 +25,8 @@ class Reconciliation extends FormRequest
     {
         return [
             'account_id' => 'required|integer',
-            'started_at' => 'required|date_format:Y-m-d H:i:s|before_or_equal:ended_at',
-            'ended_at' => 'required|date_format:Y-m-d H:i:s|after_or_equal:started_at',
+            'started_at' => 'required|date_format:Y-m-d H:i:s',
+            'ended_at' => 'required|date_format:Y-m-d H:i:s',
             'closing_balance' => 'required',
         ];
     }

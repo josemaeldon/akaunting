@@ -2,62 +2,68 @@
 
 namespace Tests\Feature;
 
+use App\Models\Auth\User;
 use App\Models\Common\Company;
-use Faker\Factory as Faker;
+use Faker\Factory;
 use Tests\TestCase;
 
 abstract class FeatureTestCase extends TestCase
 {
-    protected $faker;
+	/**
+	 * @var \Faker\Generator
+	 */
+	protected $faker;
 
-    protected $user;
+	/** @var User */
+	protected $user;
 
-    protected $company;
+	/** @var Company */
+	protected $company;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
+	protected function setUp()
+	{
+		parent::setUp();
 
-        $this->withoutExceptionHandling();
+		$this->faker = Factory::create();
+		$this->user = User::first();
+		$this->company = $this->user->first()->companies()->first();
 
-        $this->faker = Faker::create();
-        $this->user = user_model_class()::first();
-        $this->company = $this->user->companies()->first();
+		// Set Company settings
+        setting()->forgetAll();
+        setting()->setExtraColumns(['company_id' => $this->company->id]);
+        setting()->load(true);
+	}
 
-        // Disable debugbar
-        config(['debugbar.enabled', false]);
-    }
+	/**
+	 * Empty for default user.
+	 *
+	 * @param User|null $user
+	 * @param Company|null $company
+	 * @return FeatureTestCase
+	 */
+	public function loginAs(User $user = null, Company $company = null)
+	{
+		if (!$user) {
+		    $user = $this->user;
+		}
 
-    /**
-     * Empty for default user.
-     *
-     * @param User|null $user
-     * @param Company|null $company
-     * @return FeatureTestCase
-     */
-    public function loginAs($user = null, Company $company = null)
-    {
-        if (!$user) {
-            $user = $this->user;
-        }
+		if (!$company) {
+		    $company = $user->companies()->first();
+		}
 
-        if ($company) {
-            $company->makeCurrent();
-        }
+		$this->startSession();
 
-        app('url')->defaults(['company_id' => company_id()]);
+		return $this->actingAs($user)->withSession(['company_id' => $company->id]);
+	}
 
-        return $this->actingAs($user);
-    }
+	public function assertFlashLevel($excepted)
+	{
+		$flash['level'] = null;
 
-    public function assertFlashLevel($excepted)
-    {
-        $flash['level'] = null;
+		if ($flashMessage = session('flash_notification')) {
+			$flash = $flashMessage->first();
+		}
 
-        if ($flashMessage = session('flash_notification')) {
-            $flash = $flashMessage->first();
-        }
-
-        $this->assertEquals($excepted, $flash['level'], json_encode($flash));
-    }
+		$this->assertEquals($excepted, $flash['level']);
+	}
 }

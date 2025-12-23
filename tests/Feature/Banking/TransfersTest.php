@@ -2,12 +2,10 @@
 
 namespace Tests\Feature\Banking;
 
-use App\Exports\Banking\Transfers as Export;
-use App\Jobs\Banking\CreateTransfer;
 use App\Models\Banking\Transfer;
+use App\Models\Expense\Payment;
+use App\Models\Income\Revenue;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
-use Maatwebsite\Excel\Facades\Excel;
 use Tests\Feature\FeatureTestCase;
 
 class TransfersTest extends FeatureTestCase
@@ -30,124 +28,139 @@ class TransfersTest extends FeatureTestCase
 
     public function testItShouldCreateTransfer()
     {
+        // Create Revenue
+        $revenue_request = $this->getRevenueRequest();
+        $revenue = Revenue::create($revenue_request);
+
+        // Create Payment
+        $payment_request = $this->getPaymentRequest();
+        $payment = Payment::create($payment_request);
+
         $this->loginAs()
-            ->post(route('transfers.store'), $this->getRequest())
-            ->assertStatus(200);
+            ->post(url('banking/transfers'), $this->getTransferRequest($revenue, $payment))
+            ->assertStatus(302)
+            ->assertRedirect(url('banking/transfers'));
 
         $this->assertFlashLevel('success');
     }
 
     public function testItShouldSeeTransferUpdatePage()
     {
-        $transfer = $this->dispatch(new CreateTransfer($this->getRequest()));
+        // Create Revenue
+        $revenue_request = $this->getRevenueRequest();
+        $revenue = Revenue::create($revenue_request);
+
+        // Create Payment
+        $payment_request = $this->getPaymentRequest();
+        $payment = Payment::create($payment_request);
+
+        $transfer = Transfer::create($this->getTransferRequest($revenue, $payment));
 
         $this->loginAs()
-            ->get(route('transfers.show', $transfer->id))
+            ->get(route('transfers.edit', ['transfer' => $transfer->id]))
             ->assertStatus(200)
-            ->assertSee($transfer->description);
-    }
-
-    public function testItShouldUpdateTransfer()
-    {
-        $request = $this->getRequest();
-
-        $transfer = $this->dispatch(new CreateTransfer($request));
-
-        $request['description'] = $this->faker->text(15);
-
-        $this->loginAs()
-            ->patch(route('transfers.update', $transfer->id), $request)
-            ->assertStatus(200);
-
-        $this->assertFlashLevel('success');
+            ->assertSee($payment->description);
     }
 
     public function testItShouldDeleteTransfer()
     {
-        $transfer = $this->dispatch(new CreateTransfer($this->getRequest()));
+        // Create Revenue
+        $revenue_request = $this->getRevenueRequest();
+        $revenue = Revenue::create($revenue_request);
+
+        // Create Payment
+        $payment_request = $this->getPaymentRequest();
+        $payment = Payment::create($payment_request);
+
+        $transfer = Transfer::create($this->getTransferRequest($revenue, $payment));
 
         $this->loginAs()
-            ->delete(route('transfers.destroy', $transfer->id))
-            ->assertStatus(200);
+            ->delete(url('banking/transfers', ['transfer' => $transfer->id]))
+            ->assertStatus(302)
+            ->assertRedirect(url('banking/transfers'));
 
         $this->assertFlashLevel('success');
     }
 
-    public function testItShouldExportTransfers()
+    public function testItShouldUpdateTransfer()
     {
-        $count = 5;
-        foreach (Transfer::factory()->count($count)->raw() as $request) {
-            $this->dispatch(new CreateTransfer($request));
-        }
+        // Create Revenue
+        $revenue_request = $this->getRevenueRequest();
+        $revenue = Revenue::create($revenue_request);
 
-        Excel::fake();
+        // Create Payment
+        $payment_request = $this->getPaymentRequest();
+        $payment = Payment::create($payment_request);
+
+        $request = $this->getTransferRequest($revenue, $payment);
+
+        $transfer = Transfer::create($request);
+
+        $request['description'] = $this->faker->text(10);
 
         $this->loginAs()
-            ->get(route('transfers.export'))
-            ->assertStatus(200);
-
-        Excel::matchByRegex();
-
-        Excel::assertDownloaded(
-            '/' . str()->filename(trans_choice('general.transfers', 2)) . '-\d{10}\.xlsx/',
-            function (Export $export) use ($count) {
-                // Assert that the correct export is downloaded.
-                return $export->collection()->count() === $count;
-            }
-        );
-    }
-
-    public function testItShouldExportSelectedTransfers()
-    {
-        $create_count = 5;
-        $select_count = 3;
-
-        foreach (Transfer::factory()->count($create_count)->raw() as $request) {
-            $responses[] = $this->dispatch(new CreateTransfer($request));
-        }
-
-        Excel::fake();
-
-        $this->loginAs()
-            ->post(
-                route('bulk-actions.action', ['group' => 'banking', 'type' => 'transfers']),
-                ['handle' => 'export', 'selected' => collect($responses)->take($select_count)->pluck('id')->toArray()]
-            )
-            ->assertStatus(200);
-
-        Excel::matchByRegex();
-
-        Excel::assertDownloaded(
-            '/' . str()->filename(trans_choice('general.transfers', 2)) . '-\d{10}\.xlsx/',
-            function (Export $export) use ($select_count) {
-                return $export->collection()->count() === $select_count;
-            }
-        );
-    }
-
-    public function testItShouldImportTransfers()
-    {
-        Excel::fake();
-
-        $this->loginAs()
-            ->post(
-                route('transfers.import'),
-                [
-                    'import' => UploadedFile::fake()->createWithContent(
-                        'transfers.xlsx',
-                        File::get(public_path('files/import/transfers.xlsx'))
-                    ),
-                ]
-            )
-            ->assertStatus(200);
-
-        Excel::assertImported('transfers.xlsx');
+            ->patch(url('banking/transfers', ['transfer' => $transfer->id]), $request)
+            ->assertStatus(302)
+            ->assertRedirect(url('banking/transfers'));
 
         $this->assertFlashLevel('success');
     }
 
-    public function getRequest()
+    private function getTransferRequest($revenue, $payment)
     {
-        return Transfer::factory()->raw();
+        return [
+            'company_id' => $this->company->id,
+            'revenue_id' => $revenue->id,
+            'payment_id' => $payment->id,
+            'from_account_id' => '1',
+            'to_account_id' => '2',
+            'amount' => '5',
+            'transferred_at' => $this->faker->date(),
+            'description'=> $this->faker->text(5),
+            'payment_method' => 'offlinepayment.cash.1',
+            'reference' => null,
+            'currency_code' => setting('general.default_currency'),
+            'currency_rate' => '1'
+        ];
+    }
+
+    private function getRevenueRequest()
+    {
+        $attachment = UploadedFile::fake()->create('image.jpg');
+
+        return [
+            'company_id' => $this->company->id,
+            'customer_id' => '',
+            'account_id' => setting('general.default_account'),
+            'paid_at' => $this->faker->date(),
+            'amount' => $this->faker->randomFloat(2, 2),
+            'currency_code' => setting('general.default_currency'),
+            'currency_rate' => '1',
+            'description' => $this->faker->text(5),
+            'category_id' => $this->company->categories()->type('income')->first()->id,
+            'reference' => $this->faker->text(5),
+            'payment_method' => setting('general.default_payment_method'),
+            'attachment' => $attachment
+        ];
+    }
+
+    private function getPaymentRequest()
+    {
+        $attachment = UploadedFile::fake()->create('image.jpg');
+
+        return [
+            'company_id' => $this->company->id,
+            'account_id' => setting('general.default_account'),
+            'vendor_id' => '',
+            'paid_at' => $this->faker->date(),
+            'amount' => $this->faker->randomFloat(2, 2),
+            'currency_code' => setting('general.default_currency'),
+            'currency_rate' => '1',
+            'description' => $this->faker->text(5),
+            'category_id' => $this->company->categories()->type('expense')->first()->id,
+            'payment_method' => setting('general.default_payment_method'),
+            'reference' => $this->faker->text(5),
+            'attachment' => $attachment
+        ];
     }
 }

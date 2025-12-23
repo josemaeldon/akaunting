@@ -13,7 +13,6 @@ return [
     'price'                 => 'Цена',
     'sub_total'             => 'Итого',
     'discount'              => 'Скидка',
-    'item_discount'         => 'Скидка на строку',
     'tax_total'             => 'Итого с налогом',
     'total'                 => 'Всего',
 
@@ -29,16 +28,22 @@ return [
     'histories'             => 'Истории',
     'payments'              => 'Платежи',
     'add_payment'           => 'Добавить платёж',
-    'mark_paid'             => 'Отметить как оплачено',
     'mark_received'         => 'Отметить как получено',
-    'mark_cancelled'        => 'Отметить как отменено',
     'download_pdf'          => 'Скачать PDF',
     'send_mail'             => 'Отправить E-mail',
-    'create_bill'           => 'Создать закупку',
-    'receive_bill'          => 'Получить закупку',
-    'make_payment'          => 'Сделать оплату',
+    'create_bill'           => 'Create Bill',
+    'receive_bill'          => 'Receive Bill',
+    'make_payment'          => 'Make Payment',
+
+    'status' => [
+        'draft'             => 'Черновик',
+        'received'          => 'Получено',
+        'partial'           => 'Частично',
+        'paid'              => 'Оплачено',
+    ],
 
     'messages' => [
+        'received'          => 'Счёт помечен как успешно получен!',
         'draft'             => 'Это <b>ЧЕРНОВИК</b> закупки, он будет проведен после отправки.',
 
         'status' => [

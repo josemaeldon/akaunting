@@ -1,35 +1,42 @@
-<x-layouts.modules>
-    <x-slot name="title">
-        {{ trans_choice('general.modules', 2) }}
-    </x-slot>
+@extends('layouts.modules')
 
-    <x-slot name="buttons">
-        <x-link href="{{ route('apps.api-key.create') }}">
-            {{ trans('modules.api_key') }}
-        </x-link>
+@section('title', trans_choice('general.modules', 2))
 
-        <x-link href="{{ route('apps.my.index') }}">
-            {{ trans('modules.my_apps') }}
-        </x-link>
-    </x-slot>
+@section('new_button')
+    <span class="new-button"><a href="{{ url('apps/token/create') }}" class="btn btn-success btn-sm"><span class="fa fa-key"></span> &nbsp;{{ trans('modules.api_token') }}</a></span>
+    <span class="new-button"><a href="{{ url('apps/my')  }}" class="btn btn-default btn-sm"><span class="fa fa-user"></span> &nbsp;{{ trans('modules.my_apps') }}</a></span>
+@endsection
 
-    <x-slot name="content">
-        @if (! empty($purchase) || ! empty($installed))
-            <x-modules.purchased />
+@section('content')
+    @include('partials.modules.bar')
 
-            <x-modules.installed />
-        @else
-            <div class="py-6 font-medium">
-                <div class="flex items-center justify-between mb-5 lg:mb-0">
-                    <h4 class="py-3 font-medium lg:text-2xl">
-                        {{ trans('modules.my_apps') }}
-                    </h4>
-                </div>
-
-                <x-modules.no-apps />
+    <div class="row">
+        <div class="col-md-12">
+            <div class="content-header no-padding-left">
+                <h3>{{ trans('modules.my.purchased') }}</h3>
             </div>
-        @endif
-    </x-slot>
 
-    <x-script folder="modules" file="apps" />
-</x-layouts.modules>
+            @if ($purchased)
+                @foreach ($purchased as $module)
+                    @include('partials.modules.item')
+                @endforeach
+            @else
+                @include('partials.modules.no_apps')
+            @endif
+        </div>
+
+        <div class="col-md-12">
+            <div class="content-header no-padding-left">
+                <h3>{{ trans('modules.my.installed') }}</h3>
+            </div>
+
+            @if ($modules)
+                @foreach ($modules as $module)
+                    @include('partials.modules.item')
+                @endforeach
+            @else
+                @include('partials.modules.no_apps')
+            @endif
+        </div>
+    </div>
+@endsection

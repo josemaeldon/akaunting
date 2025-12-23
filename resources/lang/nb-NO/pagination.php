@@ -2,8 +2,8 @@
 
 return [
 
-    'previous'              => 'Forrige',
-    'next'                  => 'Neste',
-    'showing'               => ':first-:last av :total oppføringer.',
-    'page'                  => 'per side.',
+    'previous'              => '&laquo; Forrige',
+    'next'                  => 'Neste &raquo;',
+    'showing'               => 'Viser :first til :last av :total :type',
+
 ];

@@ -2,16 +2,17 @@
 
 return [
 
-    'sale_price'                => 'Harga Jual',
-    'purchase_price'            => 'Harga Beli',
-    'enter_item_description'    => 'Masukkan deskripsi item',
-    'billing'                   => 'Penagihan',
-    'sale_information'          => 'Informasi Penjualan',
-    'purchase_information'      => 'Informasi Pembelian',
+    'quantities'            => 'Jumlah | Banyaknya',
+    'sales_price'           => 'Harga Jual',
+    'purchase_price'        => 'Harga Beli',
+    'sku'                   => 'SKU',
 
-    'form_description' => [
-        'general'               => 'Pilih kategori untuk membuat laporan Anda lebih detail. Deskripsi akan diisi saat item dipilih dalam faktur atau tagihan.',
-        'billing'               => 'Informasi Penjualan digunakan dalam faktur, dan Informasi Pembelian digunakan dalam tagihan. Pajak akan diterapkan pada faktur dan tagihan.',
+    'notification' => [
+        'message'       => [
+            'reminder' => 'You are receiving this email because only :quantity of :name has remained.',
+            'out_of_stock' => 'You are receiving this email because the :name is running out of stock.',
+        ],
+        'button'        => 'Lihat sekarang',
     ],
 
 ];

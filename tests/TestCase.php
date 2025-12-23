@@ -2,18 +2,20 @@
 
 namespace Tests;
 
-use App\Traits\Jobs;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Artisan;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication, Jobs, RefreshDatabase;
+    use CreatesApplication, DatabaseMigrations;
 
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
 
-        $this->artisan('db:seed', ['--class' => '\Database\Seeds\TestCompany', '--force' => true]);
+        Artisan::call('db:seed', ['--class' => '\Database\Seeds\TestCompany', '--force' => true]);
+        Artisan::call('company:seed', ['company' => 1]);
     }
 }

@@ -20,4 +20,5 @@ return [
     'account_balance'           => 'Υπόλοιπο λογαριασμού',
     'latest_incomes'            => 'Τελευταία Έσοδα',
     'latest_expenses'           => 'Τελευταία έξοδα',
+
 ];

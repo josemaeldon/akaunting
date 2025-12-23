@@ -3,16 +3,14 @@
 return [
 
     'company' => [
-        'description'       => 'Alterar nome da empresa, e-mail, endereço, número fiscal etc',
         'name'              => 'Nome',
         'email'             => 'E-mail',
         'phone'             => 'Telefone',
         'address'           => 'Endereço',
-        'logo'              => 'Logótipo',
+        'logo'              => 'Logotipo',
     ],
-
     'localisation' => [
-        'description'       => 'Definir o ano fiscal, fuso horário, formato da data e localizações',
+        'tab'               => 'Localização',
         'financial_start'   => 'Início do ano fiscal',
         'timezone'          => 'Fuso Horário',
         'date' => [
@@ -29,20 +27,13 @@ return [
             'before'        => 'Antes do Número',
             'after'         => 'Depois do Número',
         ],
-        'discount_location' => [
-            'name'          => 'Localização do Desconto',
-            'item'          => 'Por linha',
-            'total'         => 'No total',
-            'both'          => 'Em ambos (linha e total)',
-        ],
     ],
-
     'invoice' => [
-        'description'       => 'Personalizar prefixo de fatura, número, termos, rodapé etc',
+        'tab'               => 'Faturas',
         'prefix'            => 'Prefixo',
         'digit'             => 'Quantidade de dígitos',
         'next'              => 'Próximo Número',
-        'logo'              => 'Logótipo',
+        'logo'              => 'Logotipo',
         'custom'            => 'Personalizado',
         'item_name'         => 'Nome do Item',
         'item'              => 'Itens',
@@ -53,25 +44,16 @@ return [
         'rate'              => 'Taxa',
         'quantity_name'     => 'Nome de Quantidade',
         'quantity'          => 'Quantidade',
-        'payment_terms'     => 'Termos de Pagamento',
-        'title'             => 'Título',
-        'subheading'        => 'Subtítulo',
-        'due_receipt'       => 'Vencida ao receber',
-        'due_days'          => 'Vencida após :days dias',
-        'choose_template'   => 'Escolher modelo da Fatura',
-        'default'           => 'Padrão',
-        'classic'           => 'Clássico',
-        'modern'            => 'Moderno',
     ],
-
     'default' => [
-        'description'       => 'Conta padrão, moeda, idioma da sua empresa',
-        'list_limit'        => 'Registos por página',
-        'use_gravatar'      => 'Usar Gravatar',
+        'tab'               => 'Padrões',
+        'account'           => 'Conta Padrão',
+        'currency'          => 'Moeda Padrão',
+        'tax'               => 'Imposto Padrão',
+        'payment'           => 'Método de Pagamento Padrão',
+        'language'          => 'Idioma Padrão',
     ],
-
     'email' => [
-        'description'       => 'Alterar o protocolo de envio e modelos de e-mail',
         'protocol'          => 'Protocolo',
         'php'               => 'PHP Mail',
         'smtp' => [
@@ -79,51 +61,43 @@ return [
             'host'          => 'Servidor SMTP',
             'port'          => 'Porta SMTP',
             'username'      => 'Utilizador SMTP',
-            'password'      => 'Palavra-passe SMTP',
+            'password'      => 'Senha SMTP',
             'encryption'    => 'Encriptação SMTP',
             'none'          => 'Nenhum',
         ],
         'sendmail'          => 'Sendmail',
         'sendmail_path'     => 'Localização Sendmail',
         'log'               => 'Registo de e-mails',
-
-        'templates' => [
-            'subject'                   => 'Assunto',
-            'body'                      => 'Conteúdo',
-            'tags'                      => '<strong>Etiquetas Disponíveis:</strong> :tag_list',
-            'invoice_new_customer'      => 'Novo modelo de Fatura (envio ao cliente)',
-            'invoice_remind_customer'   => 'Modelo de lembrete de Fatura (envio ao cliente)',
-            'invoice_remind_admin'      => 'Modelo de lembrete de Fatura (envio ao administrador)',
-            'invoice_recur_customer'    => 'Modelo de Fatura recorrente (envio ao cliente)',
-            'invoice_recur_admin'       => 'Modelo de Fatura recorrente (envio ao administrador)',
-            'invoice_payment_customer'  => 'Modelo de Pagamento recebido (envio ao cliente)',
-            'invoice_payment_admin'     => 'Modelo de Pagamento recebido (envio ao administrador)',
-            'bill_remind_admin'         => 'Modelo de lembrete de Conta (envio ao administrador)',
-            'bill_recur_admin'          => 'Modelo de Conta recorrente (envio ao administrador)',
-        ],
     ],
-
     'scheduling' => [
-        'name'              => 'Agendado',
-        'description'       => 'Lembretes automáticos e comandos para recorrentes agendados',
+        'tab'               => 'Agendamento',
         'send_invoice'      => 'Enviar lembrete de faturas',
         'invoice_days'      => 'Enviar após dias de vencimento',
         'send_bill'         => 'Enviar lembrete de Contas',
         'bill_days'         => 'Enviar antes de vencer',
         'cron_command'      => 'Comando Cron',
         'schedule_time'     => 'Iniciar Cron',
+        'send_item_reminder'=> 'Enviar lembrete de Item',
+        'item_stocks'       => 'Enviar Quando Item Disponível',
     ],
-
-    'categories' => [
-        'description'       => 'Categorias ilimitadas para receita, despesa, e itens',
+    'appearance' => [
+        'tab'               => 'Aparência',
+        'theme'             => 'Tema',
+        'light'             => 'Claro',
+        'dark'              => 'Escuro',
+        'list_limit'        => 'Resultados por Página',
+        'use_gravatar'      => 'Usar Gravatar',
     ],
-
-    'currencies' => [
-        'description'       => 'Criar e gerir moedas e definir as taxas',
-    ],
-
-    'taxes' => [
-        'description'       => 'Taxas de imposto fixa, normal, inclusiva e composta',
+    'system' => [
+        'tab'               => 'Sistema',
+        'session' => [
+            'lifetime'      => 'Fechar sessão (Minutos)',
+            'handler'       => 'Gestor de Sessão',
+            'file'          => 'Ficheiro',
+            'database'      => 'Base de Dados',
+        ],
+        'file_size'         => 'Tamanho máximo do ficheiro (MB)',
+        'file_types'        => 'Tipos de ficheiros permitidos',
     ],
 
 ];

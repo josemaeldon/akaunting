@@ -2,11 +2,20 @@
 
 namespace App\Http\Controllers\Modals;
 
-use App\Abstracts\Http\Controller;
-use App\Http\Requests\Common\Contact as Request;
-use App\Models\Common\Contact;
-use App\Jobs\Common\CreateContact;
-use App\Jobs\Common\UpdateContact;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Income\Customer as Request;
+use App\Models\Auth\User;
+use App\Models\Income\Customer;
+use App\Models\Income\Invoice;
+use App\Models\Income\Revenue;
+use App\Models\Setting\Currency;
+use App\Utilities\Import;
+use App\Utilities\ImportFile;
+use Date;
+use Illuminate\Http\Request as FRequest;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class Customers extends Controller
 {
@@ -16,10 +25,10 @@ class Customers extends Controller
     public function __construct()
     {
         // Add CRUD permission check
-        $this->middleware('permission:create-sales-customers')->only('create', 'store', 'duplicate', 'import');
-        $this->middleware('permission:read-sales-customers')->only('index', 'show', 'edit', 'export');
-        $this->middleware('permission:update-sales-customers')->only('update', 'enable', 'disable');
-        $this->middleware('permission:delete-sales-customers')->only('destroy');
+        $this->middleware('permission:create-incomes-customers')->only(['create', 'store', 'duplicate', 'import']);
+        $this->middleware('permission:read-incomes-customers')->only(['index', 'show', 'edit', 'export']);
+        $this->middleware('permission:update-incomes-customers')->only(['update', 'enable', 'disable']);
+        $this->middleware('permission:delete-incomes-customers')->only('destroy');
     }
 
     /**
@@ -29,13 +38,17 @@ class Customers extends Controller
      */
     public function create()
     {
-        $contact_selector = false;
+        $currencies = Currency::enabled()->pluck('name', 'code');
 
-        if (request()->has('contact_selector')) {
-            $contact_selector = request()->get('contact_selector');
+        $customer_selector = false;
+
+        if (request()->has('customer_selector')) {
+            $customer_selector = request()->get('customer_selector');
         }
 
-        $html = view('modals.customers.create', compact('contact_selector'))->render();
+        $rand = rand();
+
+        $html = view('modals.customers.create', compact('currencies', 'customer_selector', 'rand'))->render();
 
         return response()->json([
             'success' => true,
@@ -56,58 +69,16 @@ class Customers extends Controller
     {
         $request['enabled'] = 1;
 
-        $response = $this->ajaxDispatch(new CreateContact($request));
+        $customer = Customer::create($request->all());
 
-        if ($response['success']) {
-            $response['message'] = trans('messages.success.created', ['type' => trans_choice('general.customers', 1)]);
-        }
-
-        return response()->json($response);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  Contact  $customer
-     *
-     * @return Response
-     */
-    public function edit(Contact $customer)
-    {
-        $contact_selector = false;
-
-        if (request()->has('contact_selector')) {
-            $contact_selector = request()->get('contact_selector');
-        }
-
-        $html = view('modals.customers.edit', compact('customer', 'contact_selector'))->render();
+        $message = trans('messages.success.added', ['type' => trans_choice('general.customers', 1)]);
 
         return response()->json([
             'success' => true,
             'error' => false,
-            'message' => 'null',
-            'html' => $html,
+            'data' => $customer,
+            'message' => $message,
+            'html' => 'null',
         ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  Contact $customer
-     * @param  Request $request
-     *
-     * @return Response
-     */
-    public function update(Contact $customer, Request $request)
-    {
-        $request['enabled'] = 1;
-
-        $response = $this->ajaxDispatch(new UpdateContact($customer, $request));
-
-        if ($response['success']) {
-            $response['message'] = trans('messages.success.updated', ['type' => trans_choice('general.customers', 1)]);
-        }
-
-        return response()->json($response);
     }
 }

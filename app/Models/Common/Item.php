@@ -2,112 +2,90 @@
 
 namespace App\Models\Common;
 
-use App\Abstracts\Model;
-use App\Models\Document\Document;
-use App\Utilities\Str;
+use App\Models\Model;
 use App\Traits\Currencies;
-use App\Traits\Media;
 use Bkwld\Cloner\Cloneable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Sofa\Eloquence\Eloquence;
+use App\Traits\Media;
 
 class Item extends Model
 {
-    use Cloneable, Currencies, HasFactory, Media;
+    use Cloneable, Currencies, Eloquence, Media;
 
     protected $table = 'items';
-
-    /**
-     * The relationships that should always be loaded.
-     *
-     * @var array
-     */
-    protected $with = ['taxes'];
 
     /**
      * The accessors to append to the model's array form.
      *
      * @var array
      */
-    protected $appends = ['item_id', 'tax_ids'];
+    protected $appends = ['item_id'];
 
     /**
      * Attributes that should be mass-assignable.
      *
      * @var array
      */
-    protected $fillable = ['company_id', 'type', 'name', 'description', 'sale_price', 'purchase_price', 'category_id', 'enabled', 'created_from', 'created_by'];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'sale_price'        => 'double',
-        'purchase_price'    => 'double',
-        'enabled'           => 'boolean',
-        'deleted_at'        => 'datetime',
-    ];
+    protected $fillable = ['company_id', 'name', 'sku', 'description', 'sale_price', 'purchase_price', 'quantity', 'category_id', 'tax_id', 'enabled'];
 
     /**
      * Sortable columns.
      *
      * @var array
      */
-    protected $sortable = ['name', 'category.name', 'description', 'sale_price', 'purchase_price', 'enabled'];
+    protected $sortable = ['name', 'category', 'quantity', 'sale_price', 'purchase_price', 'enabled'];
 
     /**
+     * Searchable rules.
+     *
      * @var array
      */
-    public $cloneable_relations = ['taxes'];
+    protected $searchableColumns = [
+        'name'        => 10,
+        'sku'         => 5,
+        'description' => 2,
+    ];
 
     public function category()
     {
-        return $this->belongsTo('App\Models\Setting\Category')->withoutGlobalScope('App\Scopes\Category')->withDefault(['name' => trans('general.na')]);
+        return $this->belongsTo('App\Models\Setting\Category');
     }
 
-    public function taxes()
+    public function tax()
     {
-        return $this->hasMany('App\Models\Common\ItemTax');
-    }
-
-    public function document_items()
-    {
-        return $this->hasMany('App\Models\Document\DocumentItem');
+        return $this->belongsTo('App\Models\Setting\Tax');
     }
 
     public function bill_items()
     {
-        return $this->document_items()->where('type', Document::BILL_TYPE);
+        return $this->hasMany('App\Models\Expense\BillItem');
     }
 
     public function invoice_items()
     {
-        return $this->document_items()->where('type', Document::INVOICE_TYPE);
+        return $this->hasMany('App\Models\Income\InvoiceItem');
     }
 
-    public function scopeName($query, $name)
+    /**
+     * Convert sale price to double.
+     *
+     * @param  string  $value
+     * @return void
+     */
+    public function setSalePriceAttribute($value)
     {
-        return $query->where('name', '=', $name);
+        $this->attributes['sale_price'] = (double) $value;
     }
 
-    public function scopeBilling($query, $billing)
+    /**
+     * Convert purchase price to double.
+     *
+     * @param  string  $value
+     * @return void
+     */
+    public function setPurchasePriceAttribute($value)
     {
-        return $query->where($billing . '_price', '=', null);
-    }
-
-    public function scopePriceType($query, $price_type)
-    {
-        return $query->whereNotNull($price_type . '_price');
-    }
-
-    public function scopeType($query, $type)
-    {
-        if (empty($type)) {
-            return $query;
-        }
-
-        return $query->where($this->qualifyColumn('type'), $type);
+        $this->attributes['purchase_price'] = (double) $value;
     }
 
     /**
@@ -118,16 +96,6 @@ class Item extends Model
     public function getItemIdAttribute()
     {
         return $this->id;
-    }
-
-    /**
-     * Get the item id.
-     *
-     * @return string
-     */
-    public function getTaxIdsAttribute()
-    {
-        return $this->taxes()->pluck('tax_id');
     }
 
     /**
@@ -147,6 +115,17 @@ class Item extends Model
     }
 
     /**
+     * Scope quantity.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeQuantity($query)
+    {
+        return $query->where('quantity', '>', '0');
+    }
+
+    /**
      * Sort by category name
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
@@ -159,11 +138,6 @@ class Item extends Model
         return $query->join('categories', 'categories.id', '=', 'items.category_id')
             ->orderBy('name', $direction)
             ->select('items.*');
-    }
-
-    public function getInitialsAttribute($value)
-    {
-        return Str::getInitials($this->name);
     }
 
     /**
@@ -180,58 +154,5 @@ class Item extends Model
         }
 
         return $this->getMedia('picture')->last();
-    }
-
-    /**
-     * Get the line actions.
-     *
-     * @return array
-     */
-    public function getLineActionsAttribute()
-    {
-        $actions = [];
-
-        $actions[] = [
-            'title' => trans('general.edit'),
-            'icon' => 'edit',
-            'url' => route('items.edit', $this->id),
-            'permission' => 'update-common-items',
-            'attributes' => [
-                'id' => 'index-line-actions-edit-item-' . $this->id,
-            ],
-        ];
-
-        $actions[] = [
-            'title' => trans('general.duplicate'),
-            'icon' => 'file_copy',
-            'url' => route('items.duplicate', $this->id),
-            'permission' => 'create-common-items',
-            'attributes' => [
-                'id' => 'index-line-actions-duplicate-item-' . $this->id,
-            ],
-        ];
-
-        $actions[] = [
-            'type' => 'delete',
-            'icon' => 'delete',
-            'route' => 'items.destroy',
-            'permission' => 'delete-common-items',
-            'attributes' => [
-                'id' => 'index-line-actions-delete-item-' . $this->id,
-            ],
-            'model' => $this,
-        ];
-
-        return $actions;
-    }
-
-    /**
-     * Create a new factory instance for the model.
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
-     */
-    protected static function newFactory()
-    {
-        return \Database\Factories\Item::new();
     }
 }

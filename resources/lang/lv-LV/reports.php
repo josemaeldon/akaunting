@@ -2,42 +2,29 @@
 
 return [
 
-    'years'                         => 'Gads|Gadi',
-    'preferences'                   => 'Preference|Preferences',
-    'this_year'                     => 'Šogad',
-    'previous_year'                 => 'Iepriekšējais gads',
-    'this_quarter'                  => 'Šis ceturksnis',
-    'previous_quarter'              => 'Iepriekšējais ceturksnis',
-    'last_12_months'                => 'Iepriekšējie 12 mēneši',
-    'profit_loss'                   => 'Peļņa & zaudējumi',
-    'income_summary'                => 'Ieņēmumu kopsavilkums',
-    'expense_summary'               => 'Izdevumu kopsavilkums',
-    'income_expense_summary'        => 'Ieņēmumi pret izdevumiem',
-    'tax_summary'                   => 'Nodokļu kopsavilkums',
-    'gross_profit'                  => 'Bruto peļņa',
-    'net_profit'                    => 'Neto peļņa',
-    'total_expenses'                => 'Kopējie izdevumi',
-    'net'                           => 'NETO',
-    'income_expense'                => 'Ienākumi & Izdevumi',
-    'pin'                           => 'Piespraust savu pārskatu',
+    'this_year'             => 'Šogad',
+    'previous_year'         => 'Iepriekšējais gads',
+    'this_quarter'          => 'Šis ceturksnis',
+    'previous_quarter'      => 'Iepriekšējais ceturksnis',
+    'last_12_months'        => 'Iepriekšējie 12 mēneši',
+    'profit_loss'           => 'Peļņa un zaudējumi',
+    'gross_profit'          => 'Bruto peļņa',
+    'net_profit'            => 'Neto peļņa',
+    'total_expenses'        => 'Kopējie izdevumi',
+    'net'                   => 'NET',
 
-    'income_expense_description'    => 'Ienākumu un izdevumu pārskatu apraksts',
-    'accounting_description'        => 'Grāmatvedības atskaišu apraksts',
-
-    'form_description' => [
-        'general'                   => 'Šeit varat ievadīt vispārīgu pārskata informāciju, piemēram, nosaukumu, veidu, aprakstu utt.',
-        'preferences'               => 'Preferences palīdz pielāgot pārskatus.'
+    'summary' => [
+        'income'            => 'Ieņēmumu kopsavilkums',
+        'expense'           => 'Izdevumu kopsavilkums',
+        'income_expense'    => 'Ieņēmumi pret izdevumiem',
+        'tax'               => 'Nodokļu kopsavilkums',
     ],
 
-    'charts' => [
-        'line'                      => 'Līnija',
-        'bar'                       => 'Stienis',
-        'pie'                       => 'Pīrāgs',
+    'quarter' => [
+        '1'                 => 'Jan-Mar',
+        '2'                 => 'Apr-Jun',
+        '3'                 => 'Jul-Sep',
+        '4'                 => 'Okt-Dec',
     ],
-
-    'pin_text' => [
-        'unpin_report'              => 'Atspraust savu ziņojumu',
-        'pin_report'                => 'Piespraust savu pārskatu',
-    ]
 
 ];

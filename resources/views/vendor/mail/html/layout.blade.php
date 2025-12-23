@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html dir="{{ language()->direction() }}" xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -27,7 +27,7 @@
         <tr>
             <td align="center">
                 <table class="content" width="100%" cellpadding="0" cellspacing="0">
-                    {{ $header ?? '' }}
+                    {{ $header or '' }}
 
                     <!-- Email Body -->
                     <tr>
@@ -36,16 +36,16 @@
                                 <!-- Body content -->
                                 <tr>
                                     <td class="content-cell">
-                                        {{ $slot }}
+                                        {{ Illuminate\Mail\Markdown::parse($slot) }}
 
-                                        {{ $subcopy ?? '' }}
+                                        {{ $subcopy or '' }}
                                     </td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
 
-                    {{ $footer ?? '' }}
+                    {{ $footer or '' }}
                 </table>
             </td>
         </tr>

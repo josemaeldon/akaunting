@@ -20,4 +20,5 @@ return [
     'account_balance'           => 'Баланс счёта',
     'latest_incomes'            => 'Последние доходы',
     'latest_expenses'           => 'Последние расходы',
+
 ];

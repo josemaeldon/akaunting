@@ -2,13 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Events\Document\DocumentReminded;
 use App\Models\Common\Company;
-use App\Models\Document\Document;
-use App\Notifications\Sale\Invoice as Notification;
-use App\Utilities\Date;
+use App\Models\Income\Invoice;
+use App\Notifications\Income\Invoice as Notification;
+use App\Utilities\Overrider;
+use Date;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Builder;
 
 class InvoiceReminder extends Command
 {
@@ -25,6 +24,14 @@ class InvoiceReminder extends Command
      * @var string
      */
     protected $description = 'Send reminders for invoices';
+    
+    /**
+     * Create a new command instance.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
     /**
      * Execute the console command.
@@ -33,66 +40,58 @@ class InvoiceReminder extends Command
      */
     public function handle()
     {
-        // Disable model cache
-        config(['laravel-model-caching.enabled' => false]);
-
-        $today = Date::today();
-
-        $start_date = $today->copy()->subMonth()->toDateString() . ' 00:00:00';
-        $end_date = $today->copy()->addWeek()->toDateString() . ' 23:59:59';
-
         // Get all companies
-        $companies = Company::whereHas('invoices', function (Builder $query) use ($start_date, $end_date) {
-                                $query->allCompanies();
-                                $query->whereBetween('due_at', [$start_date, $end_date]);
-                                $query->accrued();
-                                $query->notPaid();
-                            })
-                            ->enabled()
-                            ->cursor();
+        $companies = Company::all();
 
         foreach ($companies as $company) {
-            $this->info('Sending invoice reminders for ' . $company->name . ' company.');
+            // Set company id
+            session(['company_id' => $company->id]);
 
-            // Set company
-            $company->makeCurrent();
+            // Override settings and currencies
+            Overrider::load('settings');
+            Overrider::load('currencies');
+
+            $company->setSettings();
 
             // Don't send reminders if disabled
-            if (! setting('schedule.send_invoice_reminder')) {
-                $this->info('Invoice reminders disabled by ' . $company->name . '.');
-
+            if (!$company->send_invoice_reminder) {
                 continue;
             }
 
-            $days = explode(',', setting('schedule.invoice_days'));
+            $days = explode(',', $company->schedule_invoice_days);
 
             foreach ($days as $day) {
                 $day = (int) trim($day);
 
-                $this->remind($day);
+                $this->remind($day, $company);
             }
         }
 
-        Company::forgetCurrent();
+        // Unset company_id
+        session()->forget('company_id');
     }
 
-    protected function remind($day)
+    protected function remind($day, $company)
     {
         // Get due date
         $date = Date::today()->subDays($day)->toDateString();
 
-        // Get upcoming invoices
-        $invoices = Document::with('contact')->invoice()->accrued()->notPaid()->due($date)->cursor();
+        // Get upcoming bills
+        $invoices = Invoice::with('customer')->accrued()->notPaid()->due($date)->get();
 
         foreach ($invoices as $invoice) {
-            $this->info($invoice->document_number . ' invoice reminded.');
+            // Notify the customer
+            if ($invoice->customer && !empty($invoice->customer_email)) {
+                $invoice->customer->notify(new Notification($invoice));
+            }
 
-            try {
-                event(new DocumentReminded($invoice, Notification::class));
-            } catch (\Throwable $e) {
-                $this->error($e->getMessage());
+            // Notify all users assigned to this company
+            foreach ($company->users as $user) {
+                if (!$user->can('read-notifications')) {
+                    continue;
+                }
 
-                report($e);
+                $user->notify(new Notification($invoice));
             }
         }
     }

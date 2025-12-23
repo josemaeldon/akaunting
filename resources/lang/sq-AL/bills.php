@@ -13,7 +13,6 @@ return [
     'price'                 => 'Çmimi',
     'sub_total'             => 'Nëntotali',
     'discount'              => 'Skonto',
-    'item_discount'         => 'Linjë Zbritje',
     'tax_total'             => 'Tatimi Gjithsej',
     'total'                 => 'Totali',
 
@@ -29,16 +28,22 @@ return [
     'histories'             => 'Historitë',
     'payments'              => 'Pagesat',
     'add_payment'           => 'Shto Pagesë',
-    'mark_paid'             => 'Shënoje të Paguar',
     'mark_received'         => 'Shënoje të Marrë',
-    'mark_cancelled'        => 'Shënoje të Anuluar',
     'download_pdf'          => 'Shkarko PDF',
     'send_mail'             => 'Dërgo Email',
     'create_bill'           => 'Krijo Faturë',
     'receive_bill'          => 'Merre Faturën',
     'make_payment'          => 'Bëj Pagesën',
 
+    'status' => [
+        'draft'             => 'Draft',
+        'received'          => 'Marrë',
+        'partial'           => 'I pjesshëm',
+        'paid'              => 'I paguar',
+    ],
+
     'messages' => [
+        'received'          => 'Fatura shënohet si i marrë me sukses!',
         'draft'             => 'Ky është një faturë <b>DRAFT</b> dhe do të pasqyrohet në skema pas marrjes së tij.',
 
         'status' => [

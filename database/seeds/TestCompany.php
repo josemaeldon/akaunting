@@ -2,19 +2,14 @@
 
 namespace Database\Seeds;
 
-use App\Abstracts\Model;
-use App\Jobs\Auth\CreateUser;
-use App\Jobs\Common\CreateCompany;
-use App\Jobs\Common\CreateContact;
-use App\Traits\Jobs;
-use App\Traits\Modules;
-use Artisan;
+use App\Models\Model;
+use App\Models\Auth\User;
+use App\Models\Common\Company;
+use Date;
 use Illuminate\Database\Seeder;
 
 class TestCompany extends Seeder
 {
-    use Jobs, Modules;
-
     /**
      * Run the database seeds.
      *
@@ -24,112 +19,63 @@ class TestCompany extends Seeder
     {
         Model::unguard();
 
-        $this->migrateRoles();
-
-        $this->call(Permissions::class);
+        $this->call(Roles::class);
 
         $this->createCompany();
 
         $this->createUser();
 
-        $this->createCustomer();
-
-        $this->installModules();
-
         Model::reguard();
-    }
-
-    private function migrateRoles()
-    {
-        if (! $this->moduleExists('roles')) {
-            return;
-        }
-
-        Artisan::call('module:migrate', [
-            'alias' => 'roles',
-            '--force' => true
-        ]);
     }
 
     private function createCompany()
     {
-        $company = $this->dispatch(new CreateCompany([
-            'name' => 'My Company',
-            'email' => 'test@company.com',
-            'domain' => 'company.com',
-            'address' => 'New Street 1254',
-            'currency' => 'USD',
-            'locale' => 'en-GB',
-            'enabled' => '1',
-            'settings' => [
-                'schedule.send_invoice_reminder' => '1',
-                'schedule.send_bill_reminder' => '1',
-                'wizard.completed' => '1',
-                'email.protocol' => 'array',
+        $rows = [
+            [
+                'id' => '1',
+                'domain' => 'test.com',
             ],
-            'created_from' => 'core::seed',
-        ]));
+        ];
 
-        $company->makeCurrent(true);
+        foreach ($rows as $row) {
+            Company::create($row);
+        }
 
-        setting()->set('email.protocol', 'log');
-        config(['mail.default' => setting('email.protocol')]);
+        setting()->setExtraColumns(['company_id' => '1']);
+        setting()->set([
+            'general.company_name'              => 'Test Inc.',
+            'general.company_email'             => 'info@test.com',
+            'general.company_address'           => 'New Street 1254',
+            'general.financial_start'           => '01-01',
+            'general.default_currency'          => 'USD',
+            'general.default_account'           => '1',
+            'general.default_payment_method'    => 'offlinepayment.cash.1',
+            'general.schedule_bill_days'        => '10,5,3,1',
+            'general.schedule_invoice_days'     => '1,3,5,10',
+            'general.send_invoice_reminder'     => true,
+            'general.send_bill_reminder'        => true,
+        ]);
+        setting()->save();
 
         $this->command->info('Test company created.');
     }
 
     public function createUser()
     {
-        $this->dispatch(new CreateUser([
-            'name' => 'Test User',
-            'email' => 'test@company.com',
+        // Create user
+        $user = User::create([
+            'name' => 'Admin',
+            'email' => 'admin@akaunting.com',
             'password' => '123456',
-            'locale' => 'en-GB',
-            'companies' => [company_id()],
-            'roles' => ['1'],
-            'enabled' => '1',
-        ]));
+            'last_logged_in_at' => Date::now(),
+        ]);
 
-        $this->command->info('Test user created.');
-    }
+        // Attach Role
+        $user->roles()->attach(1);
 
-    private function createCustomer()
-    {
-        $this->dispatch(new CreateContact([
-            'type' => 'customer',
-            'name' => 'Test Customer',
-            'email' => 'customer@company.com',
-            'currency_code' => default_currency(),
-            'password' => '123456',
-            'password_confirmation' => '123456',
-            'company_id' => company_id(),
-            'enabled' => '1',
-            'create_user' => 'true',
-        ]));
+        // Attach company
+        $user->companies()->attach(1);
 
-        $this->command->info('Test customer created.');
-    }
-
-    private function installModules()
-    {
-        $core_modules = ['offline-payments', 'paypal-standard'];
-
-        $modules = module()->all();
-
-        foreach ($modules as $module) {
-            $alias = $module->getAlias();
-
-            if (in_array($alias, $core_modules)) {
-                continue;
-            }
-
-            Artisan::call('module:install', [
-                'alias'     => $alias,
-                'company'   => company_id(),
-                'locale'    => session('locale', company(company_id())->locale),
-            ]);
-        }
-
-        $this->command->info('Modules installed.');
+        $this->command->info('Admin user created.');
     }
 }

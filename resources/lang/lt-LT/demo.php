@@ -2,30 +2,15 @@
 
 return [
 
-    'accounts' => [
-        'cash'              => 'Grynieji pinigai',
-    ],
-
-    'categories' => [
-        'deposit'           => 'Depozitas',
-        'sales'             => 'Pardavimai',
-    ],
-
-    'currencies' => [
-        'usd'               => 'JAV doleris',
-    ],
-
-    'offline_payments' => [
-        'cash'              => 'Grynieji pinigai',
-        'bank'              => 'Bankinis pervedimas',
-    ],
-
-    'reports' => [
-        'income'            => 'Mėnesio pajamų santrauka pagal kategoriją.',
-        'expense'           => 'Mėnesio išlaidų santrauka pagal kategoriją.',
-        'income_expense'    => 'Mėnesio pajamos/išlaidos pagal kategoriją.',
-        'tax'               => 'Ketvirčio mokesčių santrauka.',
-        'profit_loss'       => 'Ketvirčio pelnas/nuostolis pagal kategoriją.',
-    ],
+    'accounts_cash'         => 'Grynieji pinigai',
+    'categories_deposit'    => 'Depozitas',
+    'categories_sales'      => 'Pardavimai',
+    'currencies_usd'        => 'JAV doleris',
+    'currencies_eur'        => 'Euras',
+    'currencies_gbp'        => 'Svarai sterlingai',
+    'currencies_try'        => 'Turkijos Lira',
+    'taxes_exempt'          => 'Neapmokestinamos pajamos',
+    'taxes_normal'          => 'Įprastiniai mokesčiai',
+    'taxes_sales'           => 'PVM',
 
 ];

@@ -2,232 +2,149 @@
 
 namespace App\Traits;
 
-use App\Models\Common\Recurring as Model;
-use App\Utilities\Date;
 use Recurr\Rule;
 use Recurr\Transformer\ArrayTransformer;
 use Recurr\Transformer\ArrayTransformerConfig;
 
 trait Recurring
 {
-    public function createRecurring($request)
+
+    public function createRecurring()
     {
-        if (empty($request['recurring_frequency']) || ($request['recurring_frequency'] == 'no')) {
+        $request = request();
+
+        if ($request->get('recurring_frequency', 'no') == 'no') {
             return;
         }
 
         $frequency = ($request['recurring_frequency'] != 'custom') ? $request['recurring_frequency'] : $request['recurring_custom_frequency'];
-        $interval = (($request['recurring_frequency'] != 'custom') || ($request['recurring_interval'] < 1)) ? 1 : (int) $request['recurring_interval'];
-        $started_at = !empty($request['recurring_started_at']) ? $request['recurring_started_at'] : Date::now();
-        $status = !empty($request['recurring_status']) ? $request['recurring_status'] : Model::ACTIVE_STATUS;
-        $limit_by = !empty($request['recurring_limit']) ? $request['recurring_limit'] : 'count';
-        $limit_count = isset($request['recurring_limit_count']) ? (int) $request['recurring_limit_count'] : 0;
-        $limit_date = !empty($request['recurring_limit_date']) ? $request['recurring_limit_date'] : null;
-        $auto_send = !empty($request['recurring_send_email']) ? $request['recurring_send_email'] : 0;
-        $source = !empty($request['created_from']) ? $request['created_from'] : source_name();
-        $owner = !empty($request['created_by']) ? $request['created_by'] : user_id();
+        $interval = ($request['recurring_frequency'] != 'custom') ? 1 : (int) $request['recurring_interval'];
+        $started_at = $request->get('paid_at') ?: ($request->get('invoiced_at') ?: $request->get('billed_at'));
 
         $this->recurring()->create([
-            'company_id'    => $this->company_id,
-            'frequency'     => $frequency,
-            'interval'      => $interval,
-            'started_at'    => $started_at,
-            'status'        => $status,
-            'limit_by'      => $limit_by,
-            'limit_count'   => $limit_count,
-            'limit_date'    => $limit_date,
-            'auto_send'     => $auto_send,
-            'created_from'  => $source,
-            'created_by'    => $owner,
+            'company_id' => session('company_id'),
+            'frequency' => $frequency,
+            'interval' => $interval,
+            'started_at' => $started_at,
+            'count' => (int) $request['recurring_count'],
         ]);
     }
 
-    public function updateRecurring($request)
+    public function updateRecurring()
     {
-        if (empty($request['recurring_frequency']) || ($request['recurring_frequency'] == 'no')) {
-            $this->recurring()->delete();
+        $request = request();
 
+        if ($request->get('recurring_frequency', 'no') == 'no') {
+            $this->recurring()->delete();
             return;
         }
 
         $frequency = ($request['recurring_frequency'] != 'custom') ? $request['recurring_frequency'] : $request['recurring_custom_frequency'];
-        $interval = (($request['recurring_frequency'] != 'custom') || ($request['recurring_interval'] < 1)) ? 1 : (int) $request['recurring_interval'];
-        $started_at = !empty($request['recurring_started_at']) ? $request['recurring_started_at'] : Date::now();
-        $limit_by = !empty($request['recurring_limit']) ? $request['recurring_limit'] : 'count';
-        $limit_count = isset($request['recurring_limit_count']) ? (int) $request['recurring_limit_count'] : 0;
-        $limit_date = !empty($request['recurring_limit_date']) ? $request['recurring_limit_date'] : null;
-        $auto_send = !empty($request['recurring_send_email']) ? $request['recurring_send_email'] : 0;
+        $interval = ($request['recurring_frequency'] != 'custom') ? 1 : (int) $request['recurring_interval'];
+        $started_at = $request->get('paid_at') ?: ($request->get('invoiced_at') ?: $request->get('billed_at'));
 
         $recurring = $this->recurring();
-        $model_exists = $recurring->count();
 
-        $data = [
-            'company_id'    => $this->company_id,
-            'frequency'     => $frequency,
-            'interval'      => $interval,
-            'started_at'    => $started_at,
-            'limit_by'      => $limit_by,
-            'limit_count'   => $limit_count,
-            'limit_date'    => $limit_date,
-            'auto_send'     => $auto_send,
-        ];
-
-        if (! empty($request['recurring_status'])) {
-            $data['status'] = $request['recurring_status'];
-        }
-
-        if ($model_exists) {
-            $recurring->update($data);
+        if ($recurring->count()) {
+            $function = 'update';
         } else {
-            $source = !empty($request['created_from']) ? $request['created_from'] : source_name();
-            $owner = !empty($request['created_by']) ? $request['created_by'] : user_id();
-
-            $recurring->create(array_merge($data, [
-                'status'        => Model::ACTIVE_STATUS,
-                'created_from'  => $source,
-                'created_by'    => $owner,
-            ]));
-        }
-    }
-
-    public function getRecurringSchedule()
-    {
-        $config = new ArrayTransformerConfig();
-        $config->enableLastDayOfMonthFix();
-        $config->setVirtualLimit($this->getRecurringVirtualLimit());
-
-        $transformer = new ArrayTransformer();
-        $transformer->setConfig($config);
-
-        return $transformer->transform($this->getRecurringRule());
-    }
-
-    public function getRecurringRule()
-    {
-        $rule = (new Rule())
-            ->setStartDate($this->getRecurringRuleStartDate())
-            ->setTimezone($this->getRecurringRuleTimeZone())
-            ->setFreq($this->getRecurringRuleFrequency())
-            ->setInterval($this->getRecurringRuleInterval());
-
-        if ($this->limit_by == 'date') {
-            $rule->setUntil($this->getRecurringRuleUntilDate());
-        } elseif ($this->limit_count != 0) {
-            // 0 means infinite
-            $rule->setCount($this->getRecurringRuleCount());
+            $function = 'create';
         }
 
-        return $rule;
+        $recurring->$function([
+            'company_id' => session('company_id'),
+            'frequency' => $frequency,
+            'interval' => $interval,
+            'started_at' => $started_at,
+            'count' => (int) $request['recurring_count'],
+        ]);
     }
 
-    public function getRecurringRuleStartDate()
+    public function current()
     {
-        return $this->getRecurringRuleDate($this->started_at);
-    }
-
-    public function getRecurringRuleUntilDate()
-    {
-        return $this->getRecurringRuleDate($this->limit_date);
-    }
-
-    public function getRecurringRuleTodayDate()
-    {
-        return $this->getRecurringRuleDate(Date::today()->toDateTimeString());
-    }
-
-    public function getRecurringRuleTomorrowDate()
-    {
-        return $this->getRecurringRuleDate(Date::tomorrow()->toDateTimeString());
-    }
-
-    public function getRecurringRuleDate($date)
-    {
-        return new \DateTime($date, new \DateTimeZone($this->getRecurringRuleTimeZone()));
-    }
-
-    public function getRecurringRuleTimeZone()
-    {
-        return setting('localisation.timezone');
-    }
-
-    public function getRecurringRuleCount()
-    {
-        return $this->limit_count;
-    }
-
-    public function getRecurringRuleFrequency()
-    {
-        return strtoupper($this->frequency);
-    }
-
-    public function getRecurringRuleInterval()
-    {
-        return $this->interval;
-    }
-
-    public function getRecurringVirtualLimit()
-    {
-        switch ($this->frequency) {
-            case 'yearly':
-                $limit = '2';
-                break;
-            case 'monthly':
-                $limit = '24';
-                break;
-            case 'weekly':
-                $limit = '104';
-                break;
-            case 'daily':
-            default;
-                $limit = '732';
-                break;
-        }
-
-        return $limit;
-    }
-
-    public function getNextRecurring()
-    {
-        if (! $schedule = $this->getRecurringSchedule()) {
+        if (!$schedule = $this->schedule()) {
             return false;
         }
 
-        $schedule = $schedule->startsAfter($this->getRecurringRuleTodayDate());
+        return $schedule->current()->getStart();
+    }
 
-        if ($schedule->count() == 0) {
+    public function next()
+    {
+        if (!$schedule = $this->schedule()) {
             return false;
         }
 
-        if (! $next = $schedule->current()) {
+        if (!$next = $schedule->next()) {
             return false;
         }
 
         return $next->getStart();
     }
 
-    public function getFirstRecurring()
+    public function first()
     {
-        if (! $schedule = $this->getRecurringSchedule()) {
+        if (!$schedule = $this->schedule()) {
             return false;
         }
 
-        if (! $first = $schedule->first()) {
-            return false;
-        }
-
-        return $first->getStart();
+        return $schedule->first()->getStart();
     }
 
-    public function getLastRecurring()
+    public function last()
     {
-        if (! $schedule = $this->getRecurringSchedule()) {
+        if (!$schedule = $this->schedule()) {
             return false;
         }
 
-        if (! $last = $schedule->last()) {
-            return false;
+        return $schedule->last()->getStart();
+    }
+
+    public function schedule()
+    {
+        $config = new ArrayTransformerConfig();
+        $config->enableLastDayOfMonthFix();
+
+        $transformer = new ArrayTransformer();
+        $transformer->setConfig($config);
+
+        return $transformer->transform($this->getRule());
+    }
+
+    public function getRule()
+    {
+        $rule = (new Rule())
+            ->setStartDate($this->getRuleStartDate())
+            ->setTimezone($this->getRuleTimeZone())
+            ->setFreq($this->getRuleFrequency())
+            ->setInterval($this->interval);
+
+        // 0 means infinite
+        if ($this->count != 0) {
+            $rule->setCount($this->getRuleCount());
         }
 
-        return $last->getStart();
+        return $rule;
+    }
+
+    public function getRuleStartDate()
+    {
+        return new \DateTime($this->started_at, new \DateTimeZone($this->getRuleTimeZone()));
+    }
+
+    public function getRuleTimeZone()
+    {
+        return setting('general.timezone');
+    }
+
+    public function getRuleCount()
+    {
+        // Fix for humans
+        return $this->count + 1;
+    }
+
+    public function getRuleFrequency()
+    {
+        return strtoupper($this->frequency);
     }
 }

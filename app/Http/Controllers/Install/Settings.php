@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Install;
 use App\Http\Requests\Install\Setting as Request;
 use App\Utilities\Installer;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
 
 class Settings extends Controller
 {
@@ -22,28 +21,22 @@ class Settings extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  $request
+     * @param  Request  $request
      *
      * @return Response
      */
     public function store(Request $request)
     {
-        DB::transaction(function () use ($request) {
-            $locale = session('locale') ?? config('app.locale');
+        // Create company
+        Installer::createCompany($request->get('company_name'), $request->get('company_email'), session('locale'));
 
-            // Create company
-            Installer::createCompany($request->get('company_name'), $request->get('company_email'), $locale);
-
-            // Create user
-            Installer::createUser($request->get('user_email'), $request->get('user_password'), $locale);
-        });
+        // Create user
+        Installer::createUser($request->get('user_email'), $request->get('user_password'), session('locale'));
 
         // Make the final touches
         Installer::finalTouches();
 
         // Redirect to dashboard
-        $response['redirect'] = route('login');
-
-        return response()->json($response);
+        return redirect('auth/login');
     }
 }

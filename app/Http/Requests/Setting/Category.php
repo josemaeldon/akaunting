@@ -2,10 +2,20 @@
 
 namespace App\Http\Requests\Setting;
 
-use App\Abstracts\Http\FormRequest;
+use App\Http\Requests\Request;
 
-class Category extends FormRequest
+class Category extends Request
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -13,12 +23,10 @@ class Category extends FormRequest
      */
     public function rules()
     {
-        $types = collect(config('type.category'))->keys();
-
         return [
             'name' => 'required|string',
-            'type' => 'required|string|in:' . $types->implode(','),
-            'color' => 'required|string|colour',
+            'type' => 'required|string',
+            'color' => 'required|string',
         ];
     }
 }

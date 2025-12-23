@@ -2,18 +2,21 @@
 
 return [
 
-    'api_key'               => 'Ключ API',
+    'title'                 => 'API ключ',
+    'api_token'             => 'Ключ',
     'my_apps'               => 'Мои приложения',
     'pre_sale'              => 'Пред продажа',
     'top_paid'              => 'Топ оплаченных',
     'new'                   => 'Новый',
     'top_free'              => 'Топ бесплатных',
     'free'                  => 'БЕСПЛАТНО',
+    'search'                => 'Поиск',
     'install'               => 'Установить',
     'buy_now'               => 'Купить сейчас',
-    'get_api_key'           => '<a href=":url" target="_blank">Нажмите здесь,</a> чтобы получить ваш API ключ.',
+    'token_link'            => '<a href="https://akaunting.com/tokens" target="_blank">Нажмите здесь</a> чтобы получить Ваш API ключ.',
     'no_apps'               => 'В этой категории еще нет приложений.',
-    'become_developer'      => 'Вы разработчик? <a href=":url" target="_blank">Здесь</a> вы можете научиться создавать приложение и начать продавать их уже сегодня!',
+    'developer'             => 'Вы разработчик? <a href="https://akaunting.com/blog/akaunting-app-store" target="_blank">Здесь</a> вы можете узнать, как создать приложение и начать продавать уже сегодня!',
+
     'recommended_apps'      => 'Рекомендуемые приложения',
 
     'about'                 => 'О нас',
@@ -35,30 +38,31 @@ return [
         'installation'      => 'Установка',
         'faq'               => 'ЧаВо',
         'changelog'         => 'История изменений',
-        'reviews'           => 'Отзывы',
+        'reviews'            => 'Reviews',
     ],
 
     'installation' => [
         'header'            => 'Установка приложения',
-        'download'          => 'Загрузка модуля :module',
-        'unzip'             => 'Извлечение файлов модуля :module',
-        'file_copy'         => 'Копирование файлов модуля :module',
-        'finish'            => 'Завершение установки модуля :module',
-        'redirect'          => 'Модуль :module установлен, перенаправление на страницу Обновлений',
-        'install'           => 'Установка модуля :module',
+        'download'          => 'Скачивание :module модуля.',
+        'unzip'             => 'Распаковка :module модуля.',
+        'file_copy'         => 'Copying :module files.',
+        'migrate'           => 'Applying :module updates.',
+        'finish'            => 'The update was successfully installed. You will be redirect Update Center.',
+        'install'           => 'Установка :module модуля.',
     ],
 
     'errors' => [
-        'download'          => 'Не удалось загрузить модуль :module',
-        'zip'               => 'Не удалось создать zip-файл модуля :module',
-        'unzip'             => 'Не удалось распаковать :module',
-        'file_copy'         => 'Не удалось скопировать файлы модуля :module',
-        'finish'            => 'Не удалось завершить установку модуля :module',
+        'download' => ':module can not download!',
+        'upload' => 'Downloaded :module can not saved!',
+        'unzip' => ':module can not unzip!',
+        'file_copy' => ':module files can not copy!',
+        'migrate' => ':module migrate broken!',
+        'migrate core' => ':module already latest version so then yon can not update.',
     ],
 
     'badge' => [
-        'installed'         => 'Установлено',
-        'pre_sale'          => 'Предпродажа',
+        'installed' => 'Установлено',
+        'pre_sale' => 'Pre-Sale',
     ],
 
     'button' => [
@@ -68,16 +72,14 @@ return [
     ],
 
     'my' => [
-        'purchased'         => 'Куплено',
-        'installed'         => 'Установлено',
+        'purchased' => 'Куплено',
+        'installed' => 'Установлено',
     ],
 
     'reviews' => [
         'button' => [
-            'add'           => 'Добавить отзыв'
+            'add' => 'Add a Review'
         ],
-
-        'na'                => 'Нет отзывов.'
-    ],
-
+        'na' => 'There are no reviews.'
+    ]
 ];

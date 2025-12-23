@@ -2,8 +2,8 @@
 
 return [
 
-    'previous'              => 'Föregående',
-    'next'                  => 'Nästa',
-    'showing'               => ':first :last av :total poster.',
-    'page'                  => 'per sida.',
+    'previous'              => '&laquo; Föregående',
+    'next'                  => 'Nästa &raquo;',
+    'showing'               => 'Visar :first till :last av :total :type',
+
 ];

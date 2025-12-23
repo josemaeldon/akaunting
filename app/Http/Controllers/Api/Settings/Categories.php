@@ -2,50 +2,50 @@
 
 namespace App\Http\Controllers\Api\Settings;
 
-use App\Abstracts\Http\ApiController;
+use App\Http\Controllers\ApiController;
 use App\Http\Requests\Setting\Category as Request;
-use App\Http\Resources\Setting\Category as Resource;
-use App\Jobs\Setting\CreateCategory;
-use App\Jobs\Setting\DeleteCategory;
-use App\Jobs\Setting\UpdateCategory;
 use App\Models\Setting\Category;
+use App\Transformers\Setting\Category as Transformer;
+use Dingo\Api\Routing\Helpers;
 
 class Categories extends ApiController
 {
+    use Helpers;
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function index()
     {
-        $categories = Category::withSubCategory()->collect();
+        $categories = Category::collect();
 
-        return Resource::collection($categories);
+        return $this->response->paginator($categories, new Transformer());
     }
 
     /**
      * Display the specified resource.
      *
      * @param  Category  $category
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function show(Category $category)
     {
-        return new Resource($category);
+        return $this->response->item($category, new Transformer());
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function store(Request $request)
     {
-        $category = $this->dispatch(new CreateCategory($request));
+        $category = Category::create($request->all());
 
-        return $this->created(route('api.categories.show', $category->id), new Resource($category));
+        return $this->response->created(url('api/categories/'.$category->id));
     }
 
     /**
@@ -53,63 +53,25 @@ class Categories extends ApiController
      *
      * @param  $category
      * @param  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function update(Category $category, Request $request)
     {
-        try {
-            $category = $this->dispatch(new UpdateCategory($category, $request));
+        $category->update($request->all());
 
-            return new Resource($category->fresh());
-        } catch(\Exception $e) {
-            $this->errorUnauthorized($e->getMessage());
-        }
-    }
-
-    /**
-     * Enable the specified resource in storage.
-     *
-     * @param  Category  $category
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function enable(Category $category)
-    {
-        $category = $this->dispatch(new UpdateCategory($category, request()->merge(['enabled' => 1])));
-
-        return new Resource($category->fresh());
-    }
-
-    /**
-     * Disable the specified resource in storage.
-     *
-     * @param  Category  $category
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function disable(Category $category)
-    {
-        try {
-            $category = $this->dispatch(new UpdateCategory($category, request()->merge(['enabled' => 0])));
-
-            return new Resource($category->fresh());
-        } catch(\Exception $e) {
-            $this->errorUnauthorized($e->getMessage());
-        }
+        return $this->response->item($category->fresh(), new Transformer());
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  Category  $category
-     * @return \Illuminate\Http\Response
+     * @return \Dingo\Api\Http\Response
      */
     public function destroy(Category $category)
     {
-        try {
-            $this->dispatch(new DeleteCategory($category));
+        $category->delete();
 
-            return $this->noContent();
-        } catch(\Exception $e) {
-            $this->errorUnauthorized($e->getMessage());
-        }
+        return $this->response->noContent();
     }
 }

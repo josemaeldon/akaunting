@@ -2,53 +2,9 @@
 
 return [
 
-    'whoops'              => 'Упс!',
-    'hello'               => 'Привет!',
-    'salutation'          => 'С уважением,<br>:company_name',
-    'subcopy'             => 'Если у вас возникли проблемы c нажатием на кнопку ":text", скопируйте и вставьте следующий URL-адрес в ваш браузер: [:url](:url)',
-
-    'update' => [
-
-        'mail' => [
-
-            'subject' => '⚠️ Ошибка обновления :domain',
-            'message' => 'Обновление :alias с :current_version до :new_version было прекращено из-за ошибки на шаге <strong>:step</strong> со следующим сообщением: :error_message',
-
-        ],
-
-        'slack' => [
-
-            'message' => '⚠️ Ошибка обновления :domain',
-
-        ],
-
-    ],
-
-    'import' => [
-
-        'completed' => [
-            'subject'           => 'Импорт завершён',
-            'description'       => 'Импорт завершён и записи доступны в вашей панели.',
-        ],
-
-        'failed' => [
-            'subject'           => 'Не удалось импортировать',
-            'description'       => 'Не удалось импортировать файл из-за следующих проблем:',
-        ],
-    ],
-
-    'export' => [
-
-        'completed' => [
-            'subject'           => 'Экспорт готов',
-            'description'       => 'Файл экспорта готов к загрузке по следующей ссылке:',
-        ],
-
-        'failed' => [
-            'subject'           => 'Не удалось экспортировать',
-            'description'       => 'Невозможно создать файл экспорта из-за следующей проблемы:',
-        ],
-
-    ],
+    'whoops'              => 'Whoops!',
+    'hello'               => 'Hello!',
+    'salutation'          => 'Regards,<br> :company_name',
+    'subcopy'             => 'If you’re having trouble clicking the ":text" button, copy and paste the URL below into your web browser: [:url](:url)',
 
 ];

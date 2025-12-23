@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Cache\RateLimiting\Limit;
 
 return [
 
@@ -9,7 +8,7 @@ return [
     | Standards Tree
     |--------------------------------------------------------------------------
     |
-    | Versioning an API revolves around content negotiation and
+    | Versioning an API with Dingo revolves around content negotiation and
     | custom MIME types. A custom type will belong to one of three
     | standards trees, the Vendor tree (vnd), the Personal tree
     | (prs), and the Unregistered tree (x).
@@ -34,7 +33,7 @@ return [
     |
     */
 
-    'subtype' => env('API_SUBTYPE', 'akaunting'),
+    'subtype' => env('API_SUBTYPE', 'api'),
 
     /*
     |--------------------------------------------------------------------------
@@ -47,7 +46,7 @@ return [
     |
     */
 
-    'version' => env('API_VERSION', 'v3'),
+    'version' => env('API_VERSION', 'v1'),
 
     /*
     |--------------------------------------------------------------------------
@@ -71,7 +70,7 @@ return [
     |
     */
 
-    'domain' => env('API_DOMAIN'),
+    'domain' => env('API_DOMAIN', null),
 
     /*
     |--------------------------------------------------------------------------
@@ -124,7 +123,7 @@ return [
     |
     */
 
-    'debug' => env('API_DEBUG', false),
+    'debug' => env('API_DEBUG', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -138,7 +137,7 @@ return [
     |
     */
 
-    'error_format' => [
+    'errorFormat' => [
         'message' => ':message',
         'errors' => ':errors',
         'code' => ':code',
@@ -155,5 +154,70 @@ return [
     |
     */
 
-    'middleware' => explode(',', env('API_MIDDLEWARE', 'api')),
+    'middleware' => [
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication Providers
+    |--------------------------------------------------------------------------
+    |
+    | The authentication providers that should be used when attempting to
+    | authenticate an incoming API request.
+    |
+    */
+
+    'auth' => [
+        'basic' => 'Dingo\Api\Auth\Provider\Basic',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Throttling / Rate Limiting
+    |--------------------------------------------------------------------------
+    |
+    | Consumers of your API can be limited to the amount of requests they can
+    | make. You can create your own throttles or simply change the default
+    | throttles.
+    |
+    */
+
+    'throttling' => [
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Response Transformer
+    |--------------------------------------------------------------------------
+    |
+    | Responses can be transformed so that they are easier to format. By
+    | default a Fractal transformer will be used to transform any
+    | responses prior to formatting. You can easily replace
+    | this with your own transformer.
+    |
+    */
+
+    'transformer' => env('API_TRANSFORMER', Dingo\Api\Transformer\Adapter\Fractal::class),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Response Formats
+    |--------------------------------------------------------------------------
+    |
+    | Responses can be returned in multiple formats by registering different
+    | response formatters. You can also customize an existing response
+    | formatter.
+    |
+    */
+
+    'defaultFormat' => env('API_DEFAULT_FORMAT', 'json'),
+
+    'formats' => [
+
+        'json' => Dingo\Api\Http\Response\Format\Json::class,
+
+    ],
+
 ];

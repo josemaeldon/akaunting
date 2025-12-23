@@ -2,61 +2,50 @@
 
 namespace App\Http\Controllers\Api\Banking;
 
-use App\Abstracts\Http\ApiController;
+use App\Http\Controllers\ApiController;
 use App\Http\Requests\Banking\Account as Request;
-use App\Http\Resources\Banking\Account as Resource;
-use App\Jobs\Banking\CreateAccount;
-use App\Jobs\Banking\DeleteAccount;
-use App\Jobs\Banking\UpdateAccount;
 use App\Models\Banking\Account;
+use App\Transformers\Banking\Account as Transformer;
+use Dingo\Api\Routing\Helpers;
 
 class Accounts extends ApiController
 {
+    use Helpers;
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function index()
     {
         $accounts = Account::collect();
 
-        return Resource::collection($accounts);
+        return $this->response->paginator($accounts, new Transformer());
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  $id
-     * @return \Illuminate\Http\JsonResponse
+     * @param  Account  $account
+     * @return \Dingo\Api\Http\Response
      */
-    public function show($id)
+    public function show(Account $account)
     {
-        // Check if we're querying by id or number
-        if (is_numeric($id)) {
-            $account = Account::find($id);
-        } else {
-            $account = Account::where('number', $id)->first();
-        }
-
-        if (! $account instanceof Account) {
-            return $this->errorInternal('No query results for model [' . Account::class . '] ' . $id);
-        }
-
-        return new Resource($account);
+        return $this->response->item($account, new Transformer());
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function store(Request $request)
     {
-        $account = $this->dispatch(new CreateAccount($request));
+        $account = Account::create($request->all());
 
-        return $this->created(route('api.accounts.show', $account->id), new Resource($account));
+        return $this->response->created(url('api/accounts/'.$account->id));
     }
 
     /**
@@ -64,63 +53,25 @@ class Accounts extends ApiController
      *
      * @param  $account
      * @param  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function update(Account $account, Request $request)
     {
-        try {
-            $account = $this->dispatch(new UpdateAccount($account, $request));
+        $account->update($request->all());
 
-            return new Resource($account->fresh());
-        } catch(\Exception $e) {
-            $this->errorUnauthorized($e->getMessage());
-        }
-    }
-
-    /**
-     * Enable the specified resource in storage.
-     *
-     * @param  Account  $account
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function enable(Account $account)
-    {
-        $account = $this->dispatch(new UpdateAccount($account, request()->merge(['enabled' => 1])));
-
-        return new Resource($account->fresh());
-    }
-
-    /**
-     * Disable the specified resource in storage.
-     *
-     * @param  Account  $account
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function disable(Account $account)
-    {
-        try {
-            $account = $this->dispatch(new UpdateAccount($account, request()->merge(['enabled' => 0])));
-
-            return new Resource($account->fresh());
-        } catch(\Exception $e) {
-            $this->errorUnauthorized($e->getMessage());
-        }
+        return $this->response->item($account->fresh(), new Transformer());
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  Account  $account
-     * @return \Illuminate\Http\Response
+     * @return \Dingo\Api\Http\Response
      */
     public function destroy(Account $account)
     {
-        try {
-            $this->dispatch(new DeleteAccount($account));
+        $account->delete();
 
-            return $this->noContent();
-        } catch(\Exception $e) {
-            $this->errorUnauthorized($e->getMessage());
-        }
+        return $this->response->noContent();
     }
 }

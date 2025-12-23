@@ -3,10 +3,19 @@
 namespace App\Http\Requests\Common;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Str;
 
 class Company extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -14,33 +23,12 @@ class Company extends FormRequest
      */
     public function rules()
     {
-        $logo = 'nullable';
-
-        if ($this->files->get('logo')) {
-            $logo = 'mimes:' . config('filesystems.mimes')
-                    . '|between:0,' . config('filesystems.max_size') * 1024
-                    . '|dimensions:max_width=' . config('filesystems.max_width') . ',max_height=' . config('filesystems.max_height');
-        }
-
         return [
-            'name'      => 'required|string',
-            'email'     => 'required|email:rfc,dns',
-            'currency'  => 'required|string',
-            'domain'    => 'nullable|string',
-            'logo'      => $logo,
-        ];
-    }
-
-    public function messages()
-    {
-        $logo_dimensions = trans('validation.custom.invalid_dimension', [
-            'attribute'     => Str::lower(trans('settings.company.logo')),
-            'width'         => config('filesystems.max_width'),
-            'height'        => config('filesystems.max_height'),
-        ]);
-
-        return [
-            'logo.dimensions' => $logo_dimensions,
+            'domain' => 'required|string',
+            'company_name' => 'required|string',
+            'company_email' => 'required|email',
+            'company_logo' => 'mimes:' . setting('general.file_types') . '|between:0,' . setting('general.file_size') * 1024,
+            'default_currency' => 'required|string',
         ];
     }
 }

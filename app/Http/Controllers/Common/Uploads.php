@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers\Common;
 
-use App\Abstracts\Http\Controller;
-use App\Models\Common\Media;
-use App\Traits\Uploads as Helper;
-use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Common\Media;
+use File;
+use Storage;
 
 class Uploads extends Controller
 {
-    use Helper;
-
     /**
      * Get the specified resource.
      *
@@ -23,31 +21,15 @@ class Uploads extends Controller
         try {
             $media = Media::find($id);
         } catch (\Exception $e) {
-            return response(null, 204);
+            return false;
         }
 
         // Get file path
-        if (!$this->getMediaPathOnStorage($media)) {
-            return response(null, 204);
+        if (!$path = $this->getPath($media)) {
+            return false;
         }
 
-        return $this->streamMedia($media);
-    }
-
-    public function inline($id)
-    {
-        try {
-            $media = Media::find($id);
-        } catch (\Exception $e) {
-            return response(null, 204);
-        }
-
-        // Get file path
-        if (!$this->getMediaPathOnStorage($media)) {
-            return response(null, 204);
-        }
-
-        return $this->streamMedia($media, 'inline');
+        return response()->file($path);
     }
 
     /**
@@ -86,7 +68,7 @@ class Uploads extends Controller
         }
 
         // Get file path
-        if (!$this->getMediaPathOnStorage($media)) {
+        if (!$path = $this->getPath($media)) {
             return response()->json([
                 'success' => false,
                 'error'   => true,
@@ -98,7 +80,7 @@ class Uploads extends Controller
 
         $file = $media;
 
-        $html = view('components.media.file', compact('file', 'column_name', 'options'))->render();
+        $html = view('partials.media.file', compact('file', 'column_name', 'options'))->render();
 
         return response()->json([
             'success' => true,
@@ -124,11 +106,11 @@ class Uploads extends Controller
         }
 
         // Get file path
-        if (!$this->getMediaPathOnStorage($media)) {
+        if (!$path = $this->getPath($media)) {
             return false;
         }
 
-        return $this->streamMedia($media);
+        return response()->download($path);
     }
 
     /**
@@ -139,35 +121,24 @@ class Uploads extends Controller
      */
     public function destroy($id, Request $request)
     {
-        $return = back();
-
-        if ($request->has('ajax') && $request->get('ajax')) {
-            $return = [
-                'success' => true,
-                'errors' => false,
-                'message' => '',
-                'redirect' => $request->get('redirect')
-            ];
-        }
-
         try {
             $media = Media::find($id);
         } catch (\Exception $e) {
-            return $return;
+            return back();
         }
 
         // Get file path
-        if (!$path = $this->getMediaPathOnStorage($media)) {
+        if (!$path = $this->getPath($media)) {
             $message = trans('messages.warning.deleted', ['name' => $media->basename, 'text' => $media->basename]);
 
-            flash($message)->warning()->important();
+            flash($message)->warning();
 
-            return $return;
+            return back();
         }
 
         $media->delete(); //will not delete files
 
-        Storage::delete($path);
+        File::delete($path);
 
         if (!empty($request->input('page'))) {
             switch ($request->input('page')) {
@@ -179,6 +150,40 @@ class Uploads extends Controller
             }
         }
 
-        return $return;
+        return back();
+    }
+
+    /**
+     * Get the full path of resource.
+     *
+     * @param  $media
+     * @return boolean|string
+     */
+    protected function getPath($media)
+    {
+        if (!is_object($media)) {
+            return false;
+        }
+
+        $path = $media->basename;
+
+        if (!empty($media->directory)) {
+            $folders = explode('/', $media->directory);
+
+            // Check if company can access media
+            if ($folders[0] != session('company_id')) {
+                return false;
+            }
+
+            $path = $media->directory . '/' . $media->basename;
+        }
+
+        if (!Storage::exists($path)) {
+            return false;
+        }
+
+        $full_path = Storage::path($path);
+
+        return $full_path;
     }
 }

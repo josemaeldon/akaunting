@@ -2,38 +2,29 @@
 
 return [
 
-    'years'                         => 'Yıl|Yıllar',
-    'date_range'                    => 'Tarih Aralığı',
-    'preferences'                   => 'Tercih|Tercihler',
-    'profit_loss'                   => 'Kar ve Zarar',
-    'income_summary'                => 'Gelir Özeti',
-    'expense_summary'               => 'Gider Özeti',
-    'income_expense_summary'        => 'Gelir Gider Dengesi',
-    'tax_summary'                   => 'Vergi Özeti',
-    'gross_profit'                  => 'Brüt Kar',
-    'net_profit'                    => 'Net Kar',
-    'total_expenses'                => 'Toplam Gider',
-    'net'                           => 'NET',
-    'income_expense'                => 'Gelir - Gider',
-    'pin'                           => 'Raporunuzu sabitleyin',
+    'this_year'             => 'Bu Yıl',
+    'previous_year'         => 'Önceki Yıl',
+    'this_quarter'          => 'Bu Çeyrek',
+    'previous_quarter'      => 'Önceki Çeyrek',
+    'last_12_months'        => 'Son 12 Ay',
+    'profit_loss'           => 'Kar ve Zarar',
+    'gross_profit'          => 'Brüt Kar',
+    'net_profit'            => 'Net Kar',
+    'total_expenses'        => 'Toplam Gider',
+    'net'                   => 'NET',
 
-    'income_expense_description'    => 'Gelir ve giderlerinizin genel görünümünü alın.',
-    'accounting_description'        => 'İşletmenizin nasıl gittiğine dair net bir resim elde edin.',
-
-    'form_description' => [
-        'general'                   => 'Burada raporun adı, türü, açıklaması gibi genel bilgilerini girebilirsiniz.',
-        'preferences'               => 'Tercihler, raporlarınızı özelleştirmenize yardımcı olur.'
+    'summary' => [
+        'income'            => 'Gelir Özeti',
+        'expense'           => 'Gider Özeti',
+        'income_expense'    => 'Gelir Gider Dengesi',
+        'tax'               => 'Vergi Özeti',
     ],
 
-    'charts' => [
-        'line'                      => 'Çizgi',
-        'bar'                       => 'Çubuk',
-        'pie'                       => 'Pasta',
+    'quarter' => [
+        '1'                 => 'Oca-Mar',
+        '2'                 => 'Nis-Haz',
+        '3'                 => 'Tem-Eyl',
+        '4'                 => 'Eki-Ara',
     ],
-
-    'pin_text' => [
-        'unpin_report'              => 'Raporunuzun sabitlemesini kaldırın',
-        'pin_report'                => 'Raporunuzu sabitleyin',
-    ]
 
 ];

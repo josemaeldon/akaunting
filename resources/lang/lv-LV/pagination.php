@@ -2,8 +2,8 @@
 
 return [
 
-    'previous'              => 'Atpakaļ',
-    'next'                  => 'Nākamais',
-    'showing'               => ':pirmais-:pēdējais no :visiem ierakstiem',
-    'page'                  => 'uz lapu',
+    'previous'              => '&laquo; Nākamā',
+    'next'                  => 'Iepriešējā &raquo;',
+    'showing'               => 'Rāda :first līdz :last no :total :type',
+
 ];

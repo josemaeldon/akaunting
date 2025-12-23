@@ -2,21 +2,17 @@
 
 namespace $NAMESPACE$;
 
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\ServiceProvider as Provider;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Factory;
 
-class $NAME$ extends Provider
+class $CLASS$ extends ServiceProvider
 {
     /**
-     * Register the service provider.
+     * Indicates if loading of the provider is deferred.
      *
-     * @return void
+     * @var bool
      */
-    public function register()
-    {
-        //$this->loadConfig();
-        $this->loadRoutes();
-    }
+    protected $defer = false;
 
     /**
      * Boot the application events.
@@ -25,69 +21,81 @@ class $NAME$ extends Provider
      */
     public function boot()
     {
-        $this->loadViews();
-        $this->loadViewComponents();
-        $this->loadMigrations();
+        $this->registerTranslations();
+        $this->registerConfig();
+        $this->registerViews();
+        $this->registerFactories();
     }
 
     /**
-     * Load views.
+     * Register the service provider.
      *
      * @return void
      */
-    public function loadViews()
+    public function register()
     {
-        $this->loadViewsFrom(__DIR__ . '/../Resources/views', '$ALIAS$');
+        //
     }
 
     /**
-     * Load view components.
+     * Register config.
      *
      * @return void
      */
-    public function loadViewComponents()
+    protected function registerConfig()
     {
-        Blade::componentNamespace('$COMPONENT_NAMESPACE$', '$ALIAS$');
+        $this->publishes([
+            __DIR__.'/../$PATH_CONFIG$/config.php' => config_path('$LOWER_NAME$.php'),
+        ], 'config');
+        $this->mergeConfigFrom(
+            __DIR__.'/../$PATH_CONFIG$/config.php', '$LOWER_NAME$'
+        );
     }
 
     /**
-     * Load migrations.
+     * Register views.
      *
      * @return void
      */
-    public function loadMigrations()
+    public function registerViews()
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../$MIGRATIONS_PATH$');
+        $viewPath = resource_path('views/modules/$LOWER_NAME$');
+
+        $sourcePath = __DIR__.'/../$PATH_VIEWS$';
+
+        $this->publishes([
+            $sourcePath => $viewPath
+        ]);
+
+        $this->loadViewsFrom(array_merge(array_map(function ($path) {
+            return $path . '/modules/$LOWER_NAME$';
+        }, \Config::get('view.paths')), [$sourcePath]), '$LOWER_NAME$');
     }
 
     /**
-     * Load config.
+     * Register translations.
      *
      * @return void
      */
-    public function loadConfig()
+    public function registerTranslations()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../$PATH_CONFIG$/config.php', '$ALIAS$');
-    }
+        $langPath = resource_path('lang/modules/$LOWER_NAME$');
 
-    /**
-     * Load routes.
-     *
-     * @return void
-     */
-    public function loadRoutes()
-    {
-        if (app()->routesAreCached()) {
-            return;
+        if (is_dir($langPath)) {
+            $this->loadTranslationsFrom($langPath, '$LOWER_NAME$');
+        } else {
+            $this->loadTranslationsFrom(__DIR__ .'/../$PATH_LANG$', '$LOWER_NAME$');
         }
+    }
 
-        $routes = [
-            'admin.php',
-            'portal.php',
-        ];
-
-        foreach ($routes as $route) {
-            $this->loadRoutesFrom(__DIR__ . '/../$ROUTES_PATH$/' . $route);
+    /**
+     * Register an additional directory of factories.
+     * @source https://github.com/sebastiaanluca/laravel-resource-flow/blob/develop/src/Modules/ModuleServiceProvider.php#L66
+     */
+    public function registerFactories()
+    {
+        if (! app()->environment('production')) {
+            app(Factory::class)->load(__DIR__ . '/Database/factories');
         }
     }
 

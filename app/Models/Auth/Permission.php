@@ -2,24 +2,21 @@
 
 namespace App\Models\Auth;
 
-use Akaunting\Sortable\Traits\Sortable;
-use App\Traits\Tenants;
-use Laratrust\Models\LaratrustPermission;
+use EloquentFilter\Filterable;
+use Laratrust\LaratrustPermission;
 use Laratrust\Traits\LaratrustPermissionTrait;
-use Lorisleiva\LaravelSearchString\Concerns\SearchString;
+use Kyslik\ColumnSortable\Sortable;
+use Request;
+use Route;
 
 class Permission extends LaratrustPermission
 {
-    use LaratrustPermissionTrait, SearchString, Sortable, Tenants;
+    use LaratrustPermissionTrait;
+    use Filterable;
+    use Sortable;
+
 
     protected $table = 'permissions';
-
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array
-     */
-    protected $appends = ['title'];
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +24,31 @@ class Permission extends LaratrustPermission
      * @var array
      */
     protected $fillable = ['name', 'display_name', 'description'];
+
+    /**
+     * Define the filter provider globally.
+     *
+     * @return ModelFilter
+     */
+    public function modelFilter()
+    {
+        // Check if is api or web
+        if (Request::is('api/*')) {
+            $arr = array_reverse(explode('\\', explode('@', app()['api.router']->currentRouteAction())[0]));
+            $folder = $arr[1];
+            $file = $arr[0];
+        } else {
+            list($folder, $file) = explode('/', Route::current()->uri());
+        }
+
+        if (empty($folder) || empty($file)) {
+            return $this->provideFilter();
+        }
+
+        $class = '\App\Filters\\' . ucfirst($folder) .'\\' . ucfirst($file);
+
+        return $this->provideFilter($class);
+    }
 
     /**
      * Scope to get all rows filtered, sorted and paginated.
@@ -40,42 +62,9 @@ class Permission extends LaratrustPermission
     {
         $request = request();
 
-        $search = $request->get('search');
-        $limit = (int) $request->get('limit', setting('default.list_limit', '25'));
+        $input = $request->input();
+        $limit = $request->get('limit', setting('general.list_limit', '25'));
 
-        return $query->usingSearchString($search)->sortable($sort)->paginate($limit);
-    }
-
-    /**
-     * Scope to only include by action.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $action
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeAction($query, $action = 'read')
-    {
-        return $query->where('name', 'like', $action . '-%');
-    }
-
-    /**
-     * Transform display name.
-     *
-     * @return string
-     */
-    public function getTitleAttribute()
-    {
-        $replaces = [
-            'Create ' => '',
-            'Read ' => '',
-            'Update ' => '',
-            'Delete ' => '',
-            'Modules' => 'Apps',
-        ];
-
-        $title = str_replace(array_keys($replaces), array_values($replaces), $this->display_name);
-
-        return $title;
+        return $query->filter($input)->sortable($sort)->paginate($limit);
     }
 }

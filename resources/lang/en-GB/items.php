@@ -2,16 +2,17 @@
 
 return [
 
-    'sale_price'                => 'Sale Price',
-    'purchase_price'            => 'Purchase Price',
-    'enter_item_description'    => 'Enter item description',
-    'billing'                   => 'Billing',
-    'sale_information'          => 'Sale Information',
-    'purchase_information'      => 'Purchase Information',
+    'quantities'            => 'Quantity|Quantities',
+    'sales_price'           => 'Sale Price',
+    'purchase_price'        => 'Purchase Price',
+    'sku'                   => 'SKU',
 
-    'form_description' => [
-        'general'               => 'Select a category to make your reports more detailed. The description will be populated when the item is selected in an invoice or bill.',
-        'billing'               => 'Sale Information is used within invoices, and Purchase Information is used within bills. Tax will be applied to both invoices and bills.',
+    'notification' => [
+        'message'       => [
+            'reminder' => 'You are receiving this email because only :quantity of :name has remained.',
+            'out_of_stock' => 'You are receiving this email because the :name is running out of stock.',
+        ],
+        'button'        => 'View Now',
     ],
 
 ];

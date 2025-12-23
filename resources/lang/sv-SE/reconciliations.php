@@ -3,20 +3,12 @@
 return [
 
     'reconcile'             => 'Avstäm',
-    'unreconcile'           => 'Oavstämd',
     'reconciled'            => 'Avstämd',
-    'opening_balance'       => 'Ingående balans',
     'closing_balance'       => 'Slutsaldo',
     'unreconciled'          => 'Oavstämd',
-    'transactions'          => 'Transaktioner',
+    'list_transactions'     => 'Visa transaktion',
     'start_date'            => 'Startdatum',
     'end_date'              => 'Slutdatum',
     'cleared_amount'        => 'Rensa Antal',
-    'deposit'               => 'Insättning',
-    'withdrawal'            => 'Uttag',
-    'reconciled_amount'     => 'Avstämd',
-    'in_progress'           => 'Pågående',
-    'save_draft'            => 'Spara som utkast',
-    'irreconcilable'        => 'Oavstämbar',
 
 ];

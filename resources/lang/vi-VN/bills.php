@@ -32,7 +32,7 @@ return [
     'download_pdf'      => 'Tải PDF',
     'send_mail'         => 'Gửi email',
 
-    'statuses' => [
+    'status' => [
         'draft'         => 'Bản nháp',
         'received'      => 'Đã nhận',
         'partial'       => 'Một phần',

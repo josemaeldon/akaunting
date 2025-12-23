@@ -2,30 +2,12 @@
 
 return [
 
-    'accounts' => [
-        'cash'              => 'Para',
-    ],
-
-    'categories' => [
-        'deposit'           => 'Depozite',
-        'sales'             => 'Shitjet',
-    ],
-
-    'currencies' => [
-        'usd'               => 'Dollar Amerikan',
-    ],
-
-    'offline_payments' => [
-        'cash'              => 'Para',
-        'bank'              => 'Transferte Bankare',
-    ],
-
-    'reports' => [
-        'income'            => 'Përmbledhja e të ardhurave mujore sipas kategorive.',
-        'expense'           => 'Përmbledhja e shpenzimeve mujore sipas kategorive.',
-        'income_expense'    => 'Të ardhurat mujore kundrejt shpenzimeve sipas kategorive.',
-        'tax'               => 'Përmbledhje tremujore e taksave.',
-        'profit_loss'       => 'Fitimi dhe humbja tremujore sipas kategorisë.',
-    ],
+    'accounts_cash'         => 'Para',
+    'categories_deposit'    => 'Depozite',
+    'categories_sales'      => 'Shitjet',
+    'currencies_usd'        => 'Dollar Amerikan',
+    'currencies_eur'        => 'Euro',
+    'currencies_gbp'        => 'Poundi Britanik',
+    'currencies_try'        => 'Lira Turke',
 
 ];

@@ -1,75 +1,102 @@
-<x-layouts.admin>
-    <x-slot name="title">
-        {{ trans('general.title.edit', ['type' => trans_choice('general.accounts', 1)]) }}
-    </x-slot>
+@extends('layouts.admin')
 
-    <x-slot name="content">
-        <x-form.container>
-            <x-form id="account" method="PATCH" :route="['accounts.update', $account->id]" :model="$account">
-                <x-form.section>
-                    <x-slot name="head">
-                        <x-form.section.head title="{{ trans('general.general') }}" description="{{ trans('accounts.form_description.general') }}" />
-                    </x-slot>
+@section('title', trans('general.title.edit', ['type' => trans_choice('general.accounts', 1)]))
 
-                    <x-slot name="body">
-                        <x-form.group.radio
-                            name="type"
-                            label="{{ trans_choice('general.types', 1) }}"
-                            :options="[
-                                'bank' => trans_choice('accounts.banks', 1),
-                                'credit_card' => trans_choice('accounts.credit_cards', 1),
-                            ]"
-                            checked="{{ $account->type }}"
-                        />
+@section('content')
+    <!-- Default box -->
+    <div class="box box-success">
+        {!! Form::model($account, [
+            'method' => 'PATCH',
+            'url' => ['banking/accounts', $account->id],
+            'role' => 'form',
+            'class' => 'form-loading-button'
+        ]) !!}
 
-                        <x-form.group.text name="name" label="{{ trans('general.name') }}" form-group-class="sm:col-span-6" />
+        <div class="box-body">
+            {{ Form::textGroup('name', trans('general.name'), 'id-card-o') }}
 
-                        <x-form.group.text name="number" label="{{ trans('accounts.number') }}" form-group-class="sm:col-span-6" />
+            {{ Form::textGroup('number', trans('accounts.number'), 'pencil') }}
 
-                        <x-form.group.currency />
+            {{ Form::selectGroup('currency_code', trans_choice('general.currencies', 1), 'exchange', $currencies) }}
 
-                        <x-form.group.money name="opening_balance" label="{{ trans('accounts.opening_balance') }}" :value="$account->opening_balance" :currency="$currency" dynamicCurrency="currency" />
+            {{ Form::textGroup('opening_balance', trans('accounts.opening_balance'), 'money') }}
 
-                        <x-form.group.toggle name="default_account" label="{{ trans('accounts.default_account') }}" :value="$account->default_account" show="form.type != 'credit_card'" />
-                    </x-slot>
-                </x-form.section>
+            {{ Form::textGroup('bank_name', trans('accounts.bank_name'), 'university', []) }}
 
-                <x-form.section>
-                    <x-slot name="head">
-                        <x-form.section.head title="{{ trans_choice('accounts.banks', 1) }}" description="{{ trans('accounts.form_description.bank') }}" />
-                    </x-slot>
+            {{ Form::textGroup('bank_phone', trans('accounts.bank_phone'), 'phone', []) }}
 
-                    <x-slot name="body">
-                        <x-form.group.text name="bank_name" label="{{ trans('accounts.bank_name') }}" not-required />
+            {{ Form::textareaGroup('bank_address', trans('accounts.bank_address')) }}
 
-                        <x-form.group.text name="bank_phone" label="{{ trans('accounts.bank_phone') }}" not-required />
+            {{ Form::radioGroup('default_account', trans('accounts.default_account')) }}
 
-                        <x-form.group.textarea name="bank_address" label="{{ trans('accounts.bank_address') }}" not-required />
-                    </x-slot>
-                </x-form.section>
+            {{ Form::radioGroup('enabled', trans('general.enabled')) }}
+        </div>
+        <!-- /.box-body -->
 
-                <x-form.group.switch name="enabled" label="{{ trans('general.enabled') }}" />
+        @permission('update-banking-accounts')
+        <div class="box-footer">
+            {{ Form::saveButtons('banking/accounts') }}
+        </div>
+        <!-- /.box-footer -->
+        @endpermission
 
-                @can('update-banking-accounts')
-                <x-form.section>
-                    <x-slot name="foot">
-                        <x-form.buttons cancel-route="accounts.index" />
-                    </x-slot>
-                </x-form.section>
-                @endcan
-            </x-form>
-        </x-form.container>
-    </x-slot>
+        {!! Form::close() !!}
+    </div>
+@endsection
 
-    @push('scripts_start')
-        <script type="text/javascript">
-            if (typeof aka_currency !== 'undefined') {
-                aka_currency = {!! json_encode(! empty($account) ? $account->currency : config('money.currencies.' . company()->currency)) !!};
-            } else {
-                var aka_currency = {!! json_encode(! empty($account) ? $account->currency : config('money.currencies.' . company()->currency)) !!};
-            }
-        </script>
-    @endpush
+@push('scripts')
+    <script type="text/javascript">
+        var text_yes = '{{ trans('general.yes') }}';
+        var text_no = '{{ trans('general.no') }}';
 
-    <x-script folder="banking" file="accounts" />
-</x-layouts.admin>
+        $(document).ready(function(){
+            $("#opening_balance").maskMoney({
+                thousands : '{{ $currency->thousands_separator }}',
+                decimal : '{{ $currency->decimal_mark }}',
+                precision : {{ $currency->precision }},
+                allowZero : true,
+                @if($currency->symbol_first)
+                prefix : '{{ $currency->symbol }}'
+                @else
+                suffix : '{{ $currency->symbol }}'
+                @endif
+            });
+
+            $("#opening_balance").focusout();
+
+            $("#currency_code").select2({
+                placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.currencies', 1)]) }}"
+            });
+        });
+
+        $(document).on('change', '#currency_code', function (e) {
+            $.ajax({
+                url: '{{ url("settings/currencies/currency") }}',
+                type: 'GET',
+                dataType: 'JSON',
+                data: 'code=' + $(this).val(),
+                success: function(data) {
+                    $('#currency').val(data.code);
+
+                    $('#currency_code').val(data.code);
+                    $('#currency_rate').val(data.rate);
+
+                    opening_balance = $('#opening_balance').maskMoney('unmasked')[0];
+
+                    $("#opening_balance").maskMoney({
+                        thousands : data.thousands_separator,
+                        decimal : data.decimal_mark,
+                        precision : data.precision,
+                        allowZero : true,
+                        prefix : (data.symbol_first) ? data.symbol : '',
+                        suffix : (data.symbol_first) ? '' : data.symbol
+                    });
+
+                    $('#opening_balance').val(opening_balance);
+
+                    $('#opening_balance').trigger('focusout');
+                }
+            });
+        });
+    </script>
+@endpush

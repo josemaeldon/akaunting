@@ -16,18 +16,6 @@ return array(
 
     /*
     |--------------------------------------------------------------------------
-    | Where to write the PhpStorm specific meta file
-    |--------------------------------------------------------------------------
-    |
-    | PhpStorm also supports the directory `.phpstorm.meta.php/` with arbitrary
-    | files in it, should you need additional files for your project; e.g.
-    | `.phpstorm.meta.php/laravel_ide_Helper.php'.
-    |
-    */
-    'meta_filename' => '.phpstorm.meta.php',
-
-    /*
-    |--------------------------------------------------------------------------
     | Fluent helpers
     |--------------------------------------------------------------------------
     |
@@ -35,56 +23,7 @@ return array(
     |
     */
 
-    'include_fluent' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Factory Builders
-    |--------------------------------------------------------------------------
-    |
-    | Set to true to generate factory generators for better factory()
-    | method auto-completion.
-    |
-    */
-
-    'include_factory_builders' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Write Model Magic methods
-    |--------------------------------------------------------------------------
-    |
-    | Set to false to disable write magic methods of model
-    |
-    */
-
-    'write_model_magic_where' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Write Model relation count properties
-    |--------------------------------------------------------------------------
-    |
-    | Set to false to disable writing of relation count properties to model DocBlocks.
-    |
-    */
-
-    'write_model_relation_count_properties' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Write Eloquent Model Mixins
-    |--------------------------------------------------------------------------
-    |
-    | This will add the necessary DocBlock mixins to the model class
-    | contained in the Laravel Framework. This helps the IDE with
-    | auto-completion.
-    |
-    | Please be aware that this setting changes a file within the /vendor directory.
-    |
-    */
-
-    'write_eloquent_model_mixins' => false,
+    'include_fluent' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -99,7 +38,7 @@ return array(
     'include_helpers' => false,
 
     'helper_files' => array(
-        base_path() . '/vendor/laravel/framework/src/Illuminate/Support/helpers.php',
+        base_path().'/vendor/laravel/framework/src/Illuminate/Support/helpers.php',
     ),
 
     /*
@@ -110,28 +49,12 @@ return array(
     | Define in which directories the ide-helper:models command should look
     | for models.
     |
-    | glob patterns are supported to easier reach models in sub-directories,
-    | e.g. `app/Services/* /Models` (without the space)
-    |
     */
 
     'model_locations' => array(
-        'app/Models',
-        'modules/*/Models'
+        'app',
     ),
 
-    /*
-    |--------------------------------------------------------------------------
-    | Models to ignore
-    |--------------------------------------------------------------------------
-    |
-    | Define which models should be ignored.
-    |
-    */
-
-    'ignored_models' => array(
-
-    ),
 
     /*
     |--------------------------------------------------------------------------
@@ -147,7 +70,18 @@ return array(
         'Session' => array('Illuminate\Session\Store'),
     ),
 
-    'magic' => array(),
+    'magic' => array(
+        'Log' => array(
+            'debug'     => 'Monolog\Logger::addDebug',
+            'info'      => 'Monolog\Logger::addInfo',
+            'notice'    => 'Monolog\Logger::addNotice',
+            'warning'   => 'Monolog\Logger::addWarning',
+            'error'     => 'Monolog\Logger::addError',
+            'critical'  => 'Monolog\Logger::addCritical',
+            'alert'     => 'Monolog\Logger::addAlert',
+            'emergency' => 'Monolog\Logger::addEmergency',
+        )
+    ),
 
     /*
     |--------------------------------------------------------------------------
@@ -206,13 +140,13 @@ return array(
      |
      | For example, normally you would see this:
      |
-     |  * @property \Illuminate\Support\Carbon $created_at
-     |  * @property \Illuminate\Support\Carbon $updated_at
+     |  * @property \Carbon\Carbon $created_at
+     |  * @property \Carbon\Carbon $updated_at
      |
      | With this enabled, the properties will be this:
      |
-     |  * @property \Illuminate\Support\Carbon $createdAt
-     |  * @property \Illuminate\Support\Carbon $updatedAt
+     |  * @property \Carbon\Carbon $createdAt
+     |  * @property \Carbon\Carbon $updatedAt
      |
      | Note, it is currently an all-or-nothing option.
      |
@@ -227,20 +161,8 @@ return array(
     | Cast the given "real type" to the given "type".
     |
     */
-    'type_overrides' => array(
+   'type_overrides' => array(
         'integer' => 'int',
         'boolean' => 'bool',
-    ),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Include DocBlocks from classes
-    |--------------------------------------------------------------------------
-    |
-    | Include DocBlocks from classes to allow additional code inspection for
-    | magic methods and properties.
-    |
-    */
-    'include_class_docblocks' => false,
-
+   ),
 );

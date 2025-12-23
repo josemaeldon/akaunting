@@ -13,9 +13,8 @@ return [
     'price'                 => 'Precio',
     'sub_total'             => 'Subtotal',
     'discount'              => 'Descuento',
-    'item_discount'         => 'Línea de descuento',
     'tax_total'             => 'Total de Impuestos',
-    'total'                 => 'Total',
+    'total'                 => 'Total ',
 
     'item_name'             => 'Nombre del producto/servicio | Nombres de los productos/servicos',
 
@@ -30,31 +29,44 @@ return [
     'add_payment'           => 'Añadir Pago',
     'mark_paid'             => 'Marcar Como Pagada',
     'mark_sent'             => 'Marcar Como Enviada',
-    'mark_viewed'           => 'Marcar como visto',
-    'mark_cancelled'        => 'Marcar Como Cancelada',
     'download_pdf'          => 'Descargar archivo PDF',
     'send_mail'             => 'Enviar Correo Electrónico',
-    'all_invoices'          => 'Inicie sesión para ver todas las facturas',
-    'create_invoice'        => 'Crear Factura',
-    'send_invoice'          => 'Enviar Factura',
-    'get_paid'              => 'Recibir Pago',
-    'accept_payments'       => 'Aceptar pagos en línea',
+    'all_invoices'          => 'Login to view all invoices',
+    'create_invoice'        => 'Create Invoice',
+    'send_invoice'          => 'Send Invoice',
+    'get_paid'              => 'Get Paid',
+    'accept_payments'       => 'Accept Online Payments',
+
+    'status' => [
+        'draft'             => 'Borrador',
+        'sent'              => 'Enviado',
+        'viewed'            => 'Visto',
+        'approved'          => 'Aprobado',
+        'partial'           => 'Parcial',
+        'paid'              => 'Pagado',
+    ],
 
     'messages' => [
+        'email_sent'        => '¡El correo electrónico de la factura se ha enviado correctamente!',
+        'marked_sent'       => '¡Factura marcada como enviada con éxito!',
         'email_required'    => 'No se encontró una dirección de correo para este cliente!',
-        'draft'             => 'Esta es una factura <b>BORRADOR</b> y se reflejará en gráficos después de ser enviada.',
+        'draft'             => 'This is a <b>DRAFT</b> invoice and will be reflected to charts after it gets sent.',
 
         'status' => [
-            'created'       => 'Creado el :date',
-            'viewed'        => 'Vista',
+            'created'       => 'Created on :date',
             'send' => [
-                'draft'     => 'No enviada',
-                'sent'      => 'Enviada el :date',
+                'draft'     => 'Not sent',
+                'sent'      => 'Sent on :date',
             ],
             'paid' => [
-                'await'     => 'Pendiente de pago',
+                'await'     => 'Awaiting payment',
             ],
         ],
+    ],
+
+    'notification' => [
+        'message'           => 'Estimado :cliente, usted está recibiendo este correo electrónico debido a que tiene una factura pendiente de pago por la cantidad de :amount, es de suma importancia que se contacte de inmediato con nosotros. Evite la suspensión de los servicios que tiene contratados o la entrega de los productos solicitados, además de posibles recargos y gastos de cobranza.',
+        'button'            => 'Realizar el Pago Ahora',
     ],
 
 ];

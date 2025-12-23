@@ -2,27 +2,29 @@
 
 return [
 
-    'years'                     => 'År|År',
-    'this_year'                 => 'Inneværende år',
-    'previous_year'             => 'Foregående år',
-    'this_quarter'              => 'Inneværende kvartal',
-    'previous_quarter'          => 'Foregående kvartal',
-    'last_12_months'            => 'Siste 12 måneder',
-    'profit_loss'               => 'Resultat',
-    'gross_profit'              => 'Bruttofortjeneste',
-    'net_profit'                => 'Nettoresultat',
-    'total_expenses'            => 'Totale utgifter',
-    'net'                       => 'NET',
-    'income_expense'            => 'Inntekter og utgifter',
-    'income_summary'            => 'Inntektsammendrag',
-    'expense_summary'           => 'Utgiftsammendrag',
-    'income_expense_summary'    => 'Inntekt mot utgift',
-    'tax_summary'               => 'Avgiftsammendrag',
+    'this_year'             => 'Inneværende år',
+    'previous_year'         => 'Foregående år',
+    'this_quarter'          => 'Inneværende kvartal',
+    'previous_quarter'      => 'Foregående kvartal',
+    'last_12_months'        => 'Siste 12 måneder',
+    'profit_loss'           => 'Resultat',
+    'gross_profit'          => 'Bruttofortjeneste',
+    'net_profit'            => 'Nettoresultat',
+    'total_expenses'        => 'Totale utgifter',
+    'net'                   => 'NET',
 
-    'charts' => [
-        'line'                  => 'Linje',
-        'bar'                   => 'Kolonne',
-        'pie'                   => 'Pai',
+    'summary' => [
+        'income'            => 'Inntektsammendrag',
+        'expense'           => 'Utgiftsammendrag',
+        'income_expense'    => 'Inntekt mot utgift',
+        'tax'               => 'Avgiftsammendrag',
+    ],
+
+    'quarter' => [
+        '1'                 => 'Jan.-Mars',
+        '2'                 => 'April-Juni',
+        '3'                 => 'Juli-Sep.',
+        '4'                 => 'Okt.-Des.',
     ],
 
 ];

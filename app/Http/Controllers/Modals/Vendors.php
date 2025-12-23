@@ -2,24 +2,34 @@
 
 namespace App\Http\Controllers\Modals;
 
-use App\Abstracts\Http\Controller;
-use App\Http\Requests\Common\Contact as Request;
-use App\Models\Common\Contact;
-use App\Jobs\Common\CreateContact;
-use App\Jobs\Common\UpdateContact;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Expense\Vendor as Request;
+use App\Models\Expense\Bill;
+use App\Models\Expense\Payment;
+use App\Models\Expense\Vendor;
+use App\Models\Setting\Currency;
+use App\Traits\Uploads;
+use App\Utilities\Import;
+use App\Utilities\ImportFile;
+use Date;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class Vendors extends Controller
 {
+    use Uploads;
+
     /**
      * Instantiate a new controller instance.
      */
     public function __construct()
     {
         // Add CRUD permission check
-        $this->middleware('permission:create-purchases-vendors')->only('create', 'store', 'duplicate', 'import');
-        $this->middleware('permission:read-purchases-vendors')->only('index', 'show', 'edit', 'export');
-        $this->middleware('permission:update-purchases-vendors')->only('update', 'enable', 'disable');
-        $this->middleware('permission:delete-purchases-vendors')->only('destroy');
+        $this->middleware('permission:create-expenses-vendors')->only(['create', 'store', 'duplicate', 'import']);
+        $this->middleware('permission:read-expenses-vendors')->only(['index', 'show', 'edit', 'export']);
+        $this->middleware('permission:update-expenses-vendors')->only(['update', 'enable', 'disable']);
+        $this->middleware('permission:delete-expenses-vendors')->only('destroy');
     }
 
     /**
@@ -29,13 +39,17 @@ class Vendors extends Controller
      */
     public function create()
     {
-        $contact_selector = false;
+        $currencies = Currency::enabled()->pluck('name', 'code');
 
-        if (request()->has('contact_selector')) {
-            $contact_selector = request()->get('contact_selector');
+        $vendor_selector = false;
+
+        if (request()->has('vendor_selector')) {
+            $vendor_selector = request()->get('vendor_selector');
         }
 
-        $html = view('modals.vendors.create', compact('contact_selector'))->render();
+        $rand = rand();
+
+        $html = view('modals.vendors.create', compact('currencies', 'vendor_selector', 'rand'))->render();
 
         return response()->json([
             'success' => true,
@@ -56,58 +70,23 @@ class Vendors extends Controller
     {
         $request['enabled'] = 1;
 
-        $response = $this->ajaxDispatch(new CreateContact($request));
+        $vendor = Vendor::create($request->all());
 
-        if ($response['success']) {
-            $response['message'] = trans('messages.success.created', ['type' => trans_choice('general.vendors', 1)]);
+        // Upload logo
+        if ($request->file('logo')) {
+            $media = $this->getMedia($request->file('logo'), 'vendors');
+
+            $vendor->attachMedia($media, 'logo');
         }
 
-        return response()->json($response);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  Contact  $vendor
-     *
-     * @return Response
-     */
-    public function edit(Contact $vendor)
-    {
-        $contact_selector = false;
-
-        if (request()->has('contact_selector')) {
-            $contact_selector = request()->get('contact_selector');
-        }
-
-        $html = view('modals.vendors.edit', compact('vendor','contact_selector'))->render();
+        $message = trans('messages.success.added', ['type' => trans_choice('general.vendors', 1)]);
 
         return response()->json([
             'success' => true,
             'error' => false,
-            'message' => 'null',
-            'html' => $html,
+            'data' => $vendor,
+            'message' => $message,
+            'html' => 'null',
         ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  Contact $vendor
-     * @param  Request $request
-     *
-     * @return Response
-     */
-    public function update(Contact $vendor, Request $request)
-    {
-        $request['enabled'] = 1;
-
-        $response = $this->ajaxDispatch(new UpdateContact($vendor, $request));
-
-        if ($response['success']) {
-            $response['message'] = trans('messages.success.updated', ['type' => trans_choice('general.vendors', 1)]);
-        }
-
-        return response()->json($response);
     }
 }

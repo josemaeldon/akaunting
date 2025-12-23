@@ -2,16 +2,17 @@
 
 return [
 
-    'sale_price'                => 'Försäljningspris',
-    'purchase_price'            => 'Inköpspris',
-    'enter_item_description'    => 'Ange varubeskrivning',
-    'billing'                   => 'Fakturering',
-    'sale_information'          => 'Försäljningsinformation',
-    'purchase_information'      => 'Köpinformation',
+    'quantities'            => 'Kvantitet | Kvantiteter',
+    'sales_price'           => 'Försäljningspris',
+    'purchase_price'        => 'Inköpspris',
+    'sku'                   => 'Artikelnummer',
 
-    'form_description' => [
-        'general'               => 'Välj en kategori för att göra dina rapporter mer detaljerade. Beskrivningen kommer att fyllas i när artikeln väljs i en faktura eller räkning.',
-        'billing'               => 'Försäljningsinformation används för fakturor och inköpsinformation används för räkningar. Skatter kommer att tillämpas på både fakturor och räkningar.',
+    'notification' => [
+        'message'       => [
+            'reminder' => 'Du får denna epost eftersom endast :quantity :name finns kvar.',
+            'out_of_stock' => 'Du får detta mail eftersom :name snart är slut på lagret.',
+        ],
+        'button'        => 'Visa nu',
     ],
 
 ];

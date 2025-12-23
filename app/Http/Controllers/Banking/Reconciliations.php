@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers\Banking;
 
-use App\Abstracts\Http\Controller;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Banking\Reconciliation as Request;
 use App\Http\Requests\Banking\ReconciliationCalculate as CalculateRequest;
-use App\Jobs\Banking\CreateReconciliation;
-use App\Jobs\Banking\DeleteReconciliation;
-use App\Jobs\Banking\UpdateReconciliation;
 use App\Models\Banking\Account;
 use App\Models\Banking\Reconciliation;
-use App\Models\Banking\Transaction;
-use App\Utilities\Date;
+use App\Models\Setting\Currency;
+use Date;
 
 class Reconciliations extends Controller
 {
@@ -22,19 +19,11 @@ class Reconciliations extends Controller
      */
     public function index()
     {
-        $reconciliations = Reconciliation::with('account')->collect();
+        $reconciliations = Reconciliation::collect();
 
-        $reconciled_amount = money($reconciliations->where('reconciled', 1)->sum('closing_balance'));
-        $in_progress_amount = money($reconciliations->where('reconciled', 0)->sum('closing_balance'));
+        $accounts = collect(Account::enabled()->orderBy('name')->pluck('name', 'id'));
 
-        $summary_amounts = [
-            'amount_exact'              => $reconciled_amount->format(),
-            'amount_for_humans'         => $reconciled_amount->formatForHumans(),
-            'in_progress_exact'         => $in_progress_amount->format(),
-            'in_progress_for_humans'    => $in_progress_amount->formatForHumans(),
-        ];
-
-        return $this->response('banking.reconciliations.index', compact('reconciliations', 'summary_amounts'));
+        return view('banking.reconciliations.index', compact('reconciliations', 'accounts'));
     }
 
     /**
@@ -54,9 +43,11 @@ class Reconciliations extends Controller
      */
     public function create()
     {
-        $account_id = request('account_id', setting('default.account'));
-        $started_at = request('started_at', Date::now()->firstOfMonth()->toDateString());
-        $ended_at = request('ended_at', Date::now()->endOfMonth()->toDateString());
+        $accounts = Account::enabled()->pluck('name', 'id');
+
+        $account_id = request('account_id', setting('general.default_account'));
+        $started_at = request('started_at', '0000-00-00');
+        $ended_at = request('ended_at', '0000-00-00');
 
         $account = Account::find($account_id);
 
@@ -64,9 +55,9 @@ class Reconciliations extends Controller
 
         $transactions = $this->getTransactions($account, $started_at, $ended_at);
 
-        $opening_balance = $this->getOpeningBalance($account, $started_at);
+        $opening_balance = $this->getOpeningBalance($account, $started_at, $ended_at);
 
-        return view('banking.reconciliations.create', compact('account', 'currency', 'opening_balance', 'transactions'));
+        return view('banking.reconciliations.create', compact('accounts', 'account', 'currency', 'opening_balance', 'transactions'));
     }
 
     /**
@@ -78,23 +69,34 @@ class Reconciliations extends Controller
      */
     public function store(Request $request)
     {
-        $response = $this->ajaxDispatch(new CreateReconciliation($request));
+        $reconcile = $request->get('reconcile');
+        $transactions = $request->get('transactions');
 
-        if ($response['success']) {
-            $response['redirect'] = route('reconciliations.index');
+        Reconciliation::create([
+            'company_id' => session('company_id'),
+            'account_id' => $request->get('account_id'),
+            'started_at' => $request->get('started_at'),
+            'ended_at' => $request->get('ended_at'),
+            'closing_balance' => $request->get('closing_balance'),
+            'reconciled' => $reconcile ? 1 : 0,
+        ]);
 
-            $message = trans('messages.success.created', ['type' => trans_choice('general.reconciliations', 1)]);
+        if ($transactions) {
+            foreach ($transactions as $key => $value) {
+                $t = explode('_', $key);
+                $m = '\\' . $t['1'];
 
-            flash($message)->success();
-        } else {
-            $response['redirect'] = route('reconciliations.create');
-
-            $message = $response['message'];
-
-            flash($message)->error()->important();
+                $transaction = $m::find($t[0]);
+                $transaction->reconciled = 1;
+                $transaction->save();
+            }
         }
 
-        return response()->json($response);
+        $message = trans('messages.success.added', ['type' => trans_choice('general.reconciliations', 1)]);
+
+        flash($message)->success();
+
+        return redirect()->route('reconciliations.index');
     }
 
     /**
@@ -120,73 +122,119 @@ class Reconciliations extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  Reconciliation $reconciliation
-     * @param  Request $request
+     * @param  Reconciliation  $reconciliation
+     * @param  Request  $request
      *
      * @return Response
      */
     public function update(Reconciliation $reconciliation, Request $request)
     {
-        $response = $this->ajaxDispatch(new UpdateReconciliation($reconciliation, $request));
+        $reconcile = $request->get('reconcile');
+        $transactions = $request->get('transactions');
 
-        if ($response['success']) {
-            $response['redirect'] = route('reconciliations.index');
+        $reconciliation->reconciled = $reconcile ? 1 : 0;
+        $reconciliation->save();
 
-            $message = trans('messages.success.updated', ['type' => trans_choice('general.reconciliations', 1)]);
+        if ($transactions) {
+            foreach ($transactions as $key => $value) {
+                $t = explode('_', $key);
+                $m = '\\' . $t['1'];
 
-            flash($message)->success();
-        } else {
-            $response['redirect'] = route('reconciliations.edit', $reconciliation->id);
-
-            $message = $response['message'];
-
-            flash($message)->error()->important();
+                $transaction = $m::find($t[0]);
+                $transaction->reconciled = 1;
+                $transaction->save();
+            }
         }
 
-        return response()->json($response);
+        $message = trans('messages.success.updated', ['type' => trans_choice('general.reconciliations', 1)]);
+
+        flash($message)->success();
+
+        return redirect()->route('reconciliations.index');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Reconciliation $reconciliation
+     * @param  Reconciliation  $reconciliation
      *
      * @return Response
      */
     public function destroy(Reconciliation $reconciliation)
     {
-        $response = $this->ajaxDispatch(new DeleteReconciliation($reconciliation));
+        $reconciliation->delete();
 
-        $response['redirect'] = route('reconciliations.index');
+        $models = [
+            'App\Models\Expense\Payment',
+            'App\Models\Expense\BillPayment',
+            'App\Models\Income\Revenue',
+            'App\Models\Income\InvoicePayment',
+        ];
 
-        if ($response['success']) {
-            $message = trans('messages.success.deleted', ['type' => trans_choice('general.reconciliations', 1)]);
+        foreach ($models as $model) {
+            $m = '\\' . $model;
 
-            flash($message)->success();
-        } else {
-            $message = $response['message'];
-
-            flash($message)->error()->important();
+            $m::where('account_id', $reconciliation->account_id)
+                ->reconciled()
+                ->whereBetween('paid_at', [$reconciliation->started_at, $reconciliation->ended_at])->each(function ($item) {
+                    $item->reconciled = 0;
+                    $item->save();
+            });
         }
 
-        return response()->json($response);
+        $message = trans('messages.success.deleted', ['type' => trans_choice('general.reconciliations', 1)]);
+
+        flash($message)->success();
+
+        return redirect()->route('reconciliations.index');
     }
 
     /**
      * Add transactions array.
      *
-     * @param $account
+     * @param $account_id
      * @param $started_at
      * @param $ended_at
      *
-     * @return mixed
+     * @return array
      */
     protected function getTransactions($account, $started_at, $ended_at)
     {
-        $started = explode(' ', $started_at)[0] . ' 00:00:00';
-        $ended = explode(' ', $ended_at)[0] . ' 23:59:59';
+        $started = explode(' ', $started_at);
+        $ended = explode(' ', $ended_at);
 
-        $transactions = Transaction::with('account', 'contact')->where('account_id', $account->id)->whereBetween('paid_at', [$started, $ended])->get();
+        $models = [
+            'App\Models\Expense\Payment',
+            'App\Models\Expense\BillPayment',
+            'App\Models\Income\Revenue',
+            'App\Models\Income\InvoicePayment',
+        ];
+
+        $transactions = [];
+
+        foreach ($models as $model) {
+            $m = '\\' . $model;
+
+            $m::where('account_id', $account->id)->whereBetween('paid_at', [$started[0], $ended[0]])->each(function($item) use(&$transactions, $model) {
+                $item->model = $model;
+
+                if (($model == 'App\Models\Income\InvoicePayment') || ($model == 'App\Models\Income\Revenue')) {
+                    if ($item->invoice) {
+                        $item->contact = $item->invoice->customer;
+                    } else {
+                        $item->contact = $item->customer;
+                    }
+                } else {
+                    if ($item->bill) {
+                        $item->contact = $item->bill->vendor;
+                    } else {
+                        $item->contact = $item->vendor;
+                    }
+                }
+
+                $transactions[] = $item;
+            });
+        }
 
         return collect($transactions)->sortByDesc('paid_at');
     }
@@ -204,15 +252,27 @@ class Reconciliations extends Controller
         // Opening Balance
         $total = $account->opening_balance;
 
-        // Sum income transactions
-        $transactions = $account->income_transactions()->whereDate('paid_at', '<', $started_at)->get();
-        foreach ($transactions as $item) {
+        // Sum invoices
+        $invoice_payments = $account->invoice_payments()->whereDate('paid_at', '<', $started_at)->get();
+        foreach ($invoice_payments as $item) {
             $total += $item->amount;
         }
 
-        // Subtract expense transactions
-        $transactions = $account->expense_transactions()->whereDate('paid_at', '<', $started_at)->get();
-        foreach ($transactions as $item) {
+        // Sum revenues
+        $revenues = $account->revenues()->whereDate('paid_at', '<', $started_at)->get();
+        foreach ($revenues as $item) {
+            $total += $item->amount;
+        }
+
+        // Subtract bills
+        $bill_payments = $account->bill_payments()->whereDate('paid_at', '<', $started_at)->get();
+        foreach ($bill_payments as $item) {
+            $total -= $item->amount;
+        }
+
+        // Subtract payments
+        $payments = $account->payments()->whereDate('paid_at', '<', $started_at)->get();
+        foreach ($payments as $item) {
             $total -= $item->amount;
         }
 
@@ -232,9 +292,9 @@ class Reconciliations extends Controller
             $opening_balance = $request['opening_balance'];
 
             foreach ($transactions as $key => $value) {
-                $k = explode('_', $key);
+                $model = explode('_', $key);
 
-                if ($k[1] == 'income') {
+                if (($model[1] == 'App\Models\Income\InvoicePayment') || ($model[1] == 'App\Models\Income\Revenue')) {
                     $income_total += $value;
                 } else {
                     $expense_total += $value;
@@ -246,9 +306,9 @@ class Reconciliations extends Controller
 
         $difference = $closing_balance - $cleared_amount;
 
-        $json->closing_balance = money($closing_balance, $currency_code)->format();
-        $json->cleared_amount = money($cleared_amount, $currency_code)->format();
-        $json->difference = money($difference, $currency_code)->format();
+        $json->closing_balance = money($closing_balance, $currency_code, true)->format();
+        $json->cleared_amount = money($cleared_amount, $currency_code, true)->format();
+        $json->difference = money($difference, $currency_code, true)->format();
         $json->difference_raw = (int) $difference;
 
         return response()->json($json);
