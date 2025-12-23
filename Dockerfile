@@ -40,7 +40,8 @@ COPY . /var/www/html/
 RUN cd /var/www/html \
     && cp .env.example .env \
     && composer install --no-dev --no-scripts --optimize-autoloader --no-interaction \
-    && composer clear-cache
+    && composer clear-cache \
+    && rm .env
 
 # Definir permissões adequadas para diretórios de storage e cache do Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
