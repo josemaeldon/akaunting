@@ -1,0 +1,48 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.travis.yml
+
+# Documentation
+README.md
+LICENSE.txt
+
+# Docker files (not needed in the image)
+docker-compose.yml
+Dockerfile
+
+# Development and testing
+tests
+phpunit.xml
+.env.testing
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp
+temp
+*.tmp
+
+# Logs
+*.log
+
+# Node modules (if any)
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Vendor directory will be installed during build
+vendor
