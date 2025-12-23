@@ -31,27 +31,62 @@ Akaunting uses [Laravel](http://laravel.com), the best existing PHP framework, a
 
 ## Docker
 
-It is possible to containerise Akaunting using the [`docker-compose`](docker-compose.yml) file. Here are a few commands:
+Akaunting can be easily containerized using Docker. The image includes Apache web server with all necessary PHP extensions and configurations embedded.
 
-```
-# Build the app
-docker build -t akaunting .
+### Quick Start with Docker Compose
 
-# Run the app
+```bash
+# Build and run the application
 docker-compose up -d
-
-# Make sure you the dependencies are installed
-docker-compose exec web composer install
 
 # Stream logs
 docker-compose logs -f web
 
 # Access the container
-docker-compose exec web /bin/sh
+docker-compose exec web /bin/bash
 
 # Stop & Delete everything
 docker-compose down -v
 ```
+
+### Features
+
+The Docker image includes:
+- **PHP 7.4** with Apache web server
+- **Pre-configured Apache VirtualHost** with DocumentRoot pointing to `public/` directory
+- **All PHP extensions** required by Akaunting (pdo_mysql, gd, zip, mbstring, xml, bcmath, opcache)
+- **Composer** pre-installed
+- **Apache modules** enabled: mod_rewrite, mod_headers
+- **Auto-installation** of dependencies on first run
+- **OPcache** enabled for production performance
+
+### Manual Docker Build
+
+```bash
+# Build the image
+docker build -t akaunting-apache .
+
+# Run with MySQL
+docker run -d --name akaunting-mysql \
+  -e MYSQL_ROOT_PASSWORD=root_password \
+  -e MYSQL_DATABASE=akaunting \
+  -e MYSQL_USER=akaunting \
+  -e MYSQL_PASSWORD=password \
+  mysql:8.0
+
+docker run -d --name akaunting-web \
+  -p 8080:80 \
+  --link akaunting-mysql:mysql \
+  -e DB_HOST=mysql \
+  -e DB_DATABASE=akaunting \
+  -e DB_USERNAME=akaunting \
+  -e DB_PASSWORD=password \
+  akaunting-apache
+```
+
+Access the application at http://localhost:8080 and complete the installation wizard.
+
+For more information about Docker deployment and GitHub Actions workflow, see [DOCKER_HUB_WORKFLOW.md](DOCKER_HUB_WORKFLOW.md).
 
 ## Contributing
 
