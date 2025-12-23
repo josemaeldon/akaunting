@@ -36,8 +36,9 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 # Copiar arquivos da aplicação
 COPY . /var/www/html/
 
-# Instalar dependências PHP (otimizado para produção)
+# Criar arquivo .env e instalar dependências PHP (otimizado para produção)
 RUN cd /var/www/html \
+    && cp .env.example .env \
     && composer install --no-dev --no-scripts --optimize-autoloader --no-interaction \
     && composer clear-cache
 
