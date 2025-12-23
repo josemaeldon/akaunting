@@ -60,6 +60,10 @@ class MultiChartBuilder
 
     public function render()
     {
+        if (!$this->view) {
+            throw new \RuntimeException('Chart view must be set before rendering');
+        }
+        
         return view($this->view, [
             'type' => $this->type,
             'library' => $this->library,
