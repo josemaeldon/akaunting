@@ -1,0 +1,33 @@
+{
+    "name": "consoletvs/charts",
+    "description": "Local Charts package for Akaunting - compatible stub for version 4.6.0",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Akaunting Team",
+            "email": "info@akaunting.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.4",
+        "illuminate/support": "5.*",
+        "jenssegers/date": "v3.*",
+        "jlawrence/eos": "3.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "ConsoleTVs\\Charts\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ConsoleTVs\\Charts\\ChartsServiceProvider"
+            ],
+            "aliases": {
+                "Charts": "ConsoleTVs\\Charts\\Facades\\Charts"
+            }
+        }
+    }
+}
