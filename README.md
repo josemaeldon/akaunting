@@ -64,7 +64,7 @@ The Docker image includes:
 
 ```bash
 # Build the image
-docker build -t akaunting-apache .
+docker build -t josemaeldon/akaunting-pro-1.3.17 .
 
 # Run with MySQL
 docker run -d --name akaunting-mysql \
@@ -81,7 +81,7 @@ docker run -d --name akaunting-web \
   -e DB_DATABASE=akaunting \
   -e DB_USERNAME=akaunting \
   -e DB_PASSWORD=password \
-  akaunting-apache
+  josemaeldon/akaunting-pro-1.3.17
 ```
 
 Access the application at http://localhost:8080 and complete the installation wizard.
