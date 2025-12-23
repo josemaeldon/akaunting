@@ -1,6 +1,6 @@
 FROM php:8.1-apache
 
-# Install system dependencies and PHP extensions required for Akaunting
+# Instalar dependências do sistema e extensões PHP necessárias para o Akaunting
 RUN apt-get update && apt-get install -y \
     zip \
     unzip \
@@ -24,29 +24,29 @@ RUN apt-get update && apt-get install -y \
         opcache \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Composer
+# Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Configure Composer
+# Configurar Composer
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Copy application files
+# Copiar arquivos da aplicação
 COPY . /var/www/html/
 
-# Install PHP dependencies (production-optimized)
+# Instalar dependências PHP (otimizado para produção)
 RUN cd /var/www/html \
     && composer install --no-dev --no-scripts --optimize-autoloader --no-interaction \
     && composer clear-cache
 
-# Set proper permissions for Laravel storage and cache directories
+# Definir permissões adequadas para diretórios de storage e cache do Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Configure Apache
+# Configurar Apache
 RUN a2enmod rewrite
 
-# Configure PHP for production
+# Configurar PHP para produção
 RUN { \
     echo 'opcache.enable=1'; \
     echo 'opcache.memory_consumption=128'; \
@@ -56,8 +56,8 @@ RUN { \
     echo 'opcache.fast_shutdown=1'; \
 } > /usr/local/etc/php/conf.d/opcache.ini
 
-# Set working directory
+# Definir diretório de trabalho
 WORKDIR /var/www/html
 
-# Expose port 80
+# Expor porta 80
 EXPOSE 80

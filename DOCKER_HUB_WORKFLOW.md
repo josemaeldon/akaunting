@@ -1,50 +1,50 @@
-# Docker Hub Workflow Configuration
+# Configuração do Workflow Docker Hub
 
-## Overview
-This repository includes a GitHub Actions workflow that automatically builds and pushes a Docker image to Docker Hub.
+## Visão Geral
+Este repositório inclui um workflow do GitHub Actions que constrói e publica automaticamente uma imagem Docker no Docker Hub.
 
-## Required Secrets
-To use this workflow, you need to configure the following secrets in your GitHub repository:
+## Secrets Necessários
+Para usar este workflow, você precisa configurar os seguintes secrets no seu repositório GitHub:
 
-1. Go to your repository on GitHub
-2. Navigate to **Settings** → **Secrets and variables** → **Actions**
-3. Add the following secrets:
+1. Acesse seu repositório no GitHub
+2. Navegue até **Settings** → **Secrets and variables** → **Actions**
+3. Adicione os seguintes secrets:
 
 ### DOCKER_USERNAME
-Your Docker Hub username (e.g., `josemaeldon`)
+Seu nome de usuário do Docker Hub (ex: `josemaeldon`)
 
 ### DOCKER_PASSWORD
-Your Docker Hub password or access token (recommended to use an access token instead of your password)
+Sua senha do Docker Hub ou token de acesso (recomendado usar um token de acesso ao invés da senha)
 
-To create a Docker Hub access token:
-1. Log in to [Docker Hub](https://hub.docker.com)
-2. Go to **Account Settings** → **Security**
-3. Click **New Access Token**
-4. Give it a description (e.g., "GitHub Actions")
-5. Copy the token and add it as the `DOCKER_PASSWORD` secret
+Para criar um token de acesso do Docker Hub:
+1. Faça login no [Docker Hub](https://hub.docker.com)
+2. Vá em **Account Settings** → **Security**
+3. Clique em **New Access Token**
+4. Dê uma descrição (ex: "GitHub Actions")
+5. Copie o token e adicione-o como o secret `DOCKER_PASSWORD`
 
-## Workflow Triggers
+## Gatilhos do Workflow
 
-The workflow will automatically run when:
+O workflow será executado automaticamente quando:
 
-1. **Push to main/master branch**: Creates and pushes images tagged with the branch name and `latest`
-2. **Creating a tag**: 
-   - Tag format: `v1.3.17` or `1.3.17`
-   - Creates multiple tags: full version, major.minor, and major version
-3. **Manual dispatch**: Run manually from GitHub Actions tab with a custom tag
+1. **Push para branch main/master**: Cria e publica imagens com a tag do nome do branch e `latest`
+2. **Criação de tag**: 
+   - Formato da tag: `v1.3.17` ou `1.3.17`
+   - Cria múltiplas tags: versão completa, major.minor e versão major
+3. **Disparo manual**: Execute manualmente pela aba GitHub Actions com uma tag personalizada
 
-## Docker Image Tags
+## Tags da Imagem Docker
 
-The workflow creates multiple tags for flexibility:
+O workflow cria múltiplas tags para flexibilidade:
 
-- `josemaeldon/akaunting-apache:latest` - Latest version from main/master branch
-- `josemaeldon/akaunting-apache:1.3.17` - Specific version (from tags)
-- `josemaeldon/akaunting-apache:1.3` - Major.minor version
-- `josemaeldon/akaunting-apache:1` - Major version
+- `josemaeldon/akaunting-apache:latest` - Versão mais recente da branch main/master
+- `josemaeldon/akaunting-apache:1.3.17` - Versão específica (de tags)
+- `josemaeldon/akaunting-apache:1.3` - Versão major.minor
+- `josemaeldon/akaunting-apache:1` - Versão major
 
-## Using the Docker Image
+## Usando a Imagem Docker
 
-### Docker Compose Example
+### Exemplo Docker Compose
 
 ```yaml
 version: "3.7"
@@ -78,7 +78,7 @@ volumes:
   mysql_data:
 ```
 
-### Docker Swarm Stack Example
+### Exemplo Docker Swarm Stack
 
 ```yaml
 version: "3.7"
@@ -120,58 +120,58 @@ networks:
     external: true
 ```
 
-## Image Features
+## Recursos da Imagem
 
-The Docker image includes:
+A imagem Docker inclui:
 
-- **PHP 8.1** with Apache web server
-- **PHP Extensions**: pdo_mysql, gd, zip, mbstring, xml, curl, bcmath, opcache
-- **Composer**: Pre-installed for dependency management
-- **Optimized for Production**: 
-  - OPcache enabled for better performance
-  - Production-optimized autoloader
-  - Proper file permissions
-  - Apache mod_rewrite enabled
+- **PHP 8.1** com servidor web Apache
+- **Extensões PHP**: pdo_mysql, gd, zip, mbstring, xml, curl, bcmath, opcache
+- **Composer**: Pré-instalado para gerenciamento de dependências
+- **Otimizado para Produção**: 
+  - OPcache habilitado para melhor desempenho
+  - Autoloader otimizado para produção
+  - Permissões de arquivo adequadas
+  - Apache mod_rewrite habilitado
 
-## First Time Setup
+## Configuração Inicial
 
-When running the container for the first time:
+Ao executar o container pela primeira vez:
 
-1. Access the application through your browser
-2. Complete the Akaunting installation wizard
-3. Configure database connection
-4. Set up your company details
+1. Acesse a aplicação através do seu navegador
+2. Complete o assistente de instalação do Akaunting
+3. Configure a conexão com o banco de dados
+4. Configure os detalhes da sua empresa
 
-## Troubleshooting
+## Solução de Problemas
 
-### Permission Issues
-If you encounter permission issues with storage or cache directories:
+### Problemas de Permissão
+Se você encontrar problemas de permissão com os diretórios storage ou cache:
 ```bash
-docker exec -it <container_name> chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-docker exec -it <container_name> chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+docker exec -it <nome_container> chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+docker exec -it <nome_container> chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 ```
 
-### Database Connection
-Make sure your database is accessible from the container and the environment variables are correctly set.
+### Conexão com Banco de Dados
+Certifique-se de que seu banco de dados está acessível pelo container e que as variáveis de ambiente estão configuradas corretamente.
 
 ### Logs
-To view application logs:
+Para visualizar os logs da aplicação:
 ```bash
-docker logs <container_name>
+docker logs <nome_container>
 ```
 
-## Manual Build
+## Build Manual
 
-To build the image manually:
+Para construir a imagem manualmente:
 
 ```bash
 docker build -t josemaeldon/akaunting-apache:1.3.17 .
 docker push josemaeldon/akaunting-apache:1.3.17
 ```
 
-## Support
+## Suporte
 
-For issues related to:
-- **Akaunting application**: Visit [Akaunting Forum](https://akaunting.com/forum)
-- **Docker image**: Open an issue in this repository
-- **Workflow**: Check GitHub Actions logs in the "Actions" tab
+Para questões relacionadas a:
+- **Aplicação Akaunting**: Visite o [Fórum Akaunting](https://akaunting.com/forum)
+- **Imagem Docker**: Abra uma issue neste repositório
+- **Workflow**: Verifique os logs do GitHub Actions na aba "Actions"
