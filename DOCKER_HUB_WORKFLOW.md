@@ -37,10 +37,10 @@ O workflow será executado automaticamente quando:
 
 O workflow cria múltiplas tags para flexibilidade:
 
-- `josemaeldon/akaunting-apache:latest` - Versão mais recente da branch main/master
-- `josemaeldon/akaunting-apache:1.3.17` - Versão específica (de tags)
-- `josemaeldon/akaunting-apache:1.3` - Versão major.minor
-- `josemaeldon/akaunting-apache:1` - Versão major
+- `josemaeldon/akaunting-pro-1.3.17:latest` - Versão mais recente da branch main/master
+- `josemaeldon/akaunting-pro-1.3.17:1.3.17` - Versão específica (de tags)
+- `josemaeldon/akaunting-pro-1.3.17:1.3` - Versão major.minor
+- `josemaeldon/akaunting-pro-1.3.17:1` - Versão major
 
 ## Usando a Imagem Docker
 
@@ -51,7 +51,7 @@ version: "3.7"
 
 services:
   app:
-    image: josemaeldon/akaunting-apache:latest
+    image: josemaeldon/akaunting-pro-1.3.17:latest
     working_dir: /var/www/html
     volumes:
       - app_data:/var/www/html
@@ -85,7 +85,7 @@ version: "3.7"
 
 services:
   app:
-    image: josemaeldon/akaunting-apache:1.3.17
+    image: josemaeldon/akaunting-pro-1.3.17:1.3.17
     working_dir: /var/www/html
 
     volumes:
@@ -180,8 +180,8 @@ docker logs <nome_container>
 Para construir a imagem manualmente:
 
 ```bash
-docker build -t josemaeldon/akaunting-apache:1.3.17 .
-docker push josemaeldon/akaunting-apache:1.3.17
+docker build -t josemaeldon/akaunting-pro-1.3.17:1.3.17 .
+docker push josemaeldon/akaunting-pro-1.3.17:1.3.17
 ```
 
 ## Suporte

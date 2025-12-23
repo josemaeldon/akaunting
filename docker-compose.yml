@@ -16,7 +16,7 @@ services:
 
   web:
     build: .
-    image: akaunting-apache
+    image: josemaeldon/akaunting-pro-1.3.17
     ports:
       - "8080:80"
     environment:
