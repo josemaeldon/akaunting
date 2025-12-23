@@ -36,19 +36,28 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 # Copiar arquivos da aplicação
 COPY . /var/www/html/
 
-# Criar arquivo .env e instalar dependências PHP (otimizado para produção)
+# Copiar e habilitar configuração Apache personalizada
+COPY apache-akaunting.conf /etc/apache2/sites-available/akaunting.conf
+RUN a2dissite 000-default.conf \
+    && a2ensite akaunting.conf
+
+# Tentar instalar dependências PHP (se falhar, será feito no runtime)
+# Criar arquivo .env temporário, instalar dependências, e remover .env
+# Timeout de 300 segundos (5 minutos) para evitar travamentos em caso de problemas de rede
 RUN cd /var/www/html \
-    && cp .env.example .env \
-    && composer install --no-dev --no-scripts --optimize-autoloader --no-interaction --prefer-dist \
-    && composer clear-cache \
-    && rm .env
+    && if [ -f composer.lock ] && [ -f .env.example ]; then \
+        cp .env.example .env; \
+        timeout 300 composer install --no-dev --no-scripts --optimize-autoloader --no-interaction --prefer-dist 2>/dev/null || echo "Composer install skipped - will run at container startup"; \
+        composer clear-cache 2>/dev/null || true; \
+        rm -f .env; \
+    fi
 
 # Definir permissões adequadas para diretórios de storage e cache do Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Configurar Apache
-RUN a2enmod rewrite
+# Configurar Apache - Habilitar módulos necessários
+RUN a2enmod rewrite headers
 
 # Configurar PHP para produção
 RUN { \
@@ -60,8 +69,16 @@ RUN { \
     echo 'opcache.fast_shutdown=1'; \
 } > /usr/local/etc/php/conf.d/opcache.ini
 
+# Copiar e configurar script de inicialização
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Definir diretório de trabalho
 WORKDIR /var/www/html
 
 # Expor porta 80
 EXPOSE 80
+
+# Usar o script de inicialização como entrypoint
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+

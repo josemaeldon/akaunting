@@ -124,25 +124,38 @@ networks:
 
 A imagem Docker inclui:
 
-- **PHP 7.4** com servidor web Apache
+- **PHP 7.4** com servidor web Apache configurado e otimizado
+- **Apache VirtualHost** configurado com DocumentRoot apontando para `/var/www/html/public`
 - **Extensões PHP**: pdo_mysql, gd, zip, mbstring, xml, curl, bcmath, opcache
 - **Composer**: Pré-instalado para gerenciamento de dependências
+- **Módulos Apache habilitados**: mod_rewrite, mod_headers
 - **Multi-arquitetura**: Suporta linux/amd64 e linux/arm64
 - **Otimizado para Produção**: 
   - OPcache habilitado para melhor desempenho
   - Autoloader otimizado para produção
   - Permissões de arquivo adequadas
-  - Apache mod_rewrite habilitado
+  - Apache com configuração de segurança
   - Imagens publicadas corretamente como tipo "image" no Docker Hub (provenance desabilitado)
+- **Entrypoint inteligente**: 
+  - Instala dependências do Composer automaticamente se não instaladas
+  - Configura permissões corretas ao iniciar
+  - Inicia Apache em foreground
 
 ## Configuração Inicial
 
 Ao executar o container pela primeira vez:
 
-1. Acesse a aplicação através do seu navegador
-2. Complete o assistente de instalação do Akaunting
-3. Configure a conexão com o banco de dados
-4. Configure os detalhes da sua empresa
+1. O container automaticamente instalará as dependências PHP se necessário
+2. Acesse a aplicação através do seu navegador (ex: http://localhost:8080)
+3. Complete o assistente de instalação do Akaunting
+4. Configure a conexão com o banco de dados:
+   - Host: mysql (ou nome do serviço de banco de dados)
+   - Database: akaunting_db (ou conforme configurado)
+   - Username: akaunting_admin (ou conforme configurado)
+   - Password: akaunting_password (ou conforme configurado)
+5. Configure os detalhes da sua empresa
+
+**Nota**: O Apache está configurado para servir a aplicação do diretório `/var/www/html/public`, que é o padrão para aplicações Laravel/Akaunting.
 
 ## Solução de Problemas
 
