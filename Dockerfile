@@ -39,7 +39,7 @@ COPY . /var/www/html/
 # Criar arquivo .env e instalar dependências PHP (otimizado para produção)
 RUN cd /var/www/html \
     && cp .env.example .env \
-    && composer install --no-dev --no-scripts --optimize-autoloader --no-interaction \
+    && composer install --no-dev --no-scripts --optimize-autoloader --no-interaction --prefer-dist \
     && composer clear-cache \
     && rm .env
 
