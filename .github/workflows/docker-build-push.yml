@@ -23,6 +23,10 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -48,7 +52,8 @@ jobs:
             type=semver,pattern={{major}}
             type=raw,value=latest,enable={{is_default_branch}}
             type=raw,value=${{ github.event.inputs.tag }},
-              enable=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag != '' }}
+              enable=${{ github.event_name == 'workflow_dispatch'
+              && github.event.inputs.tag != '' }}
 
       - name: Build and push Docker image
         id: build-push
