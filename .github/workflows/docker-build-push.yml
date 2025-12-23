@@ -69,6 +69,6 @@ jobs:
             type=registry,ref=${{ env.DOCKER_IMAGE }}:buildcache,mode=max
 
       - name: Digest da imagem
-        run: >-
-          echo "Imagem publicada com digest
+        run: |
+          echo "Imagem publicada com digest \
           ${{ steps.build-push.outputs.digest }}"
