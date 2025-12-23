@@ -43,6 +43,7 @@ RUN a2dissite 000-default.conf \
 
 # Tentar instalar dependências PHP (se falhar, será feito no runtime)
 # Criar arquivo .env temporário, instalar dependências, e remover .env
+# Timeout de 300 segundos (5 minutos) para evitar travamentos em caso de problemas de rede
 RUN cd /var/www/html \
     && if [ -f composer.lock ] && [ -f .env.example ]; then \
         cp .env.example .env; \
