@@ -124,14 +124,16 @@ networks:
 
 A imagem Docker inclui:
 
-- **PHP 8.1** com servidor web Apache
+- **PHP 7.4** com servidor web Apache
 - **Extensões PHP**: pdo_mysql, gd, zip, mbstring, xml, curl, bcmath, opcache
 - **Composer**: Pré-instalado para gerenciamento de dependências
+- **Multi-arquitetura**: Suporta linux/amd64 e linux/arm64
 - **Otimizado para Produção**: 
   - OPcache habilitado para melhor desempenho
   - Autoloader otimizado para produção
   - Permissões de arquivo adequadas
   - Apache mod_rewrite habilitado
+  - Imagens publicadas corretamente como tipo "image" no Docker Hub (provenance desabilitado)
 
 ## Configuração Inicial
 
