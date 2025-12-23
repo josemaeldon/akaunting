@@ -626,6 +626,11 @@
         {
             "name": "consoletvs/charts",
             "version": "4.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ConsoleTVs/Charts.git",
+                "reference": "5f31e72cf292c0042ff3eec68ad7a7fa36bdffc2"
+            },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/ConsoleTVs/Charts/zipball/5f31e72cf292c0042ff3eec68ad7a7fa36bdffc2",
