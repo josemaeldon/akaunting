@@ -1,4 +1,6 @@
-FROM php:8.1-apache
+FROM php:7.4-apache
+# Note: PHP 7.4 is used to match composer.lock dependency constraints.
+# Consider upgrading dependencies to support PHP 8.1+ in the future.
 
 # Instalar dependências do sistema e extensões PHP necessárias para o Akaunting
 RUN apt-get update && apt-get install -y \
