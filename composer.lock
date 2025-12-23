@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c80b09ceb129520b9a7bfea9a0c92e61",
+    "content-hash": "03b9b7d273e96bec325fd9cd8c6e1e5e",
     "packages": [
         {
             "name": "akaunting/language",
@@ -622,50 +622,6 @@
             ],
             "description": "A trait for Laravel Eloquent models that lets you clone of a model and it's relationships, including files.",
             "time": "2018-02-23T00:44:26+00:00"
-        },
-        {
-            "name": "consoletvs/charts",
-            "version": "4.6.0",
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ConsoleTVs/Charts/zipball/5f31e72cf292c0042ff3eec68ad7a7fa36bdffc2",
-                "reference": "5f31e72cf292c0042ff3eec68ad7a7fa36bdffc2",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/support": "5.*",
-                "jenssegers/date": "v3.*",
-                "jlawrence/eos": "3.*",
-                "php": ">=5.6.4"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "ConsoleTVs\\Charts\\ChartsServiceProvider"
-                    ],
-                    "aliases": {
-                        "Charts": "ConsoleTVs\\Charts\\Facades\\Charts"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ConsoleTVs\\Charts\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Erik Campobadal",
-                    "email": "soc@erik.cat"
-                }
-            ],
-            "description": "Create charts for laravel using diferent charts libraries",
-            "time": "2017-06-07T20:23:50+00:00"
         },
         {
             "name": "consoletvs/identify",
