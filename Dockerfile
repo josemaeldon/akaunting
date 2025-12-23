@@ -44,8 +44,8 @@ RUN a2dissite 000-default.conf \
 # Tentar instalar dependências PHP (se falhar, será feito no runtime)
 # Criar arquivo .env temporário, instalar dependências, e remover .env
 RUN cd /var/www/html \
-    && if [ -f composer.lock ]; then \
-        cp .env.example .env 2>/dev/null || true; \
+    && if [ -f composer.lock ] && [ -f .env.example ]; then \
+        cp .env.example .env; \
         timeout 300 composer install --no-dev --no-scripts --optimize-autoloader --no-interaction --prefer-dist 2>/dev/null || echo "Composer install skipped - will run at container startup"; \
         composer clear-cache 2>/dev/null || true; \
         rm -f .env; \
@@ -68,28 +68,9 @@ RUN { \
     echo 'opcache.fast_shutdown=1'; \
 } > /usr/local/etc/php/conf.d/opcache.ini
 
-# Criar script de inicialização
-RUN echo '#!/bin/bash\n\
-set -e\n\
-\n\
-# Instalar dependências do Composer se ainda não instaladas\n\
-if [ ! -d "/var/www/html/vendor" ] || [ ! -f "/var/www/html/vendor/autoload.php" ]; then\n\
-    echo "Installing Composer dependencies..."\n\
-    cd /var/www/html\n\
-    cp .env.example .env 2>/dev/null || true\n\
-    composer install --no-dev --no-scripts --optimize-autoloader --no-interaction --prefer-dist\n\
-    composer clear-cache\n\
-    rm -f .env\n\
-fi\n\
-\n\
-# Garantir permissões corretas\n\
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache\n\
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache\n\
-\n\
-# Iniciar Apache\n\
-exec apache2-foreground\n\
-' > /usr/local/bin/docker-entrypoint.sh \
-    && chmod +x /usr/local/bin/docker-entrypoint.sh
+# Copiar e configurar script de inicialização
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Definir diretório de trabalho
 WORKDIR /var/www/html
