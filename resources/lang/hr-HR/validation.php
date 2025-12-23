@@ -33,20 +33,19 @@ return [
     'confirmed'            => ':attribute potvrda se ne podudara.',
     'date'                 => ':attribute nije važeći datum.',
     'date_format'          => ':attribute ne odgovara formatu :format.',
-    'different'            => 'Polja :attribute i :other moraju biti različita.',
+    'different'            => ':attribute i :other moraju biti različiti.',
     'digits'               => ':attribute mora sadržavati :digits znamenki.',
     'digits_between'       => ':attribute mora biti između :min i :max znamenki.',
     'dimensions'           => ':attribute ima nevažeće dimenzije slike.',
     'distinct'             => 'Polje :attribute ima dvostruku vrijednost.',
-    'email'                => 'Polje :attribute mora biti ispravna e-mail adresa.',
-    'ends_with'            => ':atribut mora završiti jednim od sljedećeg:: vrijednosti',
+    'email'                => ':attribute mora biti važeća e-mail adresa.',
     'exists'               => 'Odabrano :attribute nije važeće.',
-    'file'                 => 'Polje :attribute mora biti datoteka.',
-    'filled'               => 'Polje :attribute je obavezno.',
-    'image'                => 'Polje :attribute mora biti slika.',
+    'file'                 => ':attribute mora biti datoteka.',
+    'filled'               => 'Polje :attribute mora imati vrijednost.',
+    'image'                => ':attribute mora biti slika.',
     'in'                   => 'Odabrano :attribute nije valjano.',
     'in_array'             => 'Polje :attribute ne postoji u :other.',
-    'integer'              => 'Polje :attribute mora biti broj.',
+    'integer'              => ':attribute mora biti cijeli broj.',
     'ip'                   => ':attribute mora biti važeća IP adresa.',
     'json'                 => ':attribute mora biti valjani JSON niz.',
     'max'                  => [
@@ -66,7 +65,7 @@ return [
     'not_in'               => 'Odabrano :attribute nije valjano.',
     'numeric'              => ':attribute mora biti broj.',
     'present'              => 'Polje :attribute mora biti prisutno.',
-    'regex'                => 'Polje :attribute se ne podudara s formatom.',
+    'regex'                => ':attribute format nije valjan.',
     'required'             => 'Polje :attribute je obavezno.',
     'required_if'          => 'Polje :attribute je obavezno kada je :other :value.',
     'required_unless'      => 'Polje :attribute je obavezno osim ako je :other u :values.',
@@ -78,14 +77,14 @@ return [
     'size'                 => [
         'numeric' => ':attribute mora biti :size.',
         'file'    => ':attribute mora biti :size kilobajta.',
-        'string'  => 'Polje :attribute mora biti :size znakova.',
+        'string'  => ':attribute mora biti :size znakova.',
         'array'   => ':attribute mora sadržavati :size stavki.',
     ],
-    'string'               => 'Polje :attribute mora biti string.',
+    'string'               => ':attribute mora biti niz.',
     'timezone'             => ':attribute mora biti važeća vremenska zona.',
-    'unique'               => 'Polje :attribute već postoji.',
-    'uploaded'             => 'Polje :attribute nije uspešno učitano.',
-    'url'                  => 'Polje :attribute nije ispravnog formata.',
+    'unique'               => ':attribute već postoji.',
+    'uploaded'             => ':attribute nije uspješno učitan.',
+    'url'                  => ':attribute nije ispravnog formata.',
 
     /*
     |--------------------------------------------------------------------------
@@ -100,11 +99,10 @@ return [
 
     'custom' => [
         'attribute-name' => [
-            'rule-name'             => 'prilagođena-poruka',
+            'rule-name' => 'prilagođena-poruka',
         ],
-        'invalid_currency'      => ': Atributni kod nije valjan.',
-        'invalid_amount'        => 'Iznos: atribut nije važeći.',
-        'invalid_extension'     => 'The file extension is invalid.',
+        'invalid_currency' => 'The :attribute code is invalid.',
+        'invalid_amount'   => 'The amount :attribute is invalid.',
     ],
 
     /*

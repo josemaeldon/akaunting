@@ -2,16 +2,17 @@
 
 return [
 
-    'sale_price'                => 'Satış Fiyatı',
-    'purchase_price'            => 'Alış Fiyatı',
-    'enter_item_description'    => 'Bir açıklama giriniz',
-    'billing'                   => 'Faturalandırma',
-    'sale_information'          => 'Satış Bilgisi',
-    'purchase_information'      => 'Alış Bilgisi',
+    'quantities'            => 'Adet|Adetler',
+    'sales_price'           => 'Satış Fiyatı',
+    'purchase_price'        => 'Alış Fiyatı',
+    'sku'                   => 'Ürün Kodu',
 
-    'form_description' => [
-        'general'               => 'Raporlarınızı daha ayrıntılı hale getirmek için bir kategori seçin. Açıklama, kalem bir fatura veya faturada seçildiğinde doldurulacaktır.',
-        'billing'               => 'Satış bilgileri faturalarda, Satın Alma Bilgileri ise faturalarda kullanılır. Vergi hem faturalara hem de faturalara uygulanacaktır.',
+    'notification' => [
+        'message'       => [
+            'reminder' => 'Bu e-postayı alıyorsunuz çünkü bu :name ürününden :quantity adet kalmıştır.',
+            'out_of_stock' => 'Bu e-postayı alıyorsunuz çünkü :name ürünü stokta tükeniyor.',
+        ],
+        'button'        => 'Şimdi Görüntüle',
     ],
 
 ];

@@ -2,56 +2,57 @@
 
 namespace App\Http\Controllers\Api\Common;
 
-use App\Abstracts\Http\ApiController;
+use App\Http\Controllers\ApiController;
 use App\Http\Requests\Common\Item as Request;
-use App\Http\Resources\Common\Item as Resource;
-use App\Jobs\Common\CreateItem;
-use App\Jobs\Common\DeleteItem;
-use App\Jobs\Common\UpdateItem;
 use App\Models\Common\Item;
+use App\Transformers\Common\Item as Transformer;
+use Dingo\Api\Routing\Helpers;
 
 class Items extends ApiController
 {
+    use Helpers;
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function index()
     {
-        $items = Item::with('category', 'taxes')->collect();
+        $items = Item::with(['category', 'tax'])->collect();
 
-        return Resource::collection($items);
+        return $this->response->paginator($items, new Transformer());
     }
 
     /**
      * Display the specified resource.
      *
      * @param  int|string  $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function show($id)
     {
-        $item = Item::with('category', 'taxes')->find($id);
-
-        if (! $item instanceof Item) {
-            return $this->errorInternal('No query results for model [' . Item::class . '] ' . $id);
+        // Check if we're querying by id or sku
+        if (is_numeric($id)) {
+            $item = Item::with(['category', 'tax'])->find($id);
+        } else {
+            $item = Item::with(['category', 'tax'])->where('sku', $id)->first();
         }
 
-        return new Resource($item);
+        return $this->response->item($item, new Transformer());
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function store(Request $request)
     {
-        $item = $this->dispatch(new CreateItem($request));
+        $item = Item::create($request->all());
 
-        return $this->created(route('api.items.show', $item->id), new Resource($item));
+        return $this->response->created(url('api/items/'.$item->id));
     }
 
     /**
@@ -59,55 +60,25 @@ class Items extends ApiController
      *
      * @param  $item
      * @param  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function update(Item $item, Request $request)
     {
-        $item = $this->dispatch(new UpdateItem($item, $request));
+        $item->update($request->all());
 
-        return new Resource($item->fresh());
-    }
-
-    /**
-     * Enable the specified resource in storage.
-     *
-     * @param  Item  $item
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function enable(Item $item)
-    {
-        $item = $this->dispatch(new UpdateItem($item, request()->merge(['enabled' => 1])));
-
-        return new Resource($item->fresh());
-    }
-
-    /**
-     * Disable the specified resource in storage.
-     *
-     * @param  Item  $item
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function disable(Item $item)
-    {
-        $item = $this->dispatch(new UpdateItem($item, request()->merge(['enabled' => 0])));
-
-        return new Resource($item->fresh());
+        return $this->response->item($item->fresh(), new Transformer());
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  Item  $item
-     * @return \Illuminate\Http\Response
+     * @return \Dingo\Api\Http\Response
      */
     public function destroy(Item $item)
     {
-        try {
-            $this->dispatch(new DeleteItem($item));
+        $item->delete();
 
-            return $this->noContent();
-        } catch(\Exception $e) {
-            $this->errorUnauthorized($e->getMessage());
-        }
+        return $this->response->noContent();
     }
 }

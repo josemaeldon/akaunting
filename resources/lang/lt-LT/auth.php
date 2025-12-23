@@ -13,24 +13,22 @@ return [
     'current_email'         => 'Dabartinis el. paštas',
     'reset'                 => 'Atstatyti',
     'never'                 => 'niekada',
-    'landing_page'          => 'Pirmas puslapis',
-
+    
     'password' => [
         'current'           => 'Slaptažodis',
         'current_confirm'   => 'Slaptažodžio patvirtinimas',
         'new'               => 'Naujas slaptažodis',
         'new_confirm'       => 'Naujo slaptažodžio patvirtinimas',
     ],
-
+    
     'error' => [
         'self_delete'       => 'Negalite ištrinti savęs!',
-        'self_disable'      => 'Klaida: negalite išjungti savęs!',
         'no_company'        => 'Nėra priskirtos kompanijos. Prašome susisiekti su sistemos administratoriumi.',
     ],
 
     'failed'                => 'Neteisingi prisijungimo duomenys.',
-    'throttle'              => 'Per daug bandymų prisijungti. Bandykite po :seconds sec.',
     'disabled'              => 'Šis vartotojas yra išjungtas. Prašome susisiekti su sistemos administratoriumi.',
+    'throttle'              => 'Per daug bandymų prisijungti. Bandykite po :seconds sec.',
 
     'notification' => [
         'message_1'     => 'Jūs gavote šį laišką, nes mes gavome prašymą atstatyti slaptažodį jūsų vartotojui.',

@@ -6,7 +6,7 @@ return [
     'reconciled'            => 'Reconciled',
     'closing_balance'       => 'Galutinis likutis',
     'unreconciled'          => 'Unreconciled',
-    'transactions'          => 'Transactions',
+    'list_transactions'     => 'Operacijos',
     'start_date'            => 'Pradžios data',
     'end_date'              => 'Pabaigos data',
     'cleared_amount'        => 'Cleared Amount',

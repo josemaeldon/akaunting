@@ -2,42 +2,50 @@
 
 namespace App\Utilities;
 
-use App\Models\Document\Document;
-use App\Traits\DateTime;
-use App\Utilities\Date;
+use Date;
 
 class Recurring
 {
-    public static function reflect(&$items, $issued_date_field)
-    {
-        $financial_year = (new class { use DateTime; })->getFinancialYear();
 
+    public static function reflect(&$items, $type, $issued_date_field, $status)
+    {
         foreach ($items as $key => $item) {
-            // @todo cache recurrings
-            if (! $item->recurring || !empty($item->parent_id)) {
+            if (($item->getTable() == 'bill_payments') || ($item->getTable() == 'invoice_payments')) {
+                $i  = $item->$type;
+                $i->category_id = $item->category_id;
+
+                $item = $i;
+            }
+
+            if (($status == 'upcoming') && (($type == 'revenue') || ($type == 'payment'))) {
+                $items->forget($key);
+            }
+
+            if (!$item->recurring || !empty($item->parent_id)) {
                 continue;
             }
 
-            foreach ($item->recurring->getRecurringSchedule() as $schedule) {
+            foreach ($item->recurring->schedule() as $recurr) {
                 $issued = Date::parse($item->$issued_date_field);
-                $start = $schedule->getStart();
-                $start_date = Date::parse($start->format('Y-m-d'));
+                $start = $recurr->getStart();
+
+                if ($issued->format('Y') != $start->format('Y')) {
+                    continue;
+                }
 
                 if (($issued->format('Y-m') == $start->format('Y-m')) && ($issued->format('d') >= $start->format('d'))) {
                     continue;
                 }
 
-                if ($start_date->lessThan($financial_year->getStartDate()) || $start_date->greaterThan($financial_year->getEndDate())) {
-                    continue;
-                }
-
                 $clone = clone $item;
 
-                if ($clone instanceof Document) {
-                    // Days between invoiced/billed and due date
-                    $diff_days = Date::parse($clone->due_at)->diffInDays(Date::parse($clone->$issued_date_field));
+                $start_date = Date::parse($start->format('Y-m-d'));
 
-                    $clone->due_at = $start_date->copy()->addDays($diff_days)->format('Y-m-d');
+                if (($type == 'invoice') || ($type == 'bill')) {
+                    // Days between invoiced/billed and due date
+                    $diff_days = Date::parse($clone->due_at)->diffInDays(Date::parse($clone->invoiced_at));
+
+                    $clone->due_at = $start_date->addDays($diff_days)->format('Y-m-d');
                 }
 
                 $clone->parent_id = $item->id;

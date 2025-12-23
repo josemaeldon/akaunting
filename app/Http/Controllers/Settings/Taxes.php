@@ -2,18 +2,13 @@
 
 namespace App\Http\Controllers\Settings;
 
-use App\Abstracts\Http\Controller;
-use App\Exports\Settings\Taxes as Export;
-use App\Http\Requests\Common\Import as ImportRequest;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Setting\Tax as Request;
-use App\Imports\Settings\Taxes as Import;
-use App\Jobs\Setting\CreateTax;
-use App\Jobs\Setting\DeleteTax;
-use App\Jobs\Setting\UpdateTax;
 use App\Models\Setting\Tax;
 
 class Taxes extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -24,14 +19,12 @@ class Taxes extends Controller
         $taxes = Tax::collect();
 
         $types = [
-            'fixed' => trans('taxes.fixed'),
             'normal' => trans('taxes.normal'),
             'inclusive' => trans('taxes.inclusive'),
-            'withholding' => trans('taxes.withholding'),
             'compound' => trans('taxes.compound'),
         ];
 
-        return $this->response('settings.taxes.index', compact('taxes', 'types'));
+        return view('settings.taxes.index', compact('taxes', 'types'));
     }
 
     /**
@@ -41,7 +34,7 @@ class Taxes extends Controller
      */
     public function show()
     {
-        return redirect()->route('taxes.index');
+        return redirect('settings/taxes');
     }
 
     /**
@@ -52,20 +45,12 @@ class Taxes extends Controller
     public function create()
     {
         $types = [
-            'fixed' => trans('taxes.fixed'),
             'normal' => trans('taxes.normal'),
             'inclusive' => trans('taxes.inclusive'),
-            'withholding' => trans('taxes.withholding'),
             'compound' => trans('taxes.compound'),
         ];
 
-        $disable_options = [];
-
-        if ($compound = Tax::compound()->first()) {
-            $disable_options = ['compound'];
-        }
-
-        return view('settings.taxes.create', compact('types', 'disable_options'));
+        return view('settings.taxes.create', compact('types'));
     }
 
     /**
@@ -77,47 +62,13 @@ class Taxes extends Controller
      */
     public function store(Request $request)
     {
-        $response = $this->ajaxDispatch(new CreateTax($request));
+        Tax::create($request->all());
 
-        if ($response['success']) {
-            $response['redirect'] = route('taxes.index');
+        $message = trans('messages.success.added', ['type' => trans_choice('general.tax_rates', 1)]);
 
-            $message = trans('messages.success.created', ['type' => trans_choice('general.taxes', 1)]);
+        flash($message)->success();
 
-            flash($message)->success();
-        } else {
-            $response['redirect'] = route('taxes.create');
-
-            $message = $response['message'];
-
-            flash($message)->error()->important();
-        }
-
-        return response()->json($response);
-    }
-
-    /**
-     * Import the specified resource.
-     *
-     * @param  ImportRequest  $request
-     *
-     * @return Response
-     */
-    public function import(ImportRequest $request)
-    {
-        $response = $this->importExcel(new Import, $request, trans_choice('general.taxes', 2));
-
-        if ($response['success']) {
-            $response['redirect'] = route('taxes.index');
-
-            flash($response['message'])->success();
-        } else {
-            $response['redirect'] = route('import.create', ['settings', 'taxes']);
-
-            flash($response['message'])->error()->important();
-        }
-
-        return response()->json($response);
+        return redirect('settings/taxes');
     }
 
     /**
@@ -130,120 +81,124 @@ class Taxes extends Controller
     public function edit(Tax $tax)
     {
         $types = [
-            'fixed' => trans('taxes.fixed'),
             'normal' => trans('taxes.normal'),
             'inclusive' => trans('taxes.inclusive'),
-            'withholding' => trans('taxes.withholding'),
             'compound' => trans('taxes.compound'),
         ];
 
-        $disable_options = [];
-
-        if ($tax->type != 'compound' && $compound = Tax::compound()->first()) {
-            $disable_options = ['compound'];
-        }
-
-        return view('settings.taxes.edit', compact('tax', 'types', 'disable_options'));
+        return view('settings.taxes.edit', compact('tax', 'types'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  Tax $tax
-     * @param  Request $request
+     * @param  Tax  $tax
+     * @param  Request  $request
      *
      * @return Response
      */
     public function update(Tax $tax, Request $request)
     {
-        $response = $this->ajaxDispatch(new UpdateTax($tax, $request));
+        $relationships = $this->countRelationships($tax, [
+            'items' => 'items',
+            'invoice_items' => 'invoices',
+            'bill_items' => 'bills',
+        ]);
 
-        if ($response['success']) {
-            $response['redirect'] = route('taxes.index');
+        if (empty($relationships) || $request['enabled']) {
+            $tax->update($request->all());
 
-            $message = trans('messages.success.updated', ['type' => $tax->name]);
+            $message = trans('messages.success.updated', ['type' => trans_choice('general.tax_rates', 1)]);
 
             flash($message)->success();
+
+            return redirect('settings/taxes');
         } else {
-            $response['redirect'] = route('taxes.edit', $tax->id);
+            $message = trans('messages.warning.disabled', ['name' => $tax->name, 'text' => implode(', ', $relationships)]);
 
-            $message = $response['message'];
+            flash($message)->warning();
 
-            flash($message)->error()->important();
+            return redirect('settings/taxes/' . $tax->id . '/edit');
         }
-
-        return response()->json($response);
     }
 
     /**
      * Enable the specified resource.
      *
-     * @param  Tax $tax
+     * @param  Tax  $tax
      *
      * @return Response
      */
     public function enable(Tax $tax)
     {
-        $response = $this->ajaxDispatch(new UpdateTax($tax, request()->merge(['enabled' => 1])));
+        $tax->enabled = 1;
+        $tax->save();
 
-        if ($response['success']) {
-            $response['message'] = trans('messages.success.enabled', ['type' => $tax->name]);
-        }
+        $message = trans('messages.success.enabled', ['type' => trans_choice('general.tax_rates', 1)]);
 
-        return response()->json($response);
+        flash($message)->success();
+
+        return redirect()->route('taxes.index');
     }
 
     /**
      * Disable the specified resource.
      *
-     * @param  Tax $tax
+     * @param  Tax  $tax
      *
      * @return Response
      */
     public function disable(Tax $tax)
     {
-        $response = $this->ajaxDispatch(new UpdateTax($tax, request()->merge(['enabled' => 0])));
+        $relationships = $this->countRelationships($tax, [
+            'items' => 'items',
+            'invoice_items' => 'invoices',
+            'bill_items' => 'bills',
+        ]);
 
-        if ($response['success']) {
-            $response['message'] = trans('messages.success.disabled', ['type' => $tax->name]);
+        if (empty($relationships)) {
+            $tax->enabled = 0;
+            $tax->save();
+
+            $message = trans('messages.success.disabled', ['type' => trans_choice('general.tax_rates', 1)]);
+
+            flash($message)->success();
+        } else {
+            $message = trans('messages.warning.disabled', ['name' => $tax->name, 'text' => implode(', ', $relationships)]);
+
+            flash($message)->warning();
         }
 
-        return response()->json($response);
+        return redirect()->route('taxes.index');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Tax $tax
+     * @param  Tax  $tax
      *
      * @return Response
      */
     public function destroy(Tax $tax)
     {
-        $response = $this->ajaxDispatch(new DeleteTax($tax));
+        $relationships = $this->countRelationships($tax, [
+            'items' => 'items',
+            'invoice_items' => 'invoices',
+            'bill_items' => 'bills',
+        ]);
 
-        $response['redirect'] = route('taxes.index');
+        if (empty($relationships)) {
+            $tax->delete();
 
-        if ($response['success']) {
-            $message = trans('messages.success.deleted', ['type' => $tax->name]);
+            $message = trans('messages.success.deleted', ['type' => trans_choice('general.taxes', 1)]);
 
             flash($message)->success();
         } else {
-            $message = $response['message'];
+            $message = trans('messages.warning.deleted', ['name' => $tax->name, 'text' => implode(', ', $relationships)]);
 
-            flash($message)->error()->important();
+            flash($message)->warning();
         }
 
-        return response()->json($response);
-    }
-
-    /**
-     * Export the specified resource.
-     *
-     * @return Response
-     */
-    public function export()
-    {
-        return $this->exportExcel(new Export, trans_choice('general.taxes', 2));
+        return redirect('settings/taxes');
     }
 }

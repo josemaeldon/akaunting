@@ -2,9 +2,10 @@
 
 return [
 
-    'import'                => 'Увези',
-    'title'                 => 'Увези :type',
-    'limitations'           => 'Дозволени типови на датотеки: :extensions<br>Максимално дозволен број на редови: :row_limit',
-    'sample_file'           => 'Можете да <a target="_blank" href=":download_link"><strong>ја симнете</strong></a> датотеката за пример и да ја пополните со своите податоци.',
+    'import'                => 'Внеси',
+    'title'                 => 'Внеси :type',
+    'message'               => 'Дозволени типови на фајлови: XLS, XLSX. Ве молиме, <a target="_blank" href=":link"><strong>симнете го</strong></a> фајлот.
+ 
+',
 
 ];

@@ -6,7 +6,7 @@ return [
     'to_account'            => 'Обліковому запису',
 
     'messages' => [
-        'delete'            => ':from до :to (:amount)',
+        'delete'            => ':from to :to (:amount)',
     ],
 
 ];

@@ -2,18 +2,20 @@
 
 return [
 
-    'api_key'               => 'کلید API',
+    'title'                 => 'API Token',
+    'api_token'             => 'Token',
     'my_apps'               => 'برنامه‌های من',
-    'pre_sale'              => 'پیش فروش',
     'top_paid'              => 'بهترین غیر رایگان',
     'new'                   => 'جدید',
     'top_free'              => 'بهترین رایگان',
     'free'                  => 'رایگان',
+    'search'                => 'جستجو',
     'install'               => 'نصب',
     'buy_now'               => 'خرید',
-    'get_api_key'           => '<a href=":url" target="_blank">دریافت کلید API</a>',
+    'token_link'            => '<a href="https://akaunting.com/tokens" target="_blank">دریافت Token</a>.',
     'no_apps'               => 'در این بخش هیچ نرم افزاری وجود ندارد.',
-    'become_developer'      => 'آیا شما یک توسعه دهنده هستید؟<a href=":url" target="_blank">با مراجعه به سایت فروشگاهی می توانید نرم افزار های خود را بسیازید و بفروشید.</a>',
+    'developer'             => 'آیا شما یک توسعه دهنده هستید؟<a href="https://akaunting.com/blog/akaunting-app-store" target="_blank">با مراجعه به سایت فروشگاهی می توانید نرم افزار های خود را بسیازید و بفروشید.</a>',
+
     'recommended_apps'      => 'برنامه‌های توصیه شده',
 
     'about'                 => 'درباره ما',
@@ -27,7 +29,7 @@ return [
 
     'installed'             => ':module نصب شد',
     'uninstalled'           => ':module حذف شد',
-    'updated_2'             => ':module به‌روز شد',
+    //'updated'               => ':module updated',
     'enabled'               => ':module فعال شد',
     'disabled'              => ':module غیر فعال شد',
 
@@ -35,30 +37,30 @@ return [
         'installation'      => 'نصب',
         'faq'               => 'سوالات متداول',
         'changelog'         => 'تغییرات',
-        'reviews'           => 'نظرات',
+        'reviews'            => 'نظرات',
     ],
 
     'installation' => [
         'header'            => 'محل نصب نرم افزار',
         'download'          => 'دریافت فایل :module',
-        'unzip'             => 'ایجاد خروجی از فایل های :module',
-        'file_copy'         => 'در حال کپی فایل های :module',
-        'finish'            => 'نهایی سازی نصب :module',
-        'redirect'          => ':module نصب شد، در حال انتقال به صفحه آپدیت ها',
-        'install'           => 'در حال نصب :module',
+        'unzip'             => 'استخراج فایل :module.',
+        'file_copy'         => 'Copying :module files.',
+        'migrate'           => 'Applying :module updates.',
+        'finish'            => 'The update was successfully installed. You will be redirect Update Center.',
+        'install'           => 'نصب فایل های :module .',
     ],
 
     'errors' => [
-        'download'          => 'امکان دانلود :module وجود ندارد',
-        'zip'               => 'امکان ساخت فایل فشرده :module وجود ندارد',
-        'unzip'             => 'امکان خارج کردن :module از حالت فشرده وجود ندارد',
-        'file_copy'         => 'امکان کپی کردن فایل های :module وجود ندارد',
-        'finish'            => 'امکان نهایی کردن نصب :module وجود ندارد',
+        'download' => ':module can not download!',
+        'upload' => 'Downloaded :module can not saved!',
+        'unzip' => ':module can not unzip!',
+        'file_copy' => ':module files can not copy!',
+        'migrate' => ':module migrate broken!',
+        'migrate core' => ':module already latest version so then yon can not update.',
     ],
 
     'badge' => [
-        'installed'         => 'نصب شده',
-        'pre_sale'          => 'پیش فروش',
+        'installed' => 'نصب شده',
     ],
 
     'button' => [
@@ -68,16 +70,14 @@ return [
     ],
 
     'my' => [
-        'purchased'         => 'خریداری شد',
-        'installed'         => 'نصب شده',
+        'purchased' => 'خریداری شد',
+        'installed' => 'نصب شده',
     ],
 
     'reviews' => [
         'button' => [
-            'add'           => 'اضافه کردن نظر'
+            'add' => 'اضافه کردن نظر'
         ],
-
-        'na'                => 'هیچ بررسی وجود دارد.'
-    ],
-
+        'na' => 'هیچ بررسی وجود دارد.'
+    ]
 ];

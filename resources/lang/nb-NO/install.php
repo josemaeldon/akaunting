@@ -21,7 +21,6 @@ return [
         'disabled'          => ':feature må være deaktivert.',
         'extension'         => 'Utvidelsen :extension må installeres og aktiveres!',
         'directory'         => 'Mappen :directory må være skrivbar.',
-        'executable'        => 'Den kjørbare PHP CLI-filen virker ikke! Vennligst be din tjenesteleverandør om å sette riktig PHP_BINARY eller PHP_PATH miljøvariabel.',
     ],
 
     'database' => [
@@ -39,7 +38,6 @@ return [
     ],
 
     'error' => [
-        'php_version'       => 'Feil: Be din tjenesteleverandør om å bruke PHP :php_version eller høyere for både HTTP og CLI.',
         'connection'        => 'Feil: Kunne ikke koble til databasen. Påse at opplysningene er riktig.',
     ],
 

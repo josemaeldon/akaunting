@@ -33,15 +33,14 @@ return [
     'confirmed'            => ':attribute konfirmimi nuk përputhet.',
     'date'                 => ':attribute nuk është një datë e saktë.',
     'date_format'          => ':attribute nuk i përshtatet formatit :format.',
-    'different'            => ':attribute dhe :other duhet të jenë të <strong>ndryshme</strong>.',
+    'different'            => ':attribute dhe :other duhet të jenë të ndryshme.',
     'digits'               => ':attribute duhet të jetë :digits shifra.',
     'digits_between'       => ':attribute duhet të jetë midis :min dhe :max shifra.',
     'dimensions'           => ':attribute ka dimensione të pavlefshme imazhi.',
     'distinct'             => ':attribute fusha ka një vlerë të dyfishtë.',
     'email'                => ':attribute formati është i pasaktë.',
-    'ends_with'            => ':attribute duhet të mbarojë me një nga këta vlerat: :values',
     'exists'               => ':attribute përzgjedhur është i/e pasaktë.',
-    'file'                 => ':attribute duhet të jetë <strong>dosje</strong>.',
+    'file'                 => ':attribute duhet të jetë një skedar.',
     'filled'               => 'Fusha :attribute është e kërkuar.',
     'image'                => ':attribute duhet të jetë imazh.',
     'in'                   => ':attribute përzgjedhur është i/e pasaktë.',
@@ -65,7 +64,7 @@ return [
     ],
     'not_in'               => ':attribute përzgjedhur është i/e pasaktë.',
     'numeric'              => ':attribute duhet të jetë një numër.',
-    'present'              => 'The :attribute field must be present.',
+    'present'              => ':attribute fusha duhet të jetë e pranishme.',
     'regex'                => 'Formati i :attribute është i pasaktë.',
     'required'             => 'Fusha :attribute është e kërkuar.',
     'required_if'          => 'Fusha :attribute është e kërkuar kur :other është :value.',
@@ -81,10 +80,10 @@ return [
         'string'  => ':attribute duhet të jetë :size karaktere.',
         'array'   => ':attribute duhet të ketë :size elemente.',
     ],
-    'string'               => ':attribute duhet të jetë <strong>varg</strong>.',
+    'string'               => ':attribute duhet të jetë varg.',
     'timezone'             => ':attribute duhet të jetë zonë e saktë.',
     'unique'               => ':attribute është marrë tashmë.',
-    'uploaded'             => ':attribute <strong>ka dështuar</strong> në ngarkim.',
+    'uploaded'             => ':attribute dështoi të ngarkohet.',
     'url'                  => 'Formati i :attribute është i pasaktë.',
 
     /*
@@ -100,11 +99,10 @@ return [
 
     'custom' => [
         'attribute-name' => [
-            'rule-name'             => 'Mesazh Privat',
+            'rule-name' => 'Mesazh Privat',
         ],
-        'invalid_currency'      => 'Kodi :attribute është i pavlefshëm.',
-        'invalid_amount'        => 'Shuma :attribute është e pavlefshme.',
-        'invalid_extension'     => 'Zgjatja e skedarit është e pavlefshme.',
+        'invalid_currency' => 'Kodi :attribute është i pavlefshëm.',
+        'invalid_amount'   => 'Shuma :attribute është e pavlefshme.',
     ],
 
     /*

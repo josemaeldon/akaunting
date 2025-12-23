@@ -1,82 +1,119 @@
-<x-layouts.admin>
-    <x-slot name="title">
-        {{ trans('general.title.new', ['type' => trans_choice('general.transfers', 1)]) }}
-    </x-slot>
+@extends('layouts.admin')
 
-    <x-slot name="favorite"
-        title="{{ trans('general.title.new', ['type' => trans_choice('general.transfers', 1)]) }}"
-        icon="sync_alt"
-        route="transfers.create"
-    ></x-slot>
+@section('title', trans('general.title.new', ['type' => trans_choice('general.transfers', 1)]))
 
-    <x-slot name="content">
-        <x-form.container>
-            <x-form id="transfer" route="transfers.store">
-                <x-form.section>
-                    <x-slot name="head">
-                        <x-form.section.head title="{{ trans('general.general') }}" description="{{ trans('transfers.form_description.general') }}" />
-                    </x-slot>
+@section('content')
+    <!-- Default box -->
+    <div class="box box-success">
+        {!! Form::open(['url' => 'banking/transfers', 'role' => 'form', 'class' => 'form-loading-button']) !!}
 
-                    <x-slot name="body">
-                        <x-form.group.select name="from_account_id" label="{{ trans('transfers.from_account') }}" :options="$accounts" change="onChangeFromAccount" />
+        <div class="box-body">
+            {{ Form::selectGroup('from_account_id', trans('transfers.from_account'), 'university', $accounts) }}
 
-                        <x-form.group.select name="to_account_id" label="{{ trans('transfers.to_account') }}" :options="$accounts" change="onChangeToAccount" />
+            {{ Form::selectGroup('to_account_id', trans('transfers.to_account'), 'university', $accounts) }}
 
-                        <div v-if="show_rate" class="sm:col-span-3">
-                            <x-form.input.hidden name="from_currency_code" v-model="form.from_currency_code" />
+            {{ Form::textGroup('amount', trans('general.amount'), 'money') }}
 
-                            <x-form.group.text name="from_account_rate" label="{{ trans('transfers.from_account_rate') }}" v-disabled="form.from_currency_code == '{{ default_currency() }}'" />
-                        </div>
+            {{ Form::textGroup('transferred_at', trans('general.date'), 'calendar',['id' => 'transferred_at', 'required' => 'required', 'data-inputmask' => '\'alias\': \'yyyy-mm-dd\'', 'data-mask' => '', 'autocomplete' => 'off'], Date::now()->toDateString()) }}
 
-                        <div v-if="show_rate" class="sm:col-span-3">
-                            <x-form.input.hidden name="to_currency_code" v-model="form.to_currency_code" />
+            {{ Form::textareaGroup('description', trans('general.description')) }}
 
-                            <x-form.group.text name="to_account_rate" label="{{ trans('transfers.to_account_rate') }}" v-disabled="form.to_currency_code == '{{ default_currency() }}'" />
-                        </div>
+            {{ Form::selectGroup('payment_method', trans_choice('general.payment_methods', 1), 'credit-card', $payment_methods, setting('general.default_payment_method')) }}
 
-                        <x-form.group.date name="transferred_at" label="{{ trans('general.date') }}" icon="calendar_today" value="{{ Date::now()->toDateString() }}" show-date-format="{{ company_date_format() }}" date-format="Y-m-d" autocomplete="off" />
+            {{ Form::textGroup('reference', trans('general.reference'), 'file-text-o', []) }}
 
-                        <x-form.group.money name="amount" label="{{ trans('general.amount') }}" value="0" :currency="$currency" dynamicCurrency="currency" />
+            {!! Form::hidden('currency_code', null, ['id' => 'currency_code']) !!}
+            {!! Form::hidden('currency_rate', null, ['id' => 'currency_rate']) !!}
+        </div>
+        <!-- /.box-body -->
 
-                        <x-form.group.textarea name="description" label="{{ trans('general.description') }}" not-required />
-                    </x-slot>
-                </x-form.section>
+        <div class="box-footer">
+            {{ Form::saveButtons('banking/transfers') }}
+        </div>
+        <!-- /.box-footer -->
 
-                <x-form.section>
-                    <x-slot name="head">
-                        <x-form.section.head title="{{ trans_choice('general.others', 1) }}" description="{{ trans('transfers.form_description.other') }}" />
-                    </x-slot>
+        {!! Form::close() !!}
+    </div>
+@endsection
 
-                    <x-slot name="body">
-                        <x-form.group.payment-method />
+@push('js')
+    <script src="{{ asset('vendor/almasaeed2010/adminlte/plugins/datepicker/bootstrap-datepicker.js') }}"></script>
+    @if (language()->getShortCode() != 'en')
+    <script src="{{ asset('vendor/almasaeed2010/adminlte/plugins/datepicker/locales/bootstrap-datepicker.' . language()->getShortCode() . '.js') }}"></script>
+    @endif
+@endpush
 
-                        <x-form.group.text name="reference" label="{{ trans('general.reference') }}" not-required />
+@push('css')
+    <link rel="stylesheet" href="{{ asset('vendor/almasaeed2010/adminlte/plugins/datepicker/datepicker3.css') }}">
+@endpush
 
-                        <x-form.group.attachment />
+@push('scripts')
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#amount").maskMoney({
+                thousands : '{{ $currency->thousands_separator }}',
+                decimal : '{{ $currency->decimal_mark }}',
+                precision : {{ $currency->precision }},
+                allowZero : true,
+                @if($currency->symbol_first)
+                prefix : '{{ $currency->symbol }}'
+                @else
+                suffix : '{{ $currency->symbol }}'
+                @endif
+            });
 
-                        <x-form.input.hidden name="currency_code" v-model="form.currency_code" />
-                        <x-form.input.hidden name="currency_rate" v-model="form.currency_rate" />
-                    </x-slot>
-                </x-form.section>
+            $("#amount").focusout();
 
-                <x-form.section>
-                    <x-slot name="foot">
-                        <x-form.buttons cancel-route="transfers.index" />
-                    </x-slot>
-                </x-form.section>
-            </x-form>
-        </x-form.container>
-    </x-slot>
+            //Date picker
+            $('#transferred_at').datepicker({
+                format: 'yyyy-mm-dd',
+                todayBtn: 'linked',
+                weekStart: 1,
+                autoclose: true,
+                language: '{{ language()->getShortCode() }}'
+            });
 
-    @push('scripts_start')
-        <script type="text/javascript">
-            if (typeof aka_currency !== 'undefined') {
-                aka_currency = {!! json_encode(! empty($currency) ? $currency : config('money.currencies.' . company()->currency)) !!};
-            } else {
-                var aka_currency = {!! json_encode(! empty($currency) ? $currency : config('money.currencies.' . company()->currency)) !!};
-            }
-        </script>
-    @endpush
+            $("#from_account_id").select2({
+                placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.accounts', 1)]) }}"
+            });
 
-    <x-script folder="banking" file="transfers" />
-</x-layouts.admin>
+            $("#to_account_id").select2({
+                placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.accounts', 1)]) }}"
+            });
+
+            $("#payment_method").select2({
+                placeholder: "{{ trans_choice('general.payment_methods', 1) }}"
+            });
+        });
+
+        $(document).on('change', '#from_account_id', function (e) {
+            $.ajax({
+                url: '{{ url("banking/accounts/currency") }}',
+                type: 'GET',
+                dataType: 'JSON',
+                data: 'account_id=' + $(this).val(),
+                success: function(data) {
+                    $('#currency').val(data.currency_code);
+
+                    $('#currency_code').val(data.currency_code);
+                    $('#currency_rate').val(data.currency_rate);
+
+                    amount = $('#amount').maskMoney('unmasked')[0];
+
+                    $("#amount").maskMoney({
+                        thousands : data.thousands_separator,
+                        decimal : data.decimal_mark,
+                        precision : data.precision,
+                        allowZero : true,
+                        prefix : (data.symbol_first) ? data.symbol : '',
+                        suffix : (data.symbol_first) ? '' : data.symbol
+                    });
+
+                    $('#amount').val(amount);
+
+                    $('#amount').trigger('focus');
+                }
+            });
+        });
+    </script>
+@endpush

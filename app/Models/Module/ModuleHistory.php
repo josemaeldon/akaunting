@@ -2,10 +2,11 @@
 
 namespace App\Models\Module;
 
-use App\Abstracts\Model;
+use App\Models\Model;
 
 class ModuleHistory extends Model
 {
+
     protected $table = 'module_histories';
 
     /**
@@ -13,10 +14,5 @@ class ModuleHistory extends Model
      *
      * @var array
      */
-    protected $fillable = ['company_id', 'module_id', 'version', 'description', 'created_from', 'created_by'];
-
-    public function module()
-    {
-        return $this->belongsTo('App\Models\Module\Module');
-    }
+    protected $fillable = ['company_id', 'module_id', 'category', 'version', 'description'];
 }

@@ -2,12 +2,11 @@
 
 namespace App\Http\Requests\Wizard;
 
-use App\Abstracts\Http\FormRequest;
+use App\Http\Requests\Request;
 use App\Traits\Modules as RemoteModules;
 use Illuminate\Validation\Factory as ValidationFactory;
-use Illuminate\Support\Str;
 
-class Company extends FormRequest
+class Company extends Request
 {
     use RemoteModules;
 
@@ -18,8 +17,18 @@ class Company extends FormRequest
             function ($attribute, $value, $parameters) {
                 return $this->checkToken($value);
             },
-            trans('messages.error.invalid_apikey')
+            trans('messages.error.invalid_token')
         );
+    }
+
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
     }
 
     /**
@@ -29,39 +38,14 @@ class Company extends FormRequest
      */
     public function rules()
     {
-        $logo = 'nullable';
-
-        if ($this->files->get('logo')) {
-            $logo = 'mimes:' . config('filesystems.mimes')
-                    . '|between:0,' . config('filesystems.max_size') * 1024
-                    . '|dimensions:max_width=' . config('filesystems.max_width') . ',max_height=' . config('filesystems.max_height');
-        }
-
         $rules = [
-            'logo' => $logo,
+            'company_logo' => 'mimes:' . setting('general.file_types') . '|between:0,' . setting('general.file_size') * 1024,
         ];
 
-        if (! setting('apps.api_key', false) && ! empty($this->request->get('api_key'))) {
-            $rules['api_key'] = 'string|check';
-        }
-
-        if (setting('apps.api_key', false) && (setting('apps.api_key', false) != $this->request->get('api_key'))) {
-            $rules['api_key'] = 'string|check';
+        if (!setting('general.api_token', false) && !empty($this->request->get('api_token'))) {
+            $rules['api_token'] = 'string|check';
         }
 
         return $rules;
-    }
-
-    public function messages()
-    {
-        $logo_dimensions = trans('validation.custom.invalid_dimension', [
-            'attribute'     => Str::lower(trans('settings.company.logo')),
-            'width'         => config('filesystems.max_width'),
-            'height'        => config('filesystems.max_height'),
-        ]);
-
-        return [
-            'logo.dimensions' => $logo_dimensions,
-        ];
     }
 }

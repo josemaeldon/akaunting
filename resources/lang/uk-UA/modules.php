@@ -2,28 +2,27 @@
 
 return [
 
-    'api_key'               => 'Api ключ',
-    'my_apps'               => 'Мої додатки',
-    'pre_sale'              => 'Попередній продаж',
-    'top_paid'              => 'Топ оплат',
-    'new'                   => 'Новий',
+    'title'                 => 'API маркер',
+    'api_token'             => 'Маркер',
+    'my_apps'               => 'My Apps',
+    'top_paid'              => 'Топ Paid',
+    'new'                   => 'Нове',
     'top_free'              => 'Топ безкоштовних',
     'free'                  => 'БЕЗКОШТОВНО',
+    'search'                => 'Пошук',
     'install'               => 'Встановити',
     'buy_now'               => 'Купити зараз',
-    'get_api_key'           => '<a href=":url" target="_blank">Натисніть тут</a> , щоб отримати свій ключ API.',
+    'token_link'            => '<a href="https://akaunting.com/tokens" target="_blank">натисніть тут</a> щоб отримати ваш API маркер.',
     'no_apps'               => 'Немає поки що додатків у цій категорії.',
-    'become_developer'      => 'Ви розробник? <a href="https://akaunting.com/developers" target="_blank">Тут</a> Ви можете дізнатися, як створити додаток і почати продажі сьогодні!',
-    'recommended_apps'      => 'Рекомендовані додатки',
+    'developer'             => 'Ви розробник? <a href="https://akaunting.com/blog/akaunting-app-store" target="_blank">тут</a> ви можете дізнатися, як створити додаток і почати продажі сьогодні!',
+
+    'recommended_apps'      => 'Recommended Apps',
 
     'about'                 => 'Про',
 
     'added'                 => 'Додано',
     'updated'               => 'Оновлено',
     'compatibility'         => 'Сумiснiсть',
-    'documentation'         => 'Документація',
-    'view'                  => 'Перегляд',
-    'back'                  => 'Назад',
 
     'installed'             => ':module встановлено',
     'uninstalled'           => ':module видалено',
@@ -35,30 +34,30 @@ return [
         'installation'      => 'Встановлення',
         'faq'               => 'Поширені запитання',
         'changelog'         => 'Історія змін',
-        'reviews'           => 'Перегляди',
+        'reviews'            => 'Reviews',
     ],
 
     'installation' => [
         'header'            => 'Встановлення додатку',
-        'download'          => 'Завантаження: модуль',
-        'unzip'             => 'Вилучення файлів :module',
-        'file_copy'         => 'Копіювання файлів :module',
-        'finish'            => 'Завершення встановлення :module',
-        'redirect'          => ':module встановлено, перенаправлення на сторінку оновлень',
-        'install'           => 'Установка :module',
+        'download'          => 'Завантаження: файл модуля.',
+        'unzip'             => 'Вилучення файлів :module.',
+        'file_copy'         => 'Copying :module files.',
+        'migrate'           => 'Applying :module updates.',
+        'finish'            => 'The update was successfully installed. You will be redirect Update Center.',
+        'install'           => 'Установка файлів : module .',
     ],
 
     'errors' => [
-        'download'          => 'Не вдалося завантажити :module',
-        'zip'               => 'Не вдалося створити файл :module zip',
-        'unzip'             => 'Не вдалося розпакувати :module',
-        'file_copy'         => 'Неможливо скопіювати :module файли',
-        'finish'            => 'Не вдалося завершити встановлення :module',
+        'download' => ':module can not download!',
+        'upload' => 'Downloaded :module can not saved!',
+        'unzip' => ':module can not unzip!',
+        'file_copy' => ':module files can not copy!',
+        'migrate' => ':module migrate broken!',
+        'migrate core' => ':module already latest version so then yon can not update.',
     ],
 
     'badge' => [
-        'installed'         => 'Встановлено',
-        'pre_sale'          => 'Попередній продаж',
+        'installed' => 'Installed',
     ],
 
     'button' => [
@@ -68,16 +67,14 @@ return [
     ],
 
     'my' => [
-        'purchased'         => 'Придбано',
-        'installed'         => 'Встановлено',
+        'purchased' => 'Purchased',
+        'installed' => 'Installed',
     ],
 
     'reviews' => [
         'button' => [
-            'add'           => 'Додати відгук'
+            'add' => 'Add a Review'
         ],
-
-        'na'                => 'Немає відгуків.'
-    ],
-
+        'na' => 'There are no reviews.'
+    ]
 ];

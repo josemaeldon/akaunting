@@ -2,16 +2,17 @@
 
 return [
 
-    'sale_price'                => 'Продажна Цена',
-    'purchase_price'            => 'Набавна цена',
-    'enter_item_description'    => 'Внеси Опис на ставката',
-    'billing'                   => 'Наплата',
-    'sale_information'          => 'Информации за продажба',
-    'purchase_information'      => 'Информации за набавка',
+    'quantities'            => 'Кочичина| Количини',
+    'sales_price'           => 'Продажна Цена',
+    'purchase_price'        => 'Набавна цена',
+    'sku'                   => 'SKU',
 
-    'form_description' => [
-        'general'               => 'Изберете категорија за да ги направите вашите извештаи подетални. Описот ќе се пополни кога предметот е избран во фактура или сметка.',
-        'billing'               => 'Информациите за продажба се користат во фактурите, а информациите за купување се користат во сметките. Данок ќе се применува и на фактурите и на сметките.',
+    'notification' => [
+        'message'       => [
+            'reminder' => 'You are receiving this email because only :quantity of :name has remained.',
+            'out_of_stock' => 'You are receiving this email because the :name is running out of stock.',
+        ],
+        'button'        => 'Погледни сега',
     ],
 
 ];

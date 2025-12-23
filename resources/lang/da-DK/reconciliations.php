@@ -2,21 +2,15 @@
 
 return [
 
-    'reconcile'             => 'Afstem',
-    'unreconcile'           => 'Uafsem',
+    'reconcile'             => 'Afstemme',
     'reconciled'            => 'Afstemt',
-    'opening_balance'       => 'Åbningsbalance',
     'closing_balance'       => 'Primo saldo',
     'unreconciled'          => 'Uafstemt',
-    'transactions'          => 'Transaktioner',
+    'list_transactions'     => 'Vis transaktioner',
     'start_date'            => 'Start dato',
     'end_date'              => 'Slut dato',
     'cleared_amount'        => 'Afstemt beløb',
     'deposit'               => 'Indbetal',
     'withdrawal'            => 'Udbetaling',
-    'reconciled_amount'     => 'Afstemt',
-    'in_progress'           => 'Igangværende',
-    'save_draft'            => 'Gem som kladde',
-    'irreconcilable'        => 'Uforenelige',
 
 ];

@@ -35,7 +35,7 @@ return [
     'receive_bill'          => 'รับบิล',
     'make_payment'          => 'ทำการชำระเงิน',
 
-    'statuses' => [
+    'status' => [
         'draft'             => 'ฉบับร่าง',
         'received'          => 'ได้รับแล้ว',
         'partial'           => 'บางส่วน',

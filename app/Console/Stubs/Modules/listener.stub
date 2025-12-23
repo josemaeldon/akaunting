@@ -3,16 +3,28 @@
 namespace $NAMESPACE$;
 
 use $EVENTNAME$;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class $CLASS$
 {
     /**
-     * Handle the event.
+     * Create the event listener.
      *
-     * @param $SHORTEVENTNAME$ $event
      * @return void
      */
-    public function handle($SHORTEVENTNAME$ $event)
+    public function __construct()
+    {
+        //
+    }
+
+    /**
+     * Handle the event.
+     *
+     * @param \$EVENTNAME$ $event
+     * @return void
+     */
+    public function handle(\$EVENTNAME$ $event)
     {
         //
     }

@@ -2,16 +2,17 @@
 
 return [
 
-    'sale_price'                => 'Pārdošanas cena',
-    'purchase_price'            => 'Iegādes cena',
-    'enter_item_description'    => 'Ievadiet aprakstu',
-    'billing'                   => 'Norēķini',
-    'sale_information'          => 'Pārdošanas informācija',
-    'purchase_information'      => 'Pārdošanas informācija',
+    'quantities'            => 'Daudzums|Daudzums',
+    'sales_price'           => 'Pārdošanas cena',
+    'purchase_price'        => 'Iegādes cena',
+    'sku'                   => 'Kods',
 
-    'form_description' => [
-        'general'               => 'Atlasiet kategoriju, lai padarītu pārskatus detalizētākus. Apraksts tiks aizpildīts, kad prece tiks atlasīta rēķinā vai pavadzīmē.',
-        'billing'               => 'Informācija par pārdošanu tiek izmantota rēķinos, bet informācija par pirkumu tiek izmantota pavadzīmēs. Nodoklis tiks piemērots gan rēķiniem, gan pavadzīmēm.',
+    'notification' => [
+        'message'       => [
+            'reminder' => 'You are receiving this email because only :quantity of :name has remained.',
+            'out_of_stock' => 'You are receiving this email because the :name is running out of stock.',
+        ],
+        'button'        => 'Skatīt tagad',
     ],
 
 ];

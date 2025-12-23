@@ -18,6 +18,5 @@ return [
     'sent' => 'Slaptažodžio keitimo nuoroda išsiųsta!',
     'token' => 'Šis slaptažodžio atnaujinimas negaliojantis.',
     'user' => "Vartotojas su tokiu el. pašu nerastas.",
-    'throttle' => 'Prašome palaukti prieš bandant dar kartą.',
 
 ];

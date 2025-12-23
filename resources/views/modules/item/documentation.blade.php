@@ -1,35 +1,48 @@
-<x-layouts.modules>
-    <x-slot name="title">
-        {{ trans('modules.documentation') }}
-    </x-slot>
+@extends('layouts.modules')
 
-    <x-slot name="buttons">
-        <x-link href="{{ route('apps.api-key.create') }}">
-            {{ trans('modules.api_key') }}
-        </x-link>
+@section('title', trans_choice('general.modules', 2))
 
-        <x-link href="{{ route('apps.my.index') }}">
-            {{ trans('modules.my_apps') }}
-        </x-link>
-    </x-slot>
+@section('new_button')
+    <span class="new-button"><a href="{{ url('apps/token/create') }}" class="btn btn-success btn-sm"><span class="fa fa-key"></span> &nbsp;{{ trans('modules.api_token') }}</a></span>
+    <span class="new-button"><a href="{{ url('apps/my')  }}" class="btn btn-default btn-sm"><span class="fa fa-user"></span> &nbsp;{{ trans('modules.my_apps') }}</a></span>
+@endsection
 
-    <x-slot name="content">
-        <div>
-            <div class="app-documentation flex flex-col gap-4 py-4">
-                @if ($documentation)
-                    {!! $documentation->body !!}
-                @else
-                    <x-empty-data />
-                @endif
+@section('content')
+    @include('partials.modules.bar')
+
+    <div class="row module">
+        <div class="col-md-12">
+            <div class="col-md-12 no-padding-left">
+                <div class="box box-success">
+                    <div class="box-body">
+                    @if ($documentation)
+                        {!! $documentation->body !!}
+                    @else
+                        {{ trans('general.na') }}
+                    @endif
+                    </div>
+                </div>
             </div>
 
-            <div class="flex flex-end">
-                <x-link href="{{ url($back) }}" class="px-6 py-1.5 hover:bg-gray-200 rounded-lg bg-light-gray">
-                    {{ trans('modules.back') }}
-                </x-link>
+            <div class="col-md-12 no-padding-left">
+                <ul class="pager nomargin">
+                    <li class="previous"><a href="{{  url($back) }}" class="btn btn-default btn-sm">&laquo; {{ trans('modules.back') }}</a></li>
+                </ul>
             </div>
         </div>
-    </x-slot>
+    </div>
+@endsection
 
-    <x-script folder="modules" file="apps" />
-</x-layouts.modules>
+@push('stylesheet')
+<style type="text/css">
+    .row.module h1 {
+        margin: 0;
+        font-size: 24px !important;
+    }
+
+    .row.module img {
+        width: 100%;
+        max-width: 900px;
+    }
+</style>
+@endpush

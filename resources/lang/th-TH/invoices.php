@@ -36,7 +36,7 @@ return [
     'send_invoice'          => 'Send Invoice',
     'get_paid'              => 'Get Paid',
 
-    'statuses' => [
+    'status' => [
         'draft'             => 'ฉบับร่าง',
         'sent'              => 'ส่ง',
         'viewed'            => 'ดูแล้ว',

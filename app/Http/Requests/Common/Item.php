@@ -2,11 +2,20 @@
 
 namespace App\Http\Requests\Common;
 
-use App\Abstracts\Http\FormRequest;
-use Illuminate\Support\Str;
+use App\Http\Requests\Request;
 
-class Item extends FormRequest
+class Item extends Request
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -14,71 +23,26 @@ class Item extends FormRequest
      */
     public function rules()
     {
-        $picture = 'nullable';
-        $sale_price = 'nullable|required_without:purchase_price';
-        $purchase_price = 'nullable|required_without:sale_price';
-
-        if ($this->files->get('picture')) {
-            $picture = 'mimes:' . config('filesystems.mimes')
-                    . '|between:0,' . config('filesystems.max_size') * 1024
-                    . '|dimensions:max_width=' . config('filesystems.max_width') . ',max_height=' . config('filesystems.max_height');
+        // Check if store or update
+        if ($this->getMethod() == 'PATCH') {
+            $id = $this->item->getAttribute('id');
+        } else {
+            $id = null;
         }
 
-        if ($this->request->get('sale_information') == 'true') {
-            $sale_price = 'required';
-        }
-
-        if ($this->request->get('purchase_information') == 'true') {
-            $purchase_price = 'required';
-        }
-
-        if ($this->request->get('sale_price')) {
-            $sale_price .= $this->maxSizePrice($this->request->get('sale_price'));
-        }
-
-        if ($this->request->get('purchase_price')) {
-            $purchase_price .= $this->maxSizePrice($this->request->get('purchase_price'));
-        }
+        // Get company id
+        $company_id = $this->request->get('company_id');
 
         return [
-            'type'              => 'required|string|in:product,service',
-            'name'              => 'required|string',
-            'sale_price'        => $sale_price . '|regex:/^(?=.*?[0-9])[0-9.,]+$/',
-            'purchase_price'    => $purchase_price . '|regex:/^(?=.*?[0-9])[0-9.,]+$/',
-            'tax_ids'           => 'nullable|array',
-            'category_id'       => 'nullable|integer',
-            'enabled'           => 'integer|boolean',
-            'picture'           => $picture,
-        ];
-    }
-
-    public function maxSizePrice($price)
-    {
-        $size = 14;
-
-        if (Str::contains($price, '.')) {
-            $size++;
-        }
-
-        if (Str::contains($price, ',')) {
-            $size++;
-        }
-
-        return '|max:' . $size;
-    }
-
-    public function messages()
-    {
-        $picture_dimensions = trans('validation.custom.invalid_dimension', [
-            'attribute'     => Str::lower(trans_choice('general.pictures', 1)),
-            'width'         => config('filesystems.max_width'),
-            'height'        => config('filesystems.max_height'),
-        ]);
-
-        return [
-            'picture.dimensions' => $picture_dimensions,
-            'sale_price.max'        => trans('validation.max.numeric', ['max' => 14]),
-            'purchase_price.max'    => trans('validation.max.numeric', ['max' => 14]),
+            'name' => 'required|string',
+            'sku' => 'required|string|unique:items,NULL,' . $id . ',id,company_id,' . $company_id . ',deleted_at,NULL',
+            'sale_price' => 'required',
+            'purchase_price' => 'required',
+            'quantity' => 'required|integer',
+            'tax_id' => 'nullable|integer',
+            'category_id' => 'nullable|integer',
+            'enabled' => 'integer|boolean',
+            'picture' => 'mimes:' . setting('general.file_types') . '|between:0,' . setting('general.file_size') * 1024,
         ];
     }
 }

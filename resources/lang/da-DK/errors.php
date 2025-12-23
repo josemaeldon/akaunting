@@ -2,24 +2,23 @@
 
 return [
 
-    'title' => [
-        '403'       => 'Oops! Ingen adgang',
-        '404'       => 'Oops! Side ikke fundet',
-        '500'       => 'Oops! Noget gik galt',
+    'forbidden_access' => 'Ingen adgang',
+    'error_page'       => 'Fejlside',
+    'page_not_found'   => 'Side ikke fundet',
+
+    'body'   => [
+        'forbidden_access' => 'Oops! Ingen Adgang.',
+        'error_page' => 'Ups! noget gik galt.',
+        'page_not_found' => 'Oops! Siden blev ikke fundet.',
     ],
 
-    'header' => [
-        '403'       => '403 Forbudt',
-        '404'       => '404 Ikke Fundet',
-        '500'       => '500 Intern Server Fejl',
-    ],
-
-    'message' => [
-        '403'       => 'Du har ikke adgang til denne side',
-        '404'       => 'Vi kunne ikke finde siden du kikkede efter.',
-        '500'       => 'Vi vil arbejde på at fixe dette straks.',
-        'record'    => 'Vi kunne ikke finde det, du ledte efter.',
-        'amount'    => 'Denne side indeholder ugyldige beløb! Kontakt venligst systemadministratoren.',
+    'messages'   => [
+        'forbidden_access' => 'Du kan ikke få adgang til denne side.
+        i mellemtiden kan du <a href=":link">returner til dashboard</a>.',
+        'error_page' => 'Vi vil fikse det så hurtigt som muligt. 
+        i mellemtiden kan du <a href=":link">returnere til dashboard</a>.',
+        'page_not_found' => 'Vi kunne ikke finde den side du søgte.
+        i mellemtiden kan du <a href=":link">vende tilbage til dashboard</a>.',
     ],
 
 ];

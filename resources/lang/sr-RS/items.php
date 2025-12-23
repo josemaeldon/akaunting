@@ -3,7 +3,7 @@
 return [
 
     'quantities'            => 'Количине|Количина',
-    'sale_price'           => 'Продајна цена',
+    'sales_price'           => 'Продајна цена',
     'purchase_price'        => 'Набавна цена',
     'sku'                   => 'СКУ',
 

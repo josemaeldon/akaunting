@@ -2,27 +2,22 @@
 
 namespace App\Http\Controllers\Api\Common;
 
-use App\Abstracts\Http\ApiController;
-use App\Utilities\Date;
+use App\Http\Controllers\ApiController;
+use Date;
+use Dingo\Api\Routing\Helpers;
 
 class Ping extends ApiController
 {
-    /**
-     * Instantiate a new controller instance.
-     */
-    public function __construct()
-    {
-        // do nothing but override permissions
-    }
+    use Helpers;
 
     /**
      * Responds with a status for heath check.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function pong()
+    public function index()
     {
-        return response()->json([
+        return $this->response->array([
             'status' => 'ok',
             'timestamp' => Date::now(),
         ]);

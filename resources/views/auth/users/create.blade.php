@@ -1,77 +1,90 @@
-<x-layouts.admin>
-    <x-slot name="title">{{ trans('general.title.invite', ['type' => trans_choice('general.users', 1)]) }}</x-slot>
+@extends('layouts.admin')
 
-    <x-slot name="favorite"
-        title="{{ trans('general.title.invite', ['type' => trans_choice('general.users', 1)]) }}"
-        icon="people"
-        route="users.create"
-    ></x-slot>
+@section('title', trans('general.title.new', ['type' => trans_choice('general.users', 1)]))
 
-    <x-slot name="content">
-        <x-form.container>
-            <x-form id="user" route="users.store">
-                <x-form.section>
-                    <x-slot name="head">
-                        <x-form.section.head title="{{ trans('auth.personal_information') }}" description="{{ trans('auth.form_description.personal') }}" />
-                    </x-slot>
+@section('content')
+    <!-- Default box -->
+    <div class="box box-success">
+        {!! Form::open(['url' => 'auth/users', 'files' => true, 'role' => 'form', 'class' => 'form-loading-button']) !!}
 
-                    <x-slot name="body">
-                        <div class="sm:col-span-3 grid gap-x-8 gap-y-6 grid-rows-2">
-                            <x-form.group.text name="name" label="{{ trans('general.name') }}" />
+        <div class="box-body">
+            {{ Form::textGroup('name', trans('general.name'), 'id-card-o') }}
 
-                            <x-form.group.email name="email" label="{{ trans('general.email') }}" />
-                        </div>
+            {{ Form::emailGroup('email', trans('general.email'), 'envelope') }}
 
-                        <div class="sm:col-span-3">
-                            @if (setting('default.use_gravatar', '0') == '1')
-                                <x-form.group.text name="fake_picture" label="{{ trans_choice('general.pictures', 1) }}" disabled placeholder="{{ trans('settings.default.use_gravatar') }}" />
-                            @else
-                                <x-form.group.file name="picture" label="{{ trans_choice('general.pictures', 1) }}" not-required />
-                            @endif
-                        </div>
-                    </x-slot>
-                </x-form.section>
+            {{ Form::passwordGroup('password', trans('auth.password.current'), 'key') }}
 
-                <x-form.section>
-                    <x-slot name="head">
-                        <x-form.section.head title="{{ trans('general.assign') }}" description="{!! trans('auth.form_description.assign', ['url' => $roles_url]) !!}" />
-                    </x-slot>
+            {{ Form::passwordGroup('password_confirmation', trans('auth.password.current_confirm'), 'key') }}
 
-                    <x-slot name="body">
-                        <x-form.group.select multiple remote name="companies" label="{{ trans_choice('general.companies', 2) }}" :options="$companies" remote_action="{{ route('companies.index') }}" form-group-class="sm:col-span-6" />
+            {{ Form::selectGroup('locale', trans_choice('general.languages', 1), 'flag', language()->allowed(), setting('general.default_locale')) }}
 
-                        @if (module_is_enabled('roles'))
-                            @can('read-roles-roles')
-                                <x-form.group.select name="roles" label="{{ trans_choice('general.roles', 1) }}" :options="$roles" change="onChangeRole" />
-                            @endcan
-                        @else
-                            @role('admin|manager')
-                                <x-form.group.select name="roles" label="{{ trans_choice('general.roles', 1) }}" :options="$roles" change="onChangeRole" />
-                            @endrole
-                        @endif
-                    </x-slot>
-                </x-form.section>
+            @if (setting('general.use_gravatar', '0') == '1')
+                @stack('picture_input_start')
+                <div class="form-group col-md-6">
+                    {!! Form::label('picture', trans_choice('general.pictures', 1), ['class' => 'control-label']) !!}
+                    <div class="input-group">
+                        <div class="input-group-addon"><i class="fa fa-picture-o"></i></div>
+                        {!! Form::text('fake_picture', null, ['id' => 'fake_picture', 'class' => 'form-control', 'disabled' => 'disabled', 'placeholder' => trans('settings.appearance.use_gravatar')]) !!}
+                    </div>
+                </div>
+                @stack('picture_input_end')
+            @else
+                {{ Form::fileGroup('picture',  trans_choice('general.pictures', 1)) }}
+            @endif
 
-                <x-form.section>
-                    <x-slot name="head">
-                        <x-form.section.head title="{{ trans('general.preferences') }}" description="{{ trans('auth.form_description.preferences') }}" />
-                    </x-slot>
+            @permission('read-common-companies')
+            {{ Form::checkboxGroup('companies', trans_choice('general.companies', 2), $companies, 'company_name') }}
+            @endpermission
 
-                    <x-slot name="body">
-                        <x-form.group.select name="landing_page" label="{!! trans('auth.landing_page') !!}" :options="$landing_pages" dynamicOptions="landing_pages" selected="dashboard" />
+            @permission('read-auth-roles')
+            {{ Form::checkboxGroup('roles', trans_choice('general.roles', 2), $roles, 'display_name') }}
+            @endpermission
 
-                        <x-form.group.locale />
-                    </x-slot>
-                </x-form.section>
+            {{ Form::radioGroup('enabled', trans('general.enabled')) }}
+        </div>
+        <!-- /.box-body -->
 
-                <x-form.section>
-                    <x-slot name="foot">
-                        <x-form.buttons cancel-route="users.index" />
-                    </x-slot>
-                </x-form.section>
-            </x-form>
-        </x-form.container>
-    </x-slot>
+        <div class="box-footer">
+            {{ Form::saveButtons('auth/users') }}
+        </div>
 
-    <x-script folder="auth" file="users" />
-</x-layouts.admin>
+        {!! Form::close() !!}
+    </div>
+@endsection
+
+@push('js')
+    <script src="{{ asset('public/js/bootstrap-fancyfile.js') }}"></script>
+    <script src="{{ asset('vendor/almasaeed2010/adminlte/plugins/iCheck/icheck.min.js') }}"></script>
+@endpush
+
+@push('css')
+    <link rel="stylesheet" href="{{ asset('public/css/bootstrap-fancyfile.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/almasaeed2010/adminlte/plugins/iCheck/square/green.css') }}">
+@endpush
+
+@push('scripts')
+    <script type="text/javascript">
+        var text_yes = '{{ trans('general.yes') }}';
+        var text_no = '{{ trans('general.no') }}';
+
+        $(document).ready(function(){
+            $("#locale").select2({
+                placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.languages', 1)]) }}"
+            });
+
+            @if (setting('general.use_gravatar', '0') != '1')
+            $('#picture').fancyfile({
+                text  : '{{ trans('general.form.select.file') }}',
+                style : 'btn-default',
+                placeholder : '{{ trans('general.form.no_file_selected') }}'
+            });
+            @endif
+
+            $('input[type=checkbox]').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+                increaseArea: '20%' // optional
+            });
+        });
+    </script>
+@endpush

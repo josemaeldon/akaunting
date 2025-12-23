@@ -1,20 +1,28 @@
 <?php
 
-// Define minimum supported PHP version
-define('AKAUNTING_PHP', '8.1.0');
+define('LARAVEL_START', microtime(true));
 
-// Check PHP version
-if (version_compare(PHP_VERSION, AKAUNTING_PHP, '<')) {
-    $message = 'Error: Ask your hosting provider to use PHP ' . AKAUNTING_PHP . ' or higher for HTTP, CLI, and php command.' . PHP_EOL . PHP_EOL . 'Current PHP version: ' . PHP_VERSION . PHP_EOL;
+/*
+|--------------------------------------------------------------------------
+| Register The Composer Auto Loader
+|--------------------------------------------------------------------------
+|
+| Composer provides a convenient, automatically generated class loader
+| for our application. We just need to utilize it! We'll require it
+| into the script here so that we do not have to worry about the
+| loading of any our classes "manually". Feels great to relax.
+|
+*/
 
-    if (defined('STDOUT')) {
-        fwrite(STDOUT, $message);
-    } else {
-        echo($message);
+require __DIR__.'/../vendor/autoload.php';
+
+// Load composer for modules
+foreach (glob(__DIR__ . '/../modules/*') as $folder) {
+    $autoload = $folder . '/vendor/autoload.php';
+
+    if (!is_file($autoload)) {
+        continue;
     }
 
-    die(1);
+    require $autoload;
 }
-
-// Load composer for core
-require __DIR__ . '/../vendor/autoload.php';

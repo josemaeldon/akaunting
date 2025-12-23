@@ -2,30 +2,15 @@
 
 return [
 
-    'accounts' => [
-        'cash'              => 'В брой',
-    ],
-
-    'categories' => [
-        'deposit'           => 'Депозит',
-        'sales'             => 'Приходи',
-    ],
-
-    'currencies' => [
-        'usd'               => 'Американски долар',
-    ],
-
-    'offline_payments' => [
-        'cash'              => 'В брой',
-        'bank'              => 'Банков превод',
-    ],
-
-    'reports' => [
-        'income'            => 'Месечен приход по категории.',
-        'expense'           => 'Месечен разход по категории.',
-        'income_expense'    => 'Месечен приход срещу разход по категории.',
-        'tax'               => 'Обобщен данък за четиримесечие.',
-        'profit_loss'       => 'Печалба срещу загуба по категория за четиримесечие.',
-    ],
+    'accounts_cash'         => 'В брой',
+    'categories_deposit'    => 'Депозит',
+    'categories_sales'      => 'Продажби',
+    'currencies_usd'        => 'Американски долар',
+    'currencies_eur'        => 'Евро',
+    'currencies_gbp'        => 'Британска лира',
+    'currencies_try'        => 'Турска лира',
+    'taxes_exempt'          => 'Освободени от данъци',
+    'taxes_normal'          => 'Нормален данък',
+    'taxes_sales'           => 'Данък продажби',
 
 ];

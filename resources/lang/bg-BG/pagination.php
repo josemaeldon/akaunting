@@ -2,8 +2,8 @@
 
 return [
 
-    'previous'              => 'Предишен',
-    'next'                  => 'Следващ',
-    'showing'               => ':first-:last от :total записа.',
-    'page'                  => 'на страница.',
+    'previous'              => '&laquo; Предишна',
+    'next'                  => 'Следваща &raquo;',
+    'showing'               => 'Показване на :first до :last от общо :total :type',
+
 ];

@@ -21,7 +21,6 @@ return [
         'disabled'          => ':feature 必須關閉！',
         'extension'         => '必須安裝並載入 :extension ！',
         'directory'         => ':directory 必須可寫入！',
-        'executable'        => 'PHP CLI 可執行文件未定義/無法運行，或者其版本不是或高於：php_version！ 請向您的託管公司要求正確設置 PHP_BINARY 或 PHP_PATH 的環境參數。',
     ],
 
     'database' => [
@@ -39,7 +38,6 @@ return [
     ],
 
     'error' => [
-        'php_version'       => '錯誤：詢問你的主機供應商以使用 PHP :php_version 或更新版本的 HTTP 和 CLI。',
         'connection'        => '錯誤：無法連線到資料庫！請確認所提供的資訊正確無誤。',
     ],
 

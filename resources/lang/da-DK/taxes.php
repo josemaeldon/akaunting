@@ -7,6 +7,5 @@ return [
     'normal'                => 'Normal',
     'inclusive'             => 'Inklusiv',
     'compound'              => 'Sammensatte',
-    'fixed'                 => 'Fast',
-    'withholding'           => 'Tilbageholdt',
+
 ];

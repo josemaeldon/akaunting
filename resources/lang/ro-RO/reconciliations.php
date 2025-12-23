@@ -2,21 +2,15 @@
 
 return [
 
-    'reconcile'             => 'Reconciliere',
-    'unreconcile'           => 'Anulare reconciliere',
-    'reconciled'            => 'Reconciliat',
-    'opening_balance'       => 'Soldul inițial',
-    'closing_balance'       => 'Soldul final',
-    'unreconciled'          => 'Neconsolidat',
-    'transactions'          => 'Tranzacții',
+    'reconcile'             => 'Reconcile',
+    'reconciled'            => 'Reconciled',
+    'closing_balance'       => 'Closing Balance',
+    'unreconciled'          => 'Unreconciled',
+    'list_transactions'     => 'Afișeayă tranzacție',
     'start_date'            => 'Data de început',
     'end_date'              => 'Data de sfârșit',
-    'cleared_amount'        => 'Sumă reconciliată',
+    'cleared_amount'        => 'Cleared Amount',
     'deposit'               => 'Depozit',
-    'withdrawal'            => 'Retragere',
-    'reconciled_amount'     => 'Reconciliat',
-    'in_progress'           => 'În desfășurare',
-    'save_draft'            => 'Salvează ca ciornă',
-    'irreconcilable'        => 'ireconciliabil',
+    'withdrawal'            => 'Withdrawal',
 
 ];

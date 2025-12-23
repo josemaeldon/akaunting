@@ -2,18 +2,20 @@
 
 return [
 
-    'api_key'               => 'API Raktas',
+    'title'                 => 'API raktas',
+    'api_token'             => 'Raktas',
     'my_apps'               => 'Mano programėlės',
-    'pre_sale'              => 'Pre-Sale',
     'top_paid'              => 'Geriausios mokamos',
     'new'                   => 'Nauji',
     'top_free'              => 'Geriausios nemokamos',
     'free'                  => 'NEMOKAMOS',
+    'search'                => 'Paieška',
     'install'               => 'Įrašyti',
     'buy_now'               => 'Pirkti dabar',
-    'get_api_key'           => 'Norėdami gauti API Raktą <a href=":url" target="_blank">spauskite čia</a>.',
+    'token_link'            => '<a href="https://akaunting.com/tokens" target="_blank">Spauskite čia</a>, kad gautumėte savo API raktą.',
     'no_apps'               => 'Nėra programėlių šioje kategorijoje.',
-    'become_developer'      => 'Are you a developer? <a href=":url" target="_blank">Here</a> you can learn how to create an app and start selling today!',
+    'developer'             => 'Ar esate kūrėjas? <a href="https://akaunting.com/blog/akaunting-app-store" target="_blank">Čia</a> galite sužinoti, kaip sukurti programėlę ir pradėti pardavinėti šiandien!',
+
     'recommended_apps'      => 'Rekomenduojamos programėlės',
 
     'about'                 => 'Apie',
@@ -35,30 +37,30 @@ return [
         'installation'      => 'Įrašymas',
         'faq'               => 'DUK',
         'changelog'         => 'Pakeitimų sąrašas',
-        'reviews'           => 'Atsiliepimai',
+        'reviews'            => 'Atsiliepimai',
     ],
 
     'installation' => [
         'header'            => 'Įrašymas',
-        'download'          => 'Parsisiunčiamas :module',
+        'download'          => 'Parsisiunčiamas :module failas.',
         'unzip'             => 'Išskleidžiami :module failai.',
         'file_copy'         => 'Kopijuojami :module failai.',
-        'finish'            => 'Užbaigiamas :module įrašymas',
-        'redirect'          => ':module įrašytas, nukreipiam į atnuajinimų puslapį',
-        'install'           => 'Įrašomas :module',
+        'migrate'           => 'Įrašomi :module atnaujinimai.',
+        'finish'            => 'Atnaujinimai įrašyti. Jūs būsite nukreipti į Atnaujinimų Centrą.',
+        'install'           => 'Įrašomi :module failai.',
     ],
 
     'errors' => [
-        'download'          => 'Negalima parsisiųsti :module',
-        'zip'               => 'Not able to create :module zip file',
-        'unzip'             => 'Not able to unzip :module',
-        'file_copy'         => 'Not able to copy :module files',
-        'finish'            => 'Not able to finalize :module installation',
+        'download' => 'Negalima parsisiųsti :module!',
+        'upload' => 'Negalima įrašyti parsiųsto modulio :module!',
+        'unzip' => 'Nagelima išpakuoti (unzip) :module!',
+        'file_copy' => 'Negalima kopijuoti :module failų!',
+        'migrate' => ':module migracija sugadinta!',
+        'migrate core' => ':module yra naujausios versijos.',
     ],
 
     'badge' => [
-        'installed'         => 'Įrašytas',
-        'pre_sale'          => 'Pre-Sale',
+        'installed' => 'Įrašytas',
     ],
 
     'button' => [
@@ -68,16 +70,14 @@ return [
     ],
 
     'my' => [
-        'purchased'         => 'Nupirkta',
-        'installed'         => 'Įrašyta',
+        'purchased' => 'Nupirkta',
+        'installed' => 'Įrašyta',
     ],
 
     'reviews' => [
         'button' => [
-            'add'           => 'Pridėti apžvalgą'
+            'add' => 'Pridėti apžvalgą'
         ],
-
-        'na'                => 'Nėra apžvalgų.'
-    ],
-
+        'na' => 'Nėra apžvalgų.'
+    ]
 ];

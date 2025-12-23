@@ -1,43 +1,64 @@
-<x-layouts.admin>
-    <x-slot name="title">
-        {{ trans('general.title.new', ['type' => trans_choice('general.categories', 1)]) }}
-    </x-slot>
+@extends('layouts.admin')
 
-    <x-slot name="favorite"
-        title="{{ trans('general.title.new', ['type' => trans_choice('general.categories', 1)]) }}"
-        icon="folder"
-        route="categories.create"
-    ></x-slot>
+@section('title', trans('general.title.new', ['type' => trans_choice('general.categories', 1)]))
 
-    <x-slot name="content">
-        <x-form.container>
-            <x-form id="category" route="categories.store">
-                <x-form.section>
-                    <x-slot name="head">
-                        <x-form.section.head title="{{ trans('general.general') }}" description="{{ trans('categories.form_description.general') }}" />
-                    </x-slot>
+@section('content')
+    <!-- Default box -->
+    <div class="box box-success">
+        {!! Form::open(['url' => 'settings/categories', 'role' => 'form', 'class' => 'form-loading-button']) !!}
 
-                    <x-slot name="body">
-                        <x-form.group.text name="name" label="{{ trans('general.name') }}" />
+        <div class="box-body">
+            {{ Form::textGroup('name', trans('general.name'), 'id-card-o') }}
 
-                        <x-form.group.color name="color" label="{{ trans('general.color') }}" />
+            {{ Form::selectGroup('type', trans_choice('general.types', 1), 'bars', $types, config('general.types')) }}
 
-                        <x-form.group.select name="type" label="{{ trans_choice('general.types', 1) }}" :options="$types" :selected="config('general.types')" change="updateParentCategories" />
+            @stack('color_input_start')
+            <div class="form-group col-md-6 required {{ $errors->has('color') ? 'has-error' : ''}}">
+                {!! Form::label('color', trans('general.color'), ['class' => 'control-label']) !!}
+                <div  id="category-color-picker" class="input-group colorpicker-component">
+                    <div class="input-group-addon"><i></i></div>
+                    {!! Form::text('color', '#00a65a', ['id' => 'color', 'class' => 'form-control', 'required' => 'required']) !!}
+                </div>
+                {!! $errors->first('color', '<p class="help-block">:message</p>') !!}
+            </div>
+            @stack('color_input_end')
 
-                        <x-form.group.select name="parent_id" label="{{ trans('general.parent') . ' ' . trans_choice('general.categories', 1) }}" :options="[]" not-required dynamicOptions="categoriesBasedTypes" sort-options="false" v-disabled="selected_type" />
+            {{ Form::radioGroup('enabled', trans('general.enabled')) }}
+        </div>
+        <!-- /.box-body -->
 
-                        <x-form.input.hidden name="categories" value="{{ json_encode($categories) }}" />
-                    </x-slot>
-                </x-form.section>
+        <div class="box-footer">
+            {{ Form::saveButtons('settings/categories') }}
+        </div>
+        <!-- /.box-footer -->
 
-                <x-form.section>
-                    <x-slot name="foot">
-                        <x-form.buttons cancel-route="categories.index" />
-                    </x-slot>
-                </x-form.section>
-            </x-form>
-        </x-form.container>
-    </x-slot>
+        {!! Form::close() !!}
+    </div>
+@endsection
 
-    <x-script folder="settings" file="categories" />
-</x-layouts.admin>
+@push('js')
+    <script src="{{ asset('vendor/almasaeed2010/adminlte/plugins/colorpicker/bootstrap-colorpicker.js') }}"></script>
+@endpush
+
+@push('css')
+    <link rel="stylesheet" href="{{ asset('vendor/almasaeed2010/adminlte/plugins/colorpicker/bootstrap-colorpicker.css') }}">
+@endpush
+
+@push('scripts')
+    <script type="text/javascript">
+        var text_yes = '{{ trans('general.yes') }}';
+        var text_no = '{{ trans('general.no') }}';
+
+        $(document).ready(function(){
+            $('#enabled_1').trigger('click');
+
+            $('#name').focus();
+
+            $("#type").select2({
+                placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.types', 1)]) }}"
+            });
+
+            $('#category-color-picker').colorpicker();
+        });
+    </script>
+@endpush

@@ -33,7 +33,7 @@ return [
     'send_mail'         => 'Gửi Email',
     'all_invoices'      => 'Login to view all invoices',
 
-    'statuses' => [
+    'status' => [
         'draft'         => 'Bản nháp',
         'sent'          => 'Đã gửi',
         'viewed'        => 'Đã xem',

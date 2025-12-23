@@ -24,7 +24,7 @@ class $CLASS$ extends Migration
     public function down()
     {
         Schema::create('$TABLE$', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
 $FIELDS$
             $table->timestamps();
         });

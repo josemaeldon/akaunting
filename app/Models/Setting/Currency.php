@@ -2,15 +2,10 @@
 
 namespace App\Models\Setting;
 
-use App\Abstracts\Model;
-use App\Models\Document\Document;
-use App\Traits\Contacts;
-use App\Traits\Transactions;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Model;
 
 class Currency extends Model
 {
-    use Contacts, HasFactory, Transactions;
 
     protected $table = 'currencies';
 
@@ -19,31 +14,7 @@ class Currency extends Model
      *
      * @var array
      */
-    protected $fillable = [
-        'company_id',
-        'name',
-        'code',
-        'rate',
-        'enabled',
-        'precision',
-        'symbol',
-        'symbol_first',
-        'decimal_mark',
-        'thousands_separator',
-        'created_from',
-        'created_by',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'rate'          => 'double',
-        'enabled'       => 'boolean',
-        'deleted_at'    => 'datetime',
-    ];
+    protected $fillable = ['company_id', 'name', 'code', 'rate', 'enabled', 'precision', 'symbol', 'symbol_first', 'decimal_mark', 'thousands_separator'];
 
     /**
      * Sortable columns.
@@ -57,71 +28,50 @@ class Currency extends Model
         return $this->hasMany('App\Models\Banking\Account', 'currency_code', 'code');
     }
 
-    public function documents()
-    {
-        return $this->hasMany('App\Models\Document\Document', 'currency_code', 'code');
-    }
-
-    public function bills()
-    {
-        return $this->documents()->where('documents.type', Document::BILL_TYPE);
-    }
-
-    public function contacts()
-    {
-        return $this->hasMany('App\Models\Common\Contact', 'currency_code', 'code');
-    }
-
     public function customers()
     {
-        return $this->contacts()->whereIn('contacts.type', (array) $this->getCustomerTypes());
-    }
-
-    public function expense_transactions()
-    {
-        return $this->transactions()->whereIn('transactions.type', (array) $this->getExpenseTypes());
-    }
-
-    public function income_transactions()
-    {
-        return $this->transactions()->whereIn('transactions.type', (array) $this->getIncomeTypes());
+        return $this->hasMany('App\Models\Income\Customer', 'currency_code', 'code');
     }
 
     public function invoices()
     {
-        return $this->documents()->where('documents.type', Document::INVOICE_TYPE);
+        return $this->hasMany('App\Models\Income\Invoice', 'currency_code', 'code');
     }
 
-    public function transactions()
+    public function invoice_payments()
     {
-        return $this->hasMany('App\Models\Banking\Transaction', 'currency_code', 'code');
+        return $this->hasMany('App\Models\Income\InvoicePayment', 'currency_code', 'code');
     }
 
-    public function vendors()
+    public function revenues()
     {
-        return $this->contacts()->whereIn('contacts.type', (array) $this->getVendorTypes());
+        return $this->hasMany('App\Models\Income\Revenue', 'currency_code', 'code');
+    }
+
+    public function bills()
+    {
+        return $this->hasMany('App\Models\Expense\Bill', 'currency_code', 'code');
+    }
+
+    public function bill_payments()
+    {
+        return $this->hasMany('App\Models\Expense\BillPayment', 'currency_code', 'code');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany('App\Models\Expense\Payment', 'currency_code', 'code');
     }
 
     /**
-     * Get the default currency.
+     * Convert rate to double.
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  string  $value
+     * @return void
      */
-    public function default()
+    public function setRateAttribute($value)
     {
-        return $this->code(default_currency())->first();
-    }
-
-    /**
-     * Scope currency by code.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param mixed $code
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeCode($query, $code)
-    {
-        return $query->where($this->qualifyColumn('code'), $code);
+        $this->attributes['rate'] = (double) $value;
     }
 
     /**
@@ -132,10 +82,10 @@ class Currency extends Model
     public function getPrecisionAttribute($value)
     {
         if (is_null($value)) {
-            return currency($this->code)->getPrecision();
+            return config('money.' . $this->code . '.precision');
         }
 
-        return (int) $value;
+        return $value;
     }
 
     /**
@@ -146,7 +96,7 @@ class Currency extends Model
     public function getSymbolAttribute($value)
     {
         if (is_null($value)) {
-            return currency($this->code)->getSymbol();
+            return config('money.' . $this->code . '.symbol');
         }
 
         return $value;
@@ -160,7 +110,7 @@ class Currency extends Model
     public function getSymbolFirstAttribute($value)
     {
         if (is_null($value)) {
-            return currency($this->code)->isSymbolFirst();
+            return config('money.' . $this->code . '.symbol_first');
         }
 
         return $value;
@@ -174,7 +124,7 @@ class Currency extends Model
     public function getDecimalMarkAttribute($value)
     {
         if (is_null($value)) {
-            return currency($this->code)->getDecimalMark();
+            return config('money.' . $this->code . '.decimal_mark');
         }
 
         return $value;
@@ -188,52 +138,9 @@ class Currency extends Model
     public function getThousandsSeparatorAttribute($value)
     {
         if (is_null($value)) {
-            return currency($this->code)->getThousandsSeparator();
+            return config('money.' . $this->code . '.thousands_separator');
         }
 
         return $value;
-    }
-
-    /**
-     * Get the line actions.
-     *
-     * @return array
-     */
-    public function getLineActionsAttribute()
-    {
-        $actions = [];
-
-        $actions[] = [
-            'title' => trans('general.edit'),
-            'icon' => 'edit',
-            'url' => route('currencies.edit', $this->id),
-            'permission' => 'update-settings-currencies',
-            'attributes' => [
-                'id' => 'index-line-actions-edit-currency-' . $this->id,
-            ],
-        ];
-
-        $actions[] = [
-            'type' => 'delete',
-            'icon' => 'delete',
-            'route' => 'currencies.destroy',
-            'permission' => 'delete-settings-currencies',
-            'attributes' => [
-                'id' => 'index-line-actions-delete-currency-' . $this->id,
-            ],
-            'model' => $this,
-        ];
-
-        return $actions;
-    }
-
-    /**
-     * Create a new factory instance for the model.
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
-     */
-    protected static function newFactory()
-    {
-        return \Database\Factories\Currency::new();
     }
 }

@@ -2,243 +2,90 @@
 
 namespace Tests\Feature\Auth;
 
-use App\Jobs\Auth\CreateUser;
-use App\Notifications\Auth\Invitation;
-use Illuminate\Support\Facades\Notification;
+use App\Models\Auth\Role;
+use App\Models\Auth\User;
 use Tests\Feature\FeatureTestCase;
 
 class UsersTest extends FeatureTestCase
 {
+
     public function testItShouldSeeUserListPage()
     {
         $this->loginAs()
             ->get(route('users.index'))
-            ->assertOk()
+            ->assertStatus(200)
             ->assertSeeText(trans_choice('general.users', 2));
-    }
-
-    public function testItShouldSeePendingUserListPage()
-    {
-        $request = $this->getRequest();
-
-        $user = $this->dispatch(new CreateUser($request));
-
-        $this->loginAs()
-            ->get(route('users.index'))
-            ->assertOk()
-            ->assertSeeTextInOrder([
-                $user->name,
-                trans('documents.statuses.pending')
-            ])
-            ->assertSee(route('users.invite', $user->id));
     }
 
     public function testItShouldSeeUserCreatePage()
     {
         $this->loginAs()
             ->get(route('users.create'))
-            ->assertOk()
-            ->assertSeeText(trans('general.title.invite', ['type' => trans_choice('general.users', 1)]));
+            ->assertStatus(200)
+            ->assertSeeText(trans('general.title.new', ['type' => trans_choice('general.users', 1)]));
     }
 
     public function testItShouldCreateUser()
     {
-        Notification::fake();
-
-        $request = $this->getRequest();
-
-        $response = $this->loginAs()
-            ->post(route('users.store'), $request)
-            ->assertOk()
-            ->assertJson([
-                'success' => true,
-                'error' => false,
-                'message' => '',
-                'redirect' => route('users.show', user_model_class()::max('id')),
-            ])
-            ->json();
-
-        $user = user_model_class()::findOrFail($response['data']['id']);
+        $this->loginAs()
+            ->post(route('users.store'), $this->getUserRequest())
+            ->assertStatus(302)
+            ->assertRedirect(route('users.index'));
 
         $this->assertFlashLevel('success');
-
-        $this->assertModelExists($user);
-
-        $this->assertModelExists($user->invitation);
-
-        Notification::assertSentTo([$user], Invitation::class);
     }
 
     public function testItShouldSeeUserUpdatePage()
     {
-        $request = $this->getRequest();
-
-        $user = $this->dispatch(new CreateUser($request));
+        $user = User::create($this->getUserRequest());
 
         $this->loginAs()
-            ->get(route('users.edit', $user->id))
-            ->assertOk()
-            ->assertSee($user->email);
+            ->get(route('users.edit', ['user' => $user->id]))
+            ->assertStatus(200)
+            ->assertSee($user->name);
     }
 
     public function testItShouldUpdateUser()
     {
-        $request = $this->getRequest();
+        $request = $this->getUserRequest();
 
-        $user = $this->dispatch(new CreateUser($request));
+        $user = User::create($request);
 
-        $request['email'] = $this->faker->freeEmail;
+        $request['name'] = $this->faker->name;
 
         $this->loginAs()
             ->patch(route('users.update', $user->id), $request)
-            ->assertOk()
-            ->assertSee($request['email']);
+            ->assertStatus(302)
+            ->assertRedirect(route('users.index'));
 
         $this->assertFlashLevel('success');
-
-        $this->assertDatabaseHas('users', $this->getAssertRequest($request));
     }
 
     public function testItShouldDeleteUser()
     {
-        $request = $this->getRequest();
-
-        $user = $this->dispatch(new CreateUser($request));
+        $user = User::create($this->getUserRequest());
 
         $this->loginAs()
             ->delete(route('users.destroy', $user->id))
-            ->assertOk();
-
-        $this->assertFlashLevel('success');
-
-        $this->assertSoftDeleted('users', $this->getAssertRequest($request));
-
-        $this->assertSoftDeleted('user_invitations', ['user_id' => $user->id]);
-    }
-
-    public function testItShouldSeeLoginPage()
-    {
-        $this->get(route('login'))
-            ->assertOk()
-            ->assertSeeText(trans('auth.login_to'));
-    }
-
-    public function testItShouldLoginUser()
-    {
-        $request = $this->getRequest();
-
-        $user = $this->dispatch(new CreateUser($request));
-
-        $this->post(route('login'), ['email' => $user->email, 'password' => $user->password])
-            ->assertOk();
-
-        $this->isAuthenticated($user->user);
-    }
-
-    public function testItShouldNotLoginUser()
-    {
-        $request = $this->getRequest();
-
-        $user = $this->dispatch(new CreateUser($request));
-
-        $this->post(route('login'), ['email' => $user->email, 'password' => $this->faker->password()])
-            ->assertOk();
-
-        $this->assertGuest();
-    }
-
-    public function testItShouldLogoutUser()
-    {
-        $request = $this->getRequest();
-
-        $user = $this->dispatch(new CreateUser($request));
-
-        $this->loginAs()
-            ->get(route('logout', $user->id))
             ->assertStatus(302)
-            ->assertRedirect(route('login'));
-
-        $this->assertGuest();
-    }
-
-    public function testItShouldSeeRegisterPage()
-    {
-        $request = $this->getRequest();
-
-        $user = $this->dispatch(new CreateUser($request));
-
-        $this->get(route('register', ['token' => $user->invitation->token]))
-            ->assertOk();
-
-        $this->assertGuest();
-    }
-
-    public function testItShouldNotSeeRegisterPage()
-    {
-        $this->withExceptionHandling()
-            ->get(route('register', ['token' => $this->faker->uuid]))
-            ->assertForbidden();
-
-        $this->assertGuest();
-    }
-
-    public function testItShouldRegisterUser()
-    {
-        $request = $this->getRequest();
-
-        $user = $this->dispatch(new CreateUser($request));
-
-        $password = $this->faker->password;
-
-        $data = [
-            'token' => $user->invitation->token,
-            'password' => $password,
-            'password_confirmation' => $password,
-        ];
-
-        $this->post(route('register.store'), $data)
-            ->assertOk()
-            ->assertJson([
-                'redirect' => url('/'),
-            ]);
+            ->assertRedirect(route('users.index'));
 
         $this->assertFlashLevel('success');
-
-        $this->assertSoftDeleted('user_invitations', ['user_id' => $user->id]);
-
-        $this->isAuthenticated($user->user);
     }
 
-    public function testItShouldNotRegisterUser()
+    private function getUserRequest()
     {
-        $password = $this->faker->password;
+        $password = $this->faker->password();
 
-        $data = [
-            'token' => $this->faker->uuid,
+        return [
+            'name' => $this->faker->name,
+            'email' => $this->faker->email,
             'password' => $password,
             'password_confirmation' => $password,
+            'locale' => 'en-GB',
+            'companies' => [session('company_id')],
+            'roles' => Role::take(1)->pluck('id')->toArray(),
+            'enabled' => $this->faker->boolean ? 1 : 0,
         ];
-
-        $this->withExceptionHandling()
-            ->post(route('register.store'), $data)
-            ->assertForbidden();
-
-        $this->assertGuest();
-    }
-
-    public function getRequest()
-    {
-        return user_model_class()::factory()->enabled()->raw();
-    }
-
-    public function getAssertRequest($request)
-    {
-        unset($request['password']);
-        unset($request['password_confirmation']);
-        unset($request['remember_token']);
-        unset($request['roles']);
-        unset($request['companies']);
-
-        return $request;
     }
 }

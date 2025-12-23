@@ -13,7 +13,6 @@ return [
     'price'                 => 'Цена',
     'sub_total'             => 'Итого',
     'discount'              => 'Скидка',
-    'item_discount'         => 'Скидка на строку',
     'tax_total'             => 'Итого с налогом',
     'total'                 => 'Всего',
 
@@ -30,23 +29,31 @@ return [
     'add_payment'           => 'Добавить платёж',
     'mark_paid'             => 'Пометить как оплачено',
     'mark_sent'             => 'Пометить как отправлено',
-    'mark_viewed'           => 'Отметить просмотреные',
-    'mark_cancelled'        => 'Отметить как отменено',
     'download_pdf'          => 'Скачать PDF',
     'send_mail'             => 'Отправить E-mail',
     'all_invoices'          => 'Войти для просмотра всех счетов',
-    'create_invoice'        => 'Создать счёт',
-    'send_invoice'          => 'Отправить счёт',
-    'get_paid'              => 'Оплачено',
-    'accept_payments'       => 'Принимать онлайн-платежи',
+    'create_invoice'        => 'Create Invoice',
+    'send_invoice'          => 'Send Invoice',
+    'get_paid'              => 'Get Paid',
+    'accept_payments'       => 'Accept Online Payments',
+
+    'status' => [
+        'draft'             => 'Черновик',
+        'sent'              => 'Отправлено',
+        'viewed'            => 'Просмотрено',
+        'approved'          => 'Утверждено',
+        'partial'           => 'Частично',
+        'paid'              => 'Оплачено',
+    ],
 
     'messages' => [
+        'email_sent'        => 'Счет-фактура успешно отправлена на e-mail!',
+        'marked_sent'       => 'Счет-фактура помечена как успешно отправлена!',
         'email_required'    => 'Отсутствует e-mail адрес для этого клиента!',
         'draft'             => 'Это <b>ЧЕРНОВИК</b> счета, он будет проведен после отправки.',
 
         'status' => [
             'created'       => 'Создано :date',
-            'viewed'        => 'Просмотрено',
             'send' => [
                 'draft'     => 'Не отправлено',
                 'sent'      => 'Отправлено :date',
@@ -55,6 +62,11 @@ return [
                 'await'     => 'Ожидает оплаты',
             ],
         ],
+    ],
+
+    'notification' => [
+        'message'           => 'Вы получили это письмо потому, что у Вас имеются входящие :amount счета на :customer клиента.',
+        'button'            => 'Оплатить сейчас',
     ],
 
 ];

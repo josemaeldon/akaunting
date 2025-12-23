@@ -2,16 +2,17 @@
 
 return [
 
-    'sale_price'                => 'Preço de venda',
-    'purchase_price'            => 'Preço de Compra',
-    'enter_item_description'    => 'Digite a descrição do item',
-    'billing'                   => 'Cobrança',
-    'sale_information'          => 'Informações de venda',
-    'purchase_information'      => 'Informações de compra',
+    'quantities'            => 'Quantidade|Quantidades',
+    'sales_price'           => 'Preço de Venda',
+    'purchase_price'        => 'Preço de Compra',
+    'sku'                   => 'SKU',
 
-    'form_description' => [
-        'general'               => 'Selecione uma categoria para fazer seus relatórios mais detalhados. A descrição será preenchida quando o item for selecionado em uma fatura ou conta.',
-        'billing'               => 'As Informações de venda são usadas nas faturas, e as Informações de compra são utilizadas nas contas. A taxa será aplicada a faturas e contas.',
+    'notification' => [
+        'message'       => [
+            'reminder' => 'Você está recebendo este e-mail porque o item ":name" possui somente :quantity disponível no estoque.',
+            'out_of_stock' => 'Você está recebendo este e-mail porque o item :name está ficando sem estoque.',
+        ],
+        'button'        => 'Ver agora',
     ],
 
 ];

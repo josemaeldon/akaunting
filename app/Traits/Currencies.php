@@ -3,83 +3,81 @@
 namespace App\Traits;
 
 use Akaunting\Money\Money;
+use Akaunting\Money\Currency;
 
 trait Currencies
 {
-    public function convert($method, $amount, $from, $to, $rate, $format = false)
-    {
-        $money = Money::$to($amount, $format);
 
-        // No need to convert same currency
-        if ($from == $to) {
-            return $format ? $money->format() : $money->getAmount();
+    public function convert($amount, $code, $rate, $format = false)
+    {
+        $default = new Currency(setting('general.default_currency', 'USD'));
+
+        if ($format) {
+            $money = Money::$code($amount, true)->convert($default, (double) $rate)->format();
+        } else {
+            $money = Money::$code($amount)->convert($default, (double) $rate)->getAmount();
         }
 
-        try {
-            $money = $money->$method((double) $rate);
-        } catch (\Throwable $e) {
-            report($e);
+        return $money;
+    }
 
-            return 0;
+    public function divide($amount, $code, $rate, $format = false)
+    {
+        if ($format) {
+            $money = Money::$code($amount, true)->divide((double) $rate)->format();
+        } else {
+            $money = Money::$code($amount)->divide((double) $rate)->getAmount();
         }
 
-        return $format ? $money->format() : $money->getAmount();
+        return $money;
     }
 
-    public function convertToDefault($amount, $from, $rate, $format = false, $default = null)
+    public function reverseConvert($amount, $code, $rate, $format = false)
     {
-        $default_currency = $default ?? $this->getDefaultCurrency();
+        $default = setting('general.default_currency', 'USD');
 
-        return $this->convert('divide', $amount, $from, $default_currency, $rate, $format);
-    }
+        $code = new Currency($code);
 
-    public function convertFromDefault($amount, $to, $rate, $format = false, $default = null)
-    {
-        $default_currency = $default ?? $this->getDefaultCurrency();
-
-        return $this->convert('multiply', $amount, $default_currency, $to, $rate, $format);
-    }
-
-    public function convertBetween($amount, $from_code, $from_rate, $to_code, $to_rate)
-    {
-        $default_amount = $amount;
-
-        if ($from_code != default_currency()) {
-            $default_amount = $this->convertToDefault($amount, $from_code, $from_rate);
+        if ($format) {
+            $money = Money::$default($amount, true)->convert($code, (double) $rate)->format();
+        } else {
+            $money = Money::$default($amount)->convert($code, (double) $rate)->getAmount();
         }
 
-        $converted_amount = $this->convertFromDefault($default_amount, $to_code, $to_rate, false, $from_code);
-
-        return $converted_amount;
+        return $money;
     }
 
-    public function getAmountConvertedToDefault($format = false, $with_tax = true)
+    public function dynamicConvert($default, $amount, $code, $rate, $format = false)
     {
-        return $this->convertToDefault($this->getAmount($with_tax), $this->currency_code, $this->currency_rate, $format);
+        $code = new Currency($code);
+
+        if ($format) {
+            $money = Money::$default($amount, true)->convert($code, (double) $rate)->format();
+        } else {
+            $money = Money::$default($amount)->convert($code, (double) $rate)->getAmount();
+        }
+
+        return $money;
     }
 
-    public function getAmountConvertedFromDefault($format = false, $with_tax = true)
+    public function getConvertedAmount($format = false, $with_tax = true)
     {
-        return $this->convertFromDefault($this->getAmount($with_tax), $this->currency_code, $this->currency_rate, $format);
+        $amount = $with_tax ? $this->amount : (isset($this->amount_without_tax) ? $this->amount_without_tax : $this->amount);
+
+        return $this->convert($amount, $this->currency_code, $this->currency_rate, $format);
     }
 
-    public function getAmount($with_tax = true)
+    public function getReverseConvertedAmount($format = false, $with_tax = true)
     {
-        return $with_tax ? $this->amount : (isset($this->amount_without_tax) ? $this->amount_without_tax : $this->amount);
+        $amount = $with_tax ? $this->amount : (isset($this->amount_without_tax) ? $this->amount_without_tax : $this->amount);
+
+        return $this->reverseConvert($amount, $this->currency_code, $this->currency_rate, $format);
     }
 
-    public function getDefaultCurrency()
+    public function getDynamicConvertedAmount($format = false, $with_tax = true)
     {
-        return !empty($this->default_currency_code) ? $this->default_currency_code : default_currency();
-    }
+        $amount = $with_tax ? $this->amount : (isset($this->amount_without_tax) ? $this->amount_without_tax : $this->amount);
 
-    public function setDefaultCurrency($code)
-    {
-        $this->default_currency_code = $code;
-    }
-
-    public function unsetDefaultCurrency()
-    {
-        unset($this->default_currency_code);
+        return $this->dynamicConvert($this->default_currency_code, $amount, $this->currency_code, $this->currency_rate, $format);
     }
 }

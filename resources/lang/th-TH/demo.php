@@ -2,30 +2,15 @@
 
 return [
 
-    'accounts' => [
-        'cash'              => 'เงินสด',
-    ],
-
-    'categories' => [
-        'deposit'           => 'เงินฝาก',
-        'sales'             => 'การขาย',
-    ],
-
-    'currencies' => [
-        'usd'               => 'ดอลลาร์สหรัฐฯ',
-    ],
-
-    'offline_payments' => [
-        'cash'              => 'เงินสด',
-        'bank'              => 'โอนเงินผ่านธนาคาร',
-    ],
-
-    'reports' => [
-        'income'            => 'สรุปรายได้ต่อเดือนตามหมวดหมู่',
-        'expense'           => 'สรุปรายจ่ายต่อเดือนตามหมวดหมู่',
-        'income_expense'    => 'สรุปรายได้กับรายจ่ายต่อเดือนตามหมวดหมู่',
-        'tax'               => 'สรุปยอดภาษีต่อไตรมาส',
-        'profit_loss'       => 'สรุปยอดกำไรขาดทุนต่อไตรมาสตามหมวดหมู่',
-    ],
+    'accounts_cash'         => 'เงินสด',
+    'categories_deposit'    => 'เงินฝาก',
+    'categories_sales'      => 'ขาย',
+    'currencies_usd'        => 'ดอลลาร์สหรัฐฯ',
+    'currencies_eur'        => 'ยูโร',
+    'currencies_gbp'        => 'ปอนด์ อังกฤษ',
+    'currencies_try'        => 'ลีรา ตุรกี',
+    'taxes_exempt'          => 'ยกเว้นภาษี',
+    'taxes_normal'          => 'ภาษีปกติ',
+    'taxes_sales'           => 'ภาษีการขาย',
 
 ];

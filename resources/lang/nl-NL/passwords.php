@@ -13,9 +13,9 @@ return [
     |
     */
 
+    'password' => 'Wachtwoord moet 6 karakters lang zijn en gelijk zijn in beide wachtwoordvelden.',
     'reset' => 'Uw wachtwoord is opnieuw ingesteld!',
     'sent' => 'Wij hebben uw wachtwoord reset link per e-mail naar u verstuurd!',
-    'throttled' => 'Wacht alsjeblieft voordat je het opnieuw probeert.',
     'token' => 'Dit wachtwoord reset-token is ongeldig.',
     'user' => "Wij kunnen geen gebruiker met dat e-mail adres vinden.",
 

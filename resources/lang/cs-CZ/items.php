@@ -2,16 +2,17 @@
 
 return [
 
-    'sale_price'                => 'Prodejní cena',
-    'purchase_price'            => 'Nákupní cena',
-    'enter_item_description'    => 'Zadejte popis položky',
-    'billing'                   => 'Fakturace',
-    'sale_information'          => 'Informace o prodeji',
-    'purchase_information'      => 'Informace o nákupu',
+    'quantities'            => 'Množství | Množství',
+    'sales_price'           => 'Prodejní cena',
+    'purchase_price'        => 'Nákupní cena',
+    'sku'                   => 'SKU',
 
-    'form_description' => [
-        'general'               => 'Vyberte kategorii pro podrobnější přehledy. Popis bude vyplněn, až bude položka vybrána ve faktuře nebo účtu.',
-        'billing'               => 'Informace o prodeji jsou používány ve fakturách a informace o nákup se používají v účtech. Daň bude aplikována jak na faktury, tak na účty.',
+    'notification' => [
+        'message'       => [
+            'reminder' => 'Obdrželi jste tento e-mail, protože je k dispozici pouze :quantity položky :name.',
+            'out_of_stock' => 'Obdrželi jste tento email, protože dochází zásoby položky :name.',
+        ],
+        'button'        => 'Zobrazit',
     ],
 
 ];

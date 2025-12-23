@@ -2,42 +2,29 @@
 
 return [
 
-    'years'                         => 'År|År',
-    'preferences'                   => 'Inställning|Inställningar',
-    'this_year'                     => 'Årets',
-    'previous_year'                 => 'Föregående år',
-    'this_quarter'                  => 'Detta kvartal',
-    'previous_quarter'              => 'Föregående kvartal',
-    'last_12_months'                => 'Senaste 12 månaderna',
-    'profit_loss'                   => 'Vinst & förlust',
-    'income_summary'                => 'Inkomstrapport',
-    'expense_summary'               => 'Utgiftsrapports',
-    'income_expense_summary'        => 'Inkomst mot Utgifter',
-    'tax_summary'                   => 'Skatt Sammanfattning',
-    'gross_profit'                  => 'Bruttovinst',
-    'net_profit'                    => 'Nettoförtjänst',
-    'total_expenses'                => 'Summa kostnader',
-    'net'                           => 'Netto',
-    'income_expense'                => 'Inkomster & Utlägg',
-    'pin'                           => 'Fäst rapporten',
+    'this_year'             => 'Årets',
+    'previous_year'         => 'Föregående år',
+    'this_quarter'          => 'Detta kvartal',
+    'previous_quarter'      => 'Föregående kvartal',
+    'last_12_months'        => 'Senaste 12 månaderna',
+    'profit_loss'           => 'Vinst & förlust',
+    'gross_profit'          => 'Bruttovinst',
+    'net_profit'            => 'Nettoförtjänst',
+    'total_expenses'        => 'Summa kostnader',
+    'net'                   => 'Netto',
 
-    'income_expense_description'    => 'Få en överblick över dina inkomster och utgifter.',
-    'accounting_description'        => 'Få en tydlig bild av hur det går för ditt företag.',
-
-    'form_description' => [
-        'general'                   => 'Här kan du ange allmän information om rapporten såsom namn, typ, beskrivning etc.',
-        'preferences'               => 'Inställningar hjälper dig att anpassa dina rapporter.'
+    'summary' => [
+        'income'            => 'Inkomstrapport',
+        'expense'           => 'Utgiftsrapports',
+        'income_expense'    => 'Inkomst mot Utgifter',
+        'tax'               => 'Skatt Sammanfattning',
     ],
 
-    'charts' => [
-        'line'                      => 'Linje',
-        'bar'                       => 'Stapel',
-        'pie'                       => 'Tårt',
+    'quarter' => [
+        '1'                 => 'Jan-Mar',
+        '2'                 => 'Apr-Jun',
+        '3'                 => 'Jul-Sep',
+        '4'                 => 'Okt-Dec',
     ],
-
-    'pin_text' => [
-        'unpin_report'              => 'Lossa rapporten',
-        'pin_report'                => 'Fäst rapporten',
-    ]
 
 ];

@@ -2,8 +2,8 @@
 
 return [
 
-    'previous'              => 'Prethodno',
-    'next'                  => 'Dalje',
-    'showing'               => ': first-: last of: ukupno zapisa.',
-    'page'                  => 'po stranici.',
+    'previous'              => '&laquo; Prethodna',
+    'next'                  => 'Sljedeća &raquo;',
+    'showing'               => 'Prikazivanje :first do :last od :total :type',
+
 ];

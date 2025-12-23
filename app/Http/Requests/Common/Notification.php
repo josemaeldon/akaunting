@@ -2,10 +2,20 @@
 
 namespace App\Http\Requests\Common;
 
-use App\Abstracts\Http\FormRequest;
+use App\Http\Requests\Request;
 
-class Notification extends FormRequest
+class Notification extends Request
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

@@ -2,30 +2,12 @@
 
 return [
 
-    'accounts' => [
-        'cash'              => 'Tunai',
-    ],
-
-    'categories' => [
-        'deposit'           => 'Deposit',
-        'sales'             => 'Penjualan',
-    ],
-
-    'currencies' => [
-        'usd'               => 'Dolar Amerika Serikat',
-    ],
-
-    'offline_payments' => [
-        'cash'              => 'Tunai',
-        'bank'              => 'Transfer Bank',
-    ],
-
-    'reports' => [
-        'income'            => 'Ringkasan penghasilan bulanan berdasarkan kategori.',
-        'expense'           => 'Ringkasan pengeluaran bulanan berdasarkan kategori.',
-        'income_expense'    => 'Penghasilan bulanan vs biaya berdasarkan kategori.',
-        'tax'               => 'Ringkasan pajak triwulanan.',
-        'profit_loss'       => 'Laba & rugi triwulan menurut kategori.',
-    ],
+    'accounts_cash'         => 'Kas',
+    'categories_deposit'    => 'Deposit',
+    'categories_sales'      => 'Penjualan',
+    'currencies_usd'        => 'Dolar Amerika',
+    'currencies_eur'        => 'Euro',
+    'currencies_gbp'        => 'Pound Inggris',
+    'currencies_try'        => 'Lira Turki',
 
 ];

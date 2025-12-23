@@ -4,7 +4,6 @@ return [
 
     'bill_number'           => 'Nomor Tagihan',
     'bill_date'             => 'Tanggal Tagihan',
-    'bill_amount'           => 'Jumlah Tagihan',
     'total_price'           => 'Total Harga',
     'due_date'              => 'Tanggal Jatuh Tempo',
     'order_number'          => 'Nomor Pesanan',
@@ -14,48 +13,47 @@ return [
     'price'                 => 'Harga',
     'sub_total'             => 'Subtotal',
     'discount'              => 'Diskon',
-    'item_discount'         => 'Potongan Harga',
     'tax_total'             => 'Total Pajak',
     'total'                 => 'Total',
 
-    'item_name'             => 'Nama Item|Nama Item',
-    'recurring_bills'       => 'Tagihan Rutin|Tagihan Rutin',
+    'item_name'             => 'Nama Barang | Nama Barang',
 
     'show_discount'         => 'Diskon :discount%',
     'add_discount'          => 'Tambahkan diskon',
-    'discount_desc'         => 'dari sub-total',
+    'discount_desc'         => 'dari subtotal',
 
-    'payment_made'          => 'Pembayaran Dibuat',
     'payment_due'           => 'Pembayaran Jatuh Tempo',
     'amount_due'            => 'Jumlah Jatuh Tempo',
     'paid'                  => 'Dibayar',
     'histories'             => 'Riwayat',
     'payments'              => 'Pembayaran',
     'add_payment'           => 'Tambahkan Pembayaran',
-    'mark_paid'             => 'Tandai sudah dibayar',
     'mark_received'         => 'Tandai Diterima',
-    'mark_cancelled'        => 'Dibatalkan',
     'download_pdf'          => 'Unduh PDF',
     'send_mail'             => 'Kirim Email',
     'create_bill'           => 'Membuat Tagihan',
     'receive_bill'          => 'Menerima Tagihan',
-    'make_payment'          => 'Melakukan Pembayaran',
+    'make_payment'          => 'Membuat Pembayaran',
 
-    'form_description' => [
-        'billing'           => 'Detail penagihan muncul di tagihan Anda. Tanggal Tagihan digunakan di dasbor dan laporan. Pilih tanggal yang Anda harapkan untuk membayar sebagai Tanggal Jatuh Tempo.',
+    'status' => [
+        'draft'             => 'Konsep',
+        'received'          => 'Diterima',
+        'partial'           => 'Sebagian',
+        'paid'              => 'Dibayar',
     ],
 
     'messages' => [
+        'received'          => 'Bill ditandai sebagai berhasil diterima!',
         'draft'             => 'Ini adalah <b>DRAFT</b> tagihan dan akan terlihat di grafik setelah dibayarkan.',
 
         'status' => [
-            'created'       => 'Dibuat pada :date',
+            'created'       => 'Dibuat pada: tanggal',
             'receive' => [
-                'draft'     => 'Tidak terkirim',
-                'received'  => 'Diterima pada :date',
+                'draft'     => 'Tidak Terikirim',
+                'received'  => 'Diterima pada: tanggal',
             ],
             'paid' => [
-                'await'     => 'Menunggu pembayaran',
+                'await'     => 'Menunggu Pembayaran',
             ],
         ],
     ],

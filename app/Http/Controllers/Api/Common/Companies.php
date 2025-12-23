@@ -2,61 +2,77 @@
 
 namespace App\Http\Controllers\Api\Common;
 
-use App\Abstracts\Http\ApiController;
+use App\Http\Controllers\ApiController;
 use App\Http\Requests\Common\Company as Request;
-use App\Http\Resources\Common\Company as Resource;
-use App\Jobs\Common\CreateCompany;
-use App\Jobs\Common\DeleteCompany;
-use App\Jobs\Common\UpdateCompany;
 use App\Models\Common\Company;
-use App\Traits\Users;
-use Illuminate\Http\Response;
+use App\Transformers\Common\Company as Transformer;
+use Dingo\Api\Routing\Helpers;
 
 class Companies extends ApiController
 {
-    use Users;
+    use Helpers;
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function index()
     {
-        $companies = user()->companies()->collect();
+        $companies = app('Dingo\Api\Auth\Auth')->user()->companies()->get()->sortBy('name');
 
-        return Resource::collection($companies);
+        foreach ($companies as $company) {
+            $company->setSettings();
+        }
+
+        return $this->response->collection($companies, new Transformer());
     }
 
     /**
      * Display the specified resource.
      *
      * @param  Company  $company
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function show(Company $company)
     {
-        try {
-            // Check if user can access company
-            $this->canAccess($company);
-
-            return new Resource($company);
-        } catch (\Exception $e) {
-            $this->errorUnauthorized($e->getMessage());
+        // Check if user can access company
+        $companies = app('Dingo\Api\Auth\Auth')->user()->companies()->pluck('id')->toArray();
+        if (!in_array($company->id, $companies)) {
+            $this->response->errorUnauthorized();
         }
+
+        $company->setSettings();
+
+        return $this->response->item($company, new Transformer());
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function store(Request $request)
     {
-        $company = $this->dispatch(new CreateCompany($request));
+        $company = Company::create($request->all());
 
-        return $this->created(route('api.companies.show', $company->id), new Resource($company));
+        // Clear settings
+        setting()->forgetAll();
+        setting()->setExtraColumns(['company_id' => $company->id]);
+
+        // Create settings
+        setting()->set([
+            'general.company_name' => $request->get('company_name'),
+            'general.company_email' => $request->get('company_email'),
+            'general.company_address' => $request->get('company_address'),
+            'general.default_currency' => $request->get('default_currency'),
+            'general.default_locale' => $request->get('default_locale', 'en-GB'),
+        ]);
+
+        setting()->save();
+
+        return $this->response->created(url('api/companies/' . $company->id));
     }
 
     /**
@@ -64,85 +80,53 @@ class Companies extends ApiController
      *
      * @param  $company
      * @param  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Dingo\Api\Http\Response
      */
     public function update(Company $company, Request $request)
     {
-        try {
-            $company = $this->dispatch(new UpdateCompany($company, $request));
-
-            return new Resource($company->fresh());
-        } catch (\Exception $e) {
-            $this->errorUnauthorized($e->getMessage());
+        // Check if user can access company
+        $companies = app('Dingo\Api\Auth\Auth')->user()->companies()->pluck('id')->toArray();
+        if (!in_array($company->id, $companies)) {
+            $this->response->errorUnauthorized();
         }
-    }
 
-    /**
-     * Enable the specified resource in storage.
-     *
-     * @param  Company  $company
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function enable(Company $company)
-    {
-        try {
-            $company = $this->dispatch(new UpdateCompany($company, request()->merge(['enabled' => 1])));
+        // Update company
+        $company->update(['domain' => $request->get('domain')]);
 
-            return new Resource($company->fresh());
-        } catch (\Exception $e) {
-            $this->errorUnauthorized($e->getMessage());
-        }
-    }
+        // Update settings
+        setting()->forgetAll();
+        setting()->setExtraColumns(['company_id' => $company->id]);
+        setting()->load(true);
 
-    /**
-     * Disable the specified resource in storage.
-     *
-     * @param  Company  $company
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function disable(Company $company)
-    {
-        try {
-            $company = $this->dispatch(new UpdateCompany($company, request()->merge(['enabled' => 0])));
+        setting()->set([
+            'general.company_name' => $request->get('company_name'),
+            'general.company_email' => $request->get('company_email'),
+            'general.company_address' => $request->get('company_address'),
+            'general.default_currency' => $request->get('default_currency'),
+            'general.default_locale' => $request->get('default_locale', 'en-GB'),
+        ]);
 
-            return new Resource($company->fresh());
-        } catch (\Exception $e) {
-            $this->errorUnauthorized($e->getMessage());
-        }
+        setting()->save();
+
+        return $this->response->item($company->fresh(), new Transformer());
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  Company  $company
-     * @return \Illuminate\Http\Response
+     * @return \Dingo\Api\Http\Response
      */
     public function destroy(Company $company)
     {
-        try {
-            $this->dispatch(new DeleteCompany($company));
-
-            return $this->noContent();
-        } catch (\Exception $e) {
-            $this->errorUnauthorized($e->getMessage());
-        }
-    }
-
-    /**
-     * Check user company assignment
-     *
-     * @param  Company  $company
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function canAccess(Company $company)
-    {
-        if (! empty($company) && $this->isUserCompany($company->id)) {
-            return new Response('');
+        // Check if user can access company
+        $companies = app('Dingo\Api\Auth\Auth')->user()->companies()->pluck('id')->toArray();
+        if (!in_array($company->id, $companies)) {
+            $this->response->errorUnauthorized();
         }
 
-        $message = trans('companies.error.not_user_company');
+        $company->delete();
 
-        $this->errorUnauthorized($message);
+        return $this->response->noContent();
     }
 }

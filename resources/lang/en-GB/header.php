@@ -4,30 +4,14 @@ return [
 
     'change_language'       => 'Change Language',
     'last_login'            => 'Last login :time',
-
     'notifications' => [
-        'counter'           => '{0} You have no new notifications|{1} You have :count new notification|[2,*] You have :count new notifications',
-        'new_apps'          => '{1} :count new app is published|[2,*] :count new apps published',
+        'counter'           => '{0} You have no notification|{1} You have :count notification|[2,*] You have :count notifications',
         'overdue_invoices'  => '{1} :count overdue invoice|[2,*] :count overdue invoices',
         'upcoming_bills'    => '{1} :count upcoming bill|[2,*] :count upcoming bills',
-        'view_all'          => 'View All',
-
-        'exports' => [
-            'completed' => '{1} :count finished export|[2,*] :count finished exports',
-            'failed' => '{1} :count failed export|[2,*] :count failed exports',
-        ],
-        'imports' => [
-            'completed' => '{1} :count finished import|[2,*] :count finished imports',
-            'failed' => '{1} :count failed import|[2,*] :count failed imports',
-        ],
+        'items_stock'       => '{1} :count item out of stock|[2,*] :count items out of stock',
+        'items_reminder'    => '{1} You have :count item left|[2,*] You have :count items left',
+        'view_all'          => 'View All'
     ],
-
     'docs_link'             => 'https://akaunting.com/docs',
-    'support_link'          => 'https://akaunting.com/support',
-
-    'favorite' => [
-        'added_favorite'    => 'Added to favorites',
-        'add_favorite'      => 'Add to favorites',
-    ],
 
 ];

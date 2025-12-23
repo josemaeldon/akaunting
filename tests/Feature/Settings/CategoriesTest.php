@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Settings;
 
-use App\Jobs\Setting\CreateCategory;
 use App\Models\Setting\Category;
 use Tests\Feature\FeatureTestCase;
 
@@ -26,64 +25,60 @@ class CategoriesTest extends FeatureTestCase
 
     public function testItShouldCreateCategory()
     {
-        $request = $this->getRequest();
-
         $this->loginAs()
-            ->post(route('categories.store'), $request)
-            ->assertStatus(200);
+            ->post(route('categories.store'), $this->getCategoryRequest())
+            ->assertStatus(302)
+            ->assertRedirect(route('categories.index'));
 
         $this->assertFlashLevel('success');
-
-        $this->assertDatabaseHas('categories', $request);
     }
 
     public function testItShouldSeeCategoryUpdatePage()
     {
-        $request = $this->getRequest();
-
-        $category = $this->dispatch(new CreateCategory($request));
+        $category = Category::create($this->getCategoryRequest());
 
         $this->loginAs()
-            ->get(route('categories.edit', $category->id))
+            ->get(route('categories.edit', ['category' => $category->id]))
             ->assertStatus(200)
             ->assertSee($category->name);
     }
 
     public function testItShouldUpdateCategory()
     {
-        $request = $this->getRequest();
+        $request = $this->getCategoryRequest();
 
-        $category = $this->dispatch(new CreateCategory($request));
+        $category = Category::create($request);
 
         $request['name'] = $this->faker->text(15);
 
         $this->loginAs()
             ->patch(route('categories.update', $category->id), $request)
-            ->assertStatus(200)
-			->assertSee($request['name']);
+            ->assertStatus(302)
+            ->assertRedirect(route('categories.index'));
 
         $this->assertFlashLevel('success');
-
-        $this->assertDatabaseHas('categories', $request);
     }
 
     public function testItShouldDeleteCategory()
     {
-        $request = $this->getRequest();
-
-        $category = $this->dispatch(new CreateCategory($request));
+        $category = Category::create($this->getCategoryRequest());
 
         $this->loginAs()
             ->delete(route('categories.destroy', $category->id))
-            ->assertStatus(200);
+            ->assertStatus(302)
+            ->assertRedirect(route('categories.index'));
 
         $this->assertFlashLevel('success');
-
-        $this->assertSoftDeleted('categories', $request);
     }
 
-    public function getRequest()
+    private function getCategoryRequest()
     {
-        return Category::factory()->enabled()->raw();
+        return [
+            'company_id' => $this->company->id,
+            'name' => $this->faker->text(15),
+            'type' => 'other',
+            'color' => $this->faker->text(15),
+            'enabled' => $this->faker->boolean ? 1 : 0
+        ];
     }
 }

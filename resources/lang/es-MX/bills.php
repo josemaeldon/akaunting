@@ -7,15 +7,14 @@ return [
     'total_price'           => 'Precio Total',
     'due_date'              => 'Fecha de Vencimiento',
     'order_number'          => 'Número de Orden',
-    'bill_from'             => 'Factura de',
+    'bill_from'             => 'Recibo De',
 
     'quantity'              => 'Cantidad',
     'price'                 => 'Precio',
     'sub_total'             => 'Subtotal',
     'discount'              => 'Descuento',
-    'item_discount'         => 'Línea de descuento',
     'tax_total'             => 'Total de Impuestos',
-    'total'                 => 'Total',
+    'total'                 => 'Total ',
 
     'item_name'             => 'Nombre del producto/servicio | Nombres de los productos/servicos',
 
@@ -29,16 +28,22 @@ return [
     'histories'             => 'Historial',
     'payments'              => 'Pagos',
     'add_payment'           => 'Añadir pago',
-    'mark_paid'             => 'Marcar Como Pagado',
     'mark_received'         => 'Marcar como Recibido',
-    'mark_cancelled'        => 'Marcar Como Cancelado',
     'download_pdf'          => 'Descargar archivo PDF',
     'send_mail'             => 'Enviar Correo Electrónico',
     'create_bill'           => 'Crear Recibo',
     'receive_bill'          => 'Recibir Recibo',
     'make_payment'          => 'Hacer Pago',
 
+    'status' => [
+        'draft'             => 'Borrador',
+        'received'          => 'Recibido',
+        'partial'           => 'Parcial',
+        'paid'              => 'Pagado',
+    ],
+
     'messages' => [
+        'received'          => '¡Recibo marcado como recibido con exitosamente!',
         'draft'             => 'Este es un borrador del recibo y será reflejado en los gráficos después de ser recibido.',
 
         'status' => [

@@ -6,17 +6,12 @@ return [
      *
      * Should extend `Plank\Mediable\Media`
      */
-    'model' => env('MEDIABLE_MODEL', App\Models\Common\Media::class),
-
-    /*
-     * Name to be used for mediables joining table
-     */
-    'mediables_table' => env('MEDIABLE_TABLE', 'mediables'),
+    'model' => Plank\Mediable\Media::class,
 
     /*
      * Filesystem disk to use if none is specified
      */
-    'default_disk' => env('MEDIABLE_DEFAULT_DISK', 'uploads'),
+    'default_disk' => 'uploads',
 
     /*
      * Filesystems that can be used for media storage
@@ -25,7 +20,6 @@ return [
      */
     'allowed_disks' => [
         'uploads',
-        's3',
     ],
 
     /*
@@ -156,7 +150,7 @@ return [
                 'text/json',
                 'application/json',
                 'application/msword',
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                'application/application/vnd.openxmlformats-officedocument.wordprocessingml.document'
             ],
             'extensions' => [
                 'doc',
@@ -171,27 +165,25 @@ return [
             'mime_types' => [
                 'application/vnd.ms-excel',
                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'text/csv',
             ],
             'extensions' => [
                 'xls',
                 'xlsx',
-                'csv',
             ]
         ],
         Plank\Mediable\Media::TYPE_PRESENTATION => [
             'mime_types' =>
-                [
-                    'application/vnd.ms-powerpoint',
-                    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-                    'application/vnd.openxmlformats-officedocument.presentationml.slideshow'
-                ],
+            [
+                'application/vnd.ms-powerpoint',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'application/vnd.openxmlformats-officedocument.presentationml.slideshow'
+            ],
             'extensions' =>
-                [
-                    'ppt',
-                    'pptx',
-                    'ppsx',
-                ]
+            [
+                'ppt',
+                'pptx',
+                'ppsx',
+            ]
         ],
     ],
 
@@ -209,7 +201,7 @@ return [
         'pattern' => [
             '^https?://' => Plank\Mediable\SourceAdapters\RemoteUrlAdapter::class,
             '^/' => Plank\Mediable\SourceAdapters\LocalPathAdapter::class,
-            '^[a-zA-Z]:\\\\' => Plank\Mediable\SourceAdapters\LocalPathAdapter::class
+            '^[a-zA-Z]:\\' => Plank\Mediable\SourceAdapters\LocalPathAdapter::class
         ],
     ],
 

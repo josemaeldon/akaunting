@@ -2,17 +2,18 @@
 
 namespace App\Listeners\Auth;
 
-use Illuminate\Auth\Events\Logout as Event;
+use Illuminate\Auth\Events\Logout as ILogout;
 
 class Logout
 {
+
     /**
      * Handle the event.
      *
-     * @param Event $event
+     * @param ILogout $event
      * @return void
      */
-    public function handle(Event $event)
+    public function handle(ILogout $event)
     {
         session()->forget('company_id');
     }

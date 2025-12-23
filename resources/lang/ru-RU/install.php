@@ -6,7 +6,7 @@ return [
     'refresh'               => 'Обновить',
 
     'steps' => [
-        'requirements'      => 'Пожалуйста, попросите вашего хостинг-провайдера исправить ошибки!',
+        'requirements'      => 'Please, ask your hosting provider to fix the errors!',
         'language'          => 'Шаг 1/3: Выбор языка',
         'database'          => 'Шаг 2/3: Настройка базы данных',
         'settings'          => 'Шаг 3/3: Компании и данные Администратора',
@@ -19,9 +19,8 @@ return [
     'requirements' => [
         'enabled'           => ':feature должно быть включено!',
         'disabled'          => ':feature должно быть отключено!',
-        'extension'         => 'Расширение :extension должно быть установлено и загружено!',
+        'extension'         => ':extension extension needs to be installed and loaded!',
         'directory'         => ':directory директория должна быть доступна для записи!',
-        'executable'        => 'Исполняемый файл PHP CLI не определен/работает, или его версия не является :php_version или выше! Пожалуйста, попросите хостинг-компанию правильно установить переменную окружения PHP_BINARY или PHP_PATH.',
     ],
 
     'database' => [
@@ -39,7 +38,6 @@ return [
     ],
 
     'error' => [
-        'php_version'       => 'Ошибка: Попросите вашего хостинг-провайдера использовать PHP :php_version или выше для HTTP и CLI.',
         'connection'        => 'Ошибка: не удалось подключиться к базе данных! Пожалуйста, убедитесь, что данные являются правильными.',
     ],
 

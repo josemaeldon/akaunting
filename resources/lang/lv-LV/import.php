@@ -4,7 +4,6 @@ return [
 
     'import'                => 'Importēt',
     'title'                 => 'Importēt :type',
-    'limitations'           => 'Atļautais faila veids: :paplašinājumi<br>Atļautais maks. rindas: :rindas_ierobežojums\'',
-    'sample_file'           => 'Jūs variet <a target="_blank" href=":download_link"><strong>lejupielādēt</strong></a> parauga failu un aizpildīt to ar datiem.',
+    'message'               => 'Atļautie failu tipi: XLS, XLSX. <a target="_blank" href=":link"><strong>Lejupielādēt</strong></a> faila paraugu',
 
 ];

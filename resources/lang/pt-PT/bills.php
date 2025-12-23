@@ -13,11 +13,10 @@ return [
     'price'                 => 'Preço',
     'sub_total'             => 'Subtotal',
     'discount'              => 'Desconto',
-    'item_discount'         => 'Line Discount',
     'tax_total'             => 'Imposto',
     'total'                 => 'Total',
 
-    'item_name'             => 'Nome do Item|Nome dos Itens',
+    'item_name'             => 'Nome do Item | Nome dos Items',
 
     'show_discount'         => ':discount% de desconto',
     'add_discount'          => 'Adicionar desconto',
@@ -28,37 +27,30 @@ return [
     'paid'                  => 'Pago',
     'histories'             => 'Histórico',
     'payments'              => 'Pagamentos',
-    'add_payment'           => 'Adicionar Pagamento',
-    'mark_paid'             => 'Marcar como Paga',
+    'add_payment'           => 'Pagar Conta',
     'mark_received'         => 'Marcar como Recebida',
-    'mark_cancelled'        => 'Marcar como Cancelada',
     'download_pdf'          => 'Transferir em PDF',
     'send_mail'             => 'Enviar e-mail',
     'create_bill'           => 'Criar Conta',
     'receive_bill'          => 'Receber Conta',
     'make_payment'          => 'Fazer Pagamento',
 
-    'statuses' => [
+    'status' => [
         'draft'             => 'Rascunho',
-        'received'          => 'Recebida',
+        'received'          => 'Recebido',
         'partial'           => 'Parcial',
-        'paid'              => 'Paga',
-        'overdue'           => 'Vencida',
-        'unpaid'            => 'Por Pagar',
-        'cancelled'         => 'Cancelada',
+        'paid'              => 'Pago',
     ],
 
     'messages' => [
-        'marked_received'   => 'Conta marcada como recebida!',
-        'marked_paid'       => 'Conta marcada como paga!',
-        'marked_cancelled'  => 'Conta marcada como cancelada!',
+        'received'          => 'Conta marcada como recebida com sucesso!',
         'draft'             => 'Isto é um <b>RASCUNHO</b> da conta e será refletida nos gráficos depois de recebida.',
 
         'status' => [
-            'created'       => 'Criada em :date',
+            'created'       => 'Criado em :date',
             'receive' => [
-                'draft'     => 'Não Recebida',
-                'received'  => 'Recebida em :date',
+                'draft'     => 'Não enviado',
+                'received'  => 'Recebido em :date',
             ],
             'paid' => [
                 'await'     => 'Aguarda pagamento',

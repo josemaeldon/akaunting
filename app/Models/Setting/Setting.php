@@ -2,11 +2,15 @@
 
 namespace App\Models\Setting;
 
-use App\Abstracts\Model;
+use App\Scopes\Company;
+use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
+
     protected $table = 'settings';
+
+    public $timestamps = false;
 
     /**
      * Attributes that should be mass-assignable.
@@ -16,22 +20,42 @@ class Setting extends Model
     protected $fillable = ['company_id', 'key', 'value'];
 
     /**
-     * Indicates if the model should be timestamped.
+     * The "booting" method of the model.
      *
-     * @var bool
+     * @return void
      */
-    public $timestamps = false;
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new Company);
+    }
+
+    public static function all($code = 'general')
+    {
+        return static::where('key', 'like', $code . '.%')->get();
+    }
 
     /**
-     * Scope to only include by prefix.
+     * Global company relation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function company()
+    {
+        return $this->belongsTo('App\Models\Common\Company');
+    }
+
+    /**
+     * Scope to only include company data.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $prefix
+     * @param $company_id
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopePrefix($query, $prefix = 'company')
+    public function scopeCompanyId($query, $company_id)
     {
-        return $query->where('key', 'like', $prefix . '.%');
+        return $query->where($this->table . '.company_id', '=', $company_id);
     }
 }

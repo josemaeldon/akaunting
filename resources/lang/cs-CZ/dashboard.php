@@ -20,4 +20,5 @@ return [
     'account_balance'           => 'Zůstatek na účtu',
     'latest_incomes'            => 'Poslední příjmy',
     'latest_expenses'           => 'Poslední výdaje',
+
 ];

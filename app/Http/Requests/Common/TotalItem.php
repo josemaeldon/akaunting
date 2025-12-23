@@ -2,10 +2,20 @@
 
 namespace App\Http\Requests\Common;
 
-use App\Abstracts\Http\FormRequest;
+use App\Http\Requests\Request;
 
-class TotalItem extends FormRequest
+class TotalItem extends Request
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -14,19 +24,19 @@ class TotalItem extends FormRequest
     public function rules()
     {
         return [
-            'items.*.quantity' => 'required',
-            'items.*.price' => 'required|amount',
-            'items.*.currency' => 'required|string|currency',
+            'item.*.quantity' => 'required',
+            'item.*.price' => 'required|amount',
+            'item.*.currency' => 'required|string|currency',
         ];
     }
 
     public function messages()
     {
         return [
-            'items.*.quantity.required' => trans('validation.required', ['attribute' => mb_strtolower(trans('invoices.quantity'))]),
-            'items.*.price.required' => trans('validation.required', ['attribute' => mb_strtolower(trans('invoices.price'))]),
-            'items.*.currency.required' => trans('validation.custom.invalid_currency'),
-            'items.*.currency.string' => trans('validation.custom.invalid_currency'),
+            'item.*.quantity.required' => trans('validation.required', ['attribute' => mb_strtolower(trans('invoices.quantity'))]),
+            'item.*.price.required' => trans('validation.required', ['attribute' => mb_strtolower(trans('invoices.price'))]),
+            'item.*.currency.required' => trans('validation.custom.invalid_currency'),
+            'item.*.currency.string' => trans('validation.custom.invalid_currency'),
         ];
     }
 }

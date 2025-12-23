@@ -1,71 +1,102 @@
-<x-form id="form-create-customer" route="customers.store">
-    <x-tabs active="general" class="grid grid-cols-3" override="class">
-        <x-slot name="navs">
-            <x-tabs.nav id="general">
-                {{ trans('general.general') }}
+<div class="modal fade create-customer-{{ $rand }}" id="modal-create-customer" style="display: none;">
+    <div class="modal-dialog  modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">{{ trans('general.title.new', ['type' => trans_choice('general.customers', 1)]) }}</h4>
+            </div>
 
-                <span class="invalid-feedback block text-xs text-red whitespace-normal" v-if="form.errors.has('name') || form.errors.has('email') || form.errors.has('phone') || form.errors.has('tax_number') || form.errors.has('currency_code')">
-                    {{ trans('general.validation_error') }}
-                </span>
-            </x-tabs.nav>
+            <div class="modal-body">
+                {!! Form::open(['id' => 'form-create-customer', 'role' => 'form', 'class' => 'form-loading-button']) !!}
 
-            <x-tabs.nav id="address">
-                {{ trans('general.address') }}
+                <div class="row">
+                    {{ Form::textGroup('name', trans('general.name'), 'id-card-o') }}
 
-                <span class="invalid-feedback block text-xs text-red whitespace-normal" v-if="form.errors.has('address') || form.errors.has('city') || form.errors.has('zip_code') || form.errors.has('state') || form.errors.has('country')">
-                    {{ trans('general.validation_error') }}
-                </span>
-            </x-tabs.nav>
+                    {{ Form::textGroup('email', trans('general.email'), 'envelope', []) }}
 
-            <x-tabs.nav id="other">
-                {{ trans_choice('general.others', 1) }}
+                    {{ Form::textGroup('tax_number', trans('general.tax_number'), 'percent', []) }}
 
-                <span class="invalid-feedback block text-xs text-red whitespace-normal" v-if="form.errors.has('website') || form.errors.has('reference')">
-                    {{ trans('general.validation_error') }}
-                </span>
-            </x-tabs.nav>
-        </x-slot>
+                    {{ Form::selectGroup('currency_code', trans_choice('general.currencies', 1), 'exchange', $currencies, setting('general.default_currency')) }}
 
-        <x-slot name="content">
-            <x-tabs.tab id="general">
-                <div class="grid sm:grid-cols-6 gap-x-8 gap-y-6 my-3.5">
-                    <x-form.group.text name="name" label="{{ trans('general.name') }}" form-group-class="col-span-6" />
+                    {{ Form::textareaGroup('address', trans('general.address')) }}
 
-                    <x-form.group.text name="email" label="{{ trans('general.email') }}" form-group-class="col-span-6" not-required />
-
-                    <x-form.group.text name="phone" label="{{ trans('general.phone') }}" form-group-class="col-span-6" not-required />
-
-                    <x-form.group.text name="tax_number" label="{{ trans('general.tax_number') }}" form-group-class="col-span-6" not-required />
-
-                    <x-form.group.currency without-add-new form-group-class="col-span-6" :add-new-text="trans_choice('general.currencies', 1)" />
+                    {!! Form::hidden('enabled', '1', []) !!}
                 </div>
-            </x-tabs.tab>
 
-            <x-tabs.tab id="address">
-                <div class="grid sm:grid-cols-6 gap-x-8 gap-y-6 my-3.5">
-                    <x-form.group.textarea name="address" label="{{ trans('general.address') }}" form-group-class="col-span-6" rows=2 not-required />
+                {!! Form::close() !!}
+            </div>
 
-                    <x-form.group.text name="city" label="{{ trans_choice('general.cities', 1) }}" form-group-class="col-span-6" not-required />
+            <div class="modal-footer">
+                <div class="pull-left">
+                    {!! Form::button('<span class="fa fa-save"></span> &nbsp;' . trans('general.save'), ['type' => 'button', 'id' =>'button-create-customer', 'class' => 'btn btn-success button-submit', 'data-loading-text' => trans('general.loading')]) !!}
 
-                    <x-form.group.text name="zip_code" label="{{ trans('general.zip_code') }}" form-group-class="col-span-6" not-required />
-
-                    <x-form.group.text name="state" label="{{ trans('general.state') }}" form-group-class="col-span-6" not-required />
-
-                    <x-form.group.country form-group-class="col-span-6 el-select-tags-pl-38" not-required />
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><span class="fa fa-times-circle"></span> &nbsp;{{ trans('general.cancel') }}</button>
                 </div>
-            </x-tabs.tab>
+            </div>
+        </div>
+    </div>
+</div>
 
-            <x-tabs.tab id="other">
-                <div class="grid sm:grid-cols-6 gap-x-8 gap-y-6 my-3.5">
-                    <x-form.group.text name="website" label="{{ trans('general.website') }}" form-group-class="col-span-6" not-required />
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.create-customer-{{ $rand }}#modal-create-customer').modal('show');
 
-                    <x-form.group.text name="reference" label="{{ trans('general.reference') }}" form-group-class="col-span-6" not-required />
+        $(".create-customer-{{ $rand }}#modal-create-customer #currency_code").select2({
+            placeholder: "{{ trans('general.form.select.field', ['field' => trans_choice('general.currencies', 1)]) }}"
+        });
+    });
 
-                    <x-form.input.hidden name="type" value="customer" />
+    $(document).on('click', '.create-customer-{{ $rand }} #button-create-customer', function (e) {
+        $('.create-customer-{{ $rand }}#modal-create-customer .modal-header').before('<span id="span-loading" style="position: absolute; height: 100%; width: 100%; z-index: 99; background: #6da252; opacity: 0.4;"><i class="fa fa-spinner fa-spin" style="font-size: 16em !important;margin-left: 35%;margin-top: 8%;"></i></span>');
 
-                    <x-form.input.hidden name="enabled" value="1" />
-                </div>
-            </x-tabs.tab>
-        </x-slot>
-    </x-tabs>
-</x-form>
+        $.ajax({
+            url: '{{ url("modals/customers") }}',
+            type: 'POST',
+            dataType: 'JSON',
+            data: $(".create-customer-{{ $rand }} #form-create-customer").serialize(),
+            beforeSend: function () {
+                $('.create-customer-{{ $rand }} #button-create-customer').button('loading');
+
+                $(".create-customer-{{ $rand }} .form-group").removeClass("has-error");
+                $(".create-customer-{{ $rand }} .help-block").remove();
+            },
+            complete: function() {
+                $('.create-customer-{{ $rand }} #button-create-customer').button('reset');
+            },
+            success: function(json) {
+                var data = json['data'];
+
+                $('.create-customer-{{ $rand }} #span-loading').remove();
+
+                $('.create-customer-{{ $rand }}#modal-create-customer').modal('hide');
+
+                $('#customer_id').append('<option value="' + data.id + '" selected="selected">' + data.name + '</option>');
+                $('#customer_id').trigger('change');
+                $('#customer_id').select2('refresh');
+
+                @if ($customer_selector)
+                $('{{ $customer_selector }}').append('<option value="' + data.id + '" selected="selected">' + data.name + '</option>');
+                $('{{ $customer_selector }}').trigger('change');
+                $('{{ $customer_selector }}').select2('refresh');
+                @endif
+            },
+            error: function(error, textStatus, errorThrown) {
+                $('.create-customer-{{ $rand }} #span-loading').remove();
+
+                if (error.responseJSON.name) {
+                    $(".create-customer-{{ $rand }}#modal-create-customer input[name='name']").parent().parent().addClass('has-error');
+                    $(".create-customer-{{ $rand }}#modal-create-customer input[name='name']").parent().after('<p class="help-block">' + error.responseJSON.name + '</p>');
+                }
+
+                if (error.responseJSON.email) {
+                    $(".create-customer-{{ $rand }}#modal-create-customer input[name='email']").parent().parent().addClass('has-error');
+                    $(".create-customer-{{ $rand }}#modal-create-customer input[name='email']").parent().after('<p class="help-block">' + error.responseJSON.email + '</p>');
+                }
+
+                if (error.responseJSON.currency_code) {
+                    $(".create-customer-{{ $rand }}#modal-create-customer select[name='currency_code']").parent().parent().addClass('has-error');
+                    $(".create-customer-{{ $rand }}#modal-create-customer select[name='currency_code']").parent().after('<p class="help-block">' + error.responseJSON.currency_code + '</p>');
+                }
+            }
+        });
+    });
+</script>
