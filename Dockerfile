@@ -82,3 +82,7 @@ EXPOSE 80
 # Usar o script de inicialização como entrypoint
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
+# CMD vazio para garantir que nenhum comando adicional seja executado
+# O script de entrypoint já inicia o Apache
+CMD []
+
